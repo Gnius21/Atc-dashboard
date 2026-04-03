@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TNCC Modern Frame</title>
+
+<style>
+  body {
+    margin:0;
+    background:#05060a;
+    color:#e6e6e6;
+    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui;
+  }
+
+  header {
+    padding:14px;
+    text-align:center;
+    background:#0b0d13;
+    color:#3fa9f5;
+    font-size:1.1rem;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    border-bottom:1px solid #11131a;
+  }
+
+  /* TOP WEATHER ICON */
+  .top-weather {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+    margin:10px;
+    padding:10px;
+    background:#0b0d13;
+    border-radius:12px;
+    border:1px solid #11131a;
+  }
+
+  .top-weather img {
+    width:48px;
+    height:48px;
+  }
+
+  .top-weather div {
+    font-size:1rem;
+    color:#3fa9f5;
+    font-weight:600;
+  }
+
+  .section-title {
+    font-size:0.75rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#3fa9f5;
+    margin:8px 0 4px 10px;
+  }
+
+  .panel {
+    background:#0b0d13;
+    border-radius:12px;
+    margin:8px;
+    padding:6px;
+    border:1px solid #11131a;
+  }
+
+  .btn {
+    display:block;
+    background:#3fa9f5;
+    color:#000;
+    padding:8px;
+    margin:6px 0;
+    border-radius:6px;
+    text-align:center;
+    font-weight:600;
+    font-size:0.75rem;
+  }
+
+  iframe {
+    border:none;
+    width:100%;
+  }
+
+  /* FIXED WINDY RADAR — NO HALF BLACK */
+  .windy-box {
+    width:100%;
+    height:350px;
+    background:#000;
+    border-radius:12px;
+    overflow:hidden;
+    margin:8px;
+    border:1px solid #11131a;
+  }
+
+  /* FLIGHTS */
+  .flights {
+    display:flex;
+    height:42vh;
+    gap:8px;
+    padding:8px;
+  }
+
+  .col {
+    flex:1;
+    background:#0b0d13;
+    border-radius:12px;
+    border:1px solid #11131a;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .col h3 {
+    text-align:center;
+    color:#3fa9f5;
+    margin:4px 0;
+    font-size:0.75rem;
+    letter-spacing:0.1em;
+  }
+
+  .col iframe {
+    flex:1;
+    height:100%;
+    transform:scale(0.85);
+    transform-origin: top left;
+    width:118%;
+  }
+</style>
+</head>
+
+<body>
+
+<header>TNCC · Modern Frame</header>
+
+<!-- CLICKABLE TOP WEATHER WIDGET (opens Meteoblue forecast) -->
+<a href="https://www.meteoblue.com/en/weather/week/curacao_netherlands-antilles_3513090" 
+   target="_blank" style="text-decoration:none;">
+  <div class="top-weather">
+    <img id="weather-icon" src="https://www.meteoblue.com/images/icons/clear_day.png">
+    <div id="weather-temp">--°C</div>
+  </div>
+</a>
+
+<script>
+// LIVE TNCC WEATHER (Open-Meteo)
+fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.9598&current_weather=true&timezone=auto")
+  .then(r => r.json())
+  .then(data => {
+    const temp = data.current_weather.temperature;
+    const code = data.current_weather.weathercode;
+
+    document.getElementById("weather-temp").innerText = temp + "°C";
+
+    // Simple icon mapping
+    const icons = {
+      0: "clear_day",
+      1: "partly_cloudy",
+      2: "partly_cloudy",
+      3: "cloudy",
+      45: "fog",
+      48: "fog",
+      51: "rain",
+      53: "rain",
+      55: "rain",
+      61: "rain",
+      63: "rain",
+      65: "rain",
+      80: "rain",
+      81: "rain",
+      82: "rain",
+      95: "thunderstorm",
+      96: "thunderstorm",
+      99: "thunderstorm"
+    };
+
+    const iconName = icons[code] || "cloudy";
+    document.getElementById("weather-icon").src =
+      "https://www.meteoblue.com/images/icons/" + iconName + ".png";
+  });
+</script>
+
+<!-- NEW TOP TABS: HARMONIE + SATELLITE -->
+<div class="panel">
+  <a class="btn" 
+     href="https://www.ventusky.com/precipitation-map/3-hours#p=11.72;-69.01;8&m=harmonie_car&w=0AAAtp9AA" 
+     target="_blank">
+     🌧 Harmonie Model
+  </a>
+
+  <a class="btn" 
+     href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026032518&initgefs=Off" 
+     target="_blank">
+     🛰 Satellite View
+  </a>
+</div>
+
+<!-- ADSBexchange Radar -->
+<div class="section-title">ADSBexchange Radar</div>
+<div style="width:100%; height:40vh; background:#000; border-radius:12px; overflow:hidden; margin:8px;">
+  <iframe src="https://globe.adsbexchange.com/" style="height:100%;"></iframe>
+</div>
+
+<!-- ATC -->
+<div class="section-title">ATC</div>
+<div class="panel">
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">▶ Tower 118.300</a>
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">▶ Terminal / Radar</a>
+</div>
+
+<!-- WINDY RADAR (FIXED) -->
+<div class="section-title">Windy Radar</div>
+<div class="windy-box">
+  <iframe 
+    src="https://embed.windy.com/embed2.html?lat=12.1889&lon=-68.9598&zoom=9&overlay=radar"
+    style="width:100%; height:100%;"
+  ></iframe>
+</div>
+
+<!-- REGIONAL DASHBOARD TAB -->
+<div class="panel">
+  <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">
+    🌦 Regional Weather Dashboard
+  </a>
+</div>
+
+<!-- ARRIVALS + DEPARTURES -->
+<div class="section-title">Flights</div>
+<div class="flights">
+  <div class="col">
+    <h3>Arrivals</h3>
+    <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
+  </div>
+  <div class="col">
+    <h3>Departures</h3>
+    <iframe src="https://curacao-airport.com/flights/?type=departures"></iframe>
+  </div>
+</div>
+
+</body>
+</html>
