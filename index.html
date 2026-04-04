@@ -24,7 +24,7 @@
     border-bottom:1px solid #11131a;
   }
 
-  /* WEATHER ROW (NO ICON) */
+  /* WEATHER ROW */
   .top-weather {
     display:flex;
     align-items:center;
@@ -112,6 +112,17 @@
     width:100%;
     height:100%;
     pointer-events:none;
+  }
+
+  .ad-container {
+    margin:12px;
+    padding:10px;
+    background:#0b0d13;
+    border-radius:14px;
+    border:1px solid #11131a;
+    text-align:center;
+    color:#777;
+    font-size:0.8rem;
   }
 
   .flights {
@@ -211,6 +222,12 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   });
 </script>
 
+<!-- AD SLOT 1 -->
+<div class="ad-container">
+  <!-- PASTE YOUR ADSENSE CODE HERE -->
+  Ad Space (Top)
+</div>
+
 <!-- WEATHER / HARMONIE / SATELLITE ROW -->
 <div class="panel tools-row">
   <a class="btn" href="https://www.meteoblue.com/en/weather/week/curacao_netherlands-antilles_3513090" target="_blank">🌦 Weather</a>
@@ -233,7 +250,13 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">▶ Terminal / Radar</a>
 </div>
 
-<!-- WINDY RADAR (FIXED EMBED + YOUR LINK ON TITLE) -->
+<!-- AD SLOT 2 -->
+<div class="ad-container">
+  <!-- PASTE YOUR ADSENSE CODE HERE -->
+  Ad Space (Middle)
+</div>
+
+<!-- WINDY RADAR -->
 <div class="section-title">
   <a href="https://www.windy.com/-Weather-radar-radar?radar,11.904,-69.079,8,p:radiosonde" target="_blank">
     Windy Radar
@@ -254,6 +277,12 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
     <h3>Arrivals</h3>
     <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
   </div>
+</div>
+
+<!-- AD SLOT 3 -->
+<div class="ad-container">
+  <!-- PASTE YOUR ADSENSE CODE HERE -->
+  Ad Space (Bottom)
 </div>
 
 </body>
