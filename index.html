@@ -114,6 +114,14 @@
     pointer-events:none;
   }
 
+  /* ARRIVALS — UNLOCKED */
+  .arrivals-unlocked iframe {
+    width:100%;
+    height:100%;
+    border:none;
+    pointer-events:auto; /* FULL INTERACTION */
+  }
+
   .ad-container {
     margin:12px;
     padding:10px;
@@ -145,12 +153,6 @@
     margin:6px 0;
     font-size:0.85rem;
     letter-spacing:0.1em;
-  }
-
-  .col iframe {
-    flex:1;
-    width:100%;
-    height:100%;
   }
 
   @media (min-width:900px){
@@ -224,15 +226,24 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
 
 <!-- AD SLOT 1 -->
 <div class="ad-container">
-  <!-- PASTE YOUR ADSENSE CODE HERE -->
   Ad Space (Top)
 </div>
 
-<!-- WEATHER / HARMONIE / SATELLITE ROW -->
+<!-- REGIONAL WEATHER / HARMONIE / SATELLITE ROW -->
 <div class="panel tools-row">
-  <a class="btn" href="https://www.meteoblue.com/en/weather/week/curacao_netherlands-antilles_3513090" target="_blank">🌦 Weather</a>
-  <a class="btn" href="https://www.ventusky.com/precipitation-map/3-hours#p=11.72;-69.01;8&m=harmonie_car" target="_blank">🌧 Harmonie</a>
-  <a class="btn" href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E" target="_blank">🛰 Satellite</a>
+
+  <a class="btn" 
+     href="https://gniusweather.github.io/REGIONALDASHBOARD/"
+     target="_blank">🌍 Regional</a>
+
+  <a class="btn" 
+     href="https://www.ventusky.com/precipitation-map/3-hours#p=11.72;-69.01;8&m=harmonie_car"
+     target="_blank">🌧 Harmonie</a>
+
+  <a class="btn" 
+     href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E"
+     target="_blank">🛰 Satellite</a>
+
 </div>
 
 <!-- ADSBexchange Radar -->
@@ -252,7 +263,6 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
 
 <!-- AD SLOT 2 -->
 <div class="ad-container">
-  <!-- PASTE YOUR ADSENSE CODE HERE -->
   Ad Space (Middle)
 </div>
 
@@ -270,9 +280,9 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   </iframe>
 </div>
 
-<!-- ARRIVALS -->
+<!-- ARRIVALS (UNLOCKED) -->
 <div class="section-title">Arrivals</div>
-<div class="flights">
+<div class="flights arrivals-unlocked">
   <div class="col">
     <h3>Arrivals</h3>
     <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
@@ -281,7 +291,6 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
 
 <!-- AD SLOT 3 -->
 <div class="ad-container">
-  <!-- PASTE YOUR ADSENSE CODE HERE -->
   Ad Space (Bottom)
 </div>
 
