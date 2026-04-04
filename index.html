@@ -185,13 +185,17 @@
 </a>
 
 <script>
-// LIVE WEATHER
+// LIVE WEATHER — WIND IN KNOTS
 fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.9598&current_weather=true&hourly=relativehumidity_2m&timezone=auto")
   .then(r => r.json())
   .then(data => {
 
     const t = data.current_weather.temperature;
-    const w = data.current_weather.windspeed;
+
+    // Convert km/h → knots
+    const w_kmh = data.current_weather.windspeed;
+    const w_knots = (w_kmh * 0.539957).toFixed(0);
+
     const d = data.current_weather.winddirection;
     const h = data.hourly.relativehumidity_2m[0];
     const code = data.current_weather.weathercode;
@@ -209,7 +213,7 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
     };
 
     document.getElementById("temp").innerText = t + "°C";
-    document.getElementById("wind").innerText = w + " " + compass;
+    document.getElementById("wind").innerText = w_knots + " kt " + compass;
     document.getElementById("humidity").innerText = h + "%";
     document.getElementById("condition").innerText = conditions[code] || "—";
   });
@@ -226,7 +230,7 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
      href="https://www.ventusky.com/precipitation-map/3-hours#p=11.72;-69.01;8&m=harmonie_car"
      target="_blank">🌧 Harmonie</a>
 
-  <!-- UPDATED SATELLITE BUTTON -->
+  <!-- YOUR EXACT SATELLITE LINK -->
   <a class="btn" 
      href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040318&initgefs=Off"
      target="_blank">🛰 Satellite</a>
