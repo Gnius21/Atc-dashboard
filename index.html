@@ -4,7 +4,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ATC Dashboard</title>
 
-<!-- AdSense Auto Ads + Manual Ads Loader -->
+<!-- GOOGLE ADSENSE AUTO ADS ONLY -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8809941591993194"
      crossorigin="anonymous"></script>
 
@@ -28,7 +28,6 @@
     border-bottom:1px solid #11131a;
   }
 
-  /* WEATHER ROW */
   .top-weather {
     display:flex;
     align-items:center;
@@ -118,7 +117,6 @@
     pointer-events:none;
   }
 
-  /* ARRIVALS — UNLOCKED */
   .arrivals-unlocked iframe {
     width:100%;
     height:100%;
@@ -151,23 +149,6 @@
   @media (min-width:900px){
     .col { height:600px; }
     .radar-lock { height:500px; }
-  }
-
-  /* Sticky bottom ad (mobile only) */
-  .sticky-ad {
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background:#0b0d13;
-    padding:6px 0;
-    border-top:1px solid #11131a;
-    text-align:center;
-    z-index:9999;
-  }
-
-  @media (min-width:900px){
-    .sticky-ad { display:none; }
   }
 </style>
 </head>
@@ -234,16 +215,7 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   });
 </script>
 
-<!-- ⭐ TOP RESPONSIVE AD -->
-<div style="margin:12px;">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-8809941591993194"
-       data-ad-slot="1000000001"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
+<!-- NO MANUAL ADS — AUTO ADS ONLY -->
 
 <!-- REGIONAL WEATHER / HARMONIE / SATELLITE ROW -->
 <div class="panel tools-row">
@@ -277,17 +249,6 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">▶ Terminal / Radar</a>
 </div>
 
-<!-- ⭐ MID-CONTENT RESPONSIVE AD -->
-<div style="margin:12px;">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-8809941591993194"
-       data-ad-slot="1000000002"
-       data-ad-format="auto"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-</div>
-
 <!-- WINDY RADAR -->
 <div class="section-title">
   <a href="https://www.windy.com/-Weather-radar-radar?radar,11.904,-69.079,8,p:radiosonde" target="_blank">
@@ -302,24 +263,13 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.959
   </iframe>
 </div>
 
-<!-- ARRIVALS (UNLOCKED) -->
+<!-- ARRIVALS -->
 <div class="section-title">Arrivals</div>
 <div class="flights arrivals-unlocked">
   <div class="col">
     <h3>Arrivals</h3>
     <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
   </div>
-</div>
-
-<!-- ⭐ STICKY BOTTOM MOBILE AD -->
-<div class="sticky-ad">
-  <ins class="adsbygoogle"
-       style="display:block"
-       data-ad-client="ca-pub-8809941591993194"
-       data-ad-slot="1000000003"
-       data-ad-format="horizontal"
-       data-full-width-responsive="true"></ins>
-  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
 </div>
 
 </body>
