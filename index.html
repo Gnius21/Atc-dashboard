@@ -4,88 +4,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ATC Dashboard</title>
 
-<!-- GOOGLE ADSENSE AUTO ADS ONLY -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8809941591993194"
-     crossorigin="anonymous"></script>
-
 <style>
   body {
     margin:0;
-    background:#05060a;
+    background:#020305;
     color:#e6e6e6;
-    font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui;
-    -webkit-tap-highlight-color: transparent;
+    font-family:-apple-system, BlinkMacSystemFont, system-ui;
+    overflow-y: scroll; /* FORCE SCROLLBAR */
+    scrollbar-width: thin;
+  }
+
+  /* CUSTOM SCROLLBAR (Chrome, Edge, Safari) */
+  body::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  body::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background: #3fa9f5;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #3fa9f5;
+  }
+
+  body::-webkit-scrollbar-thumb:hover {
+    background: #6bc4ff;
+  }
+
+  /* DARK GLASS */
+  .glass {
+    background:rgba(15,17,25,0.55);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 0 22px rgba(0,0,0,0.45);
   }
 
   header {
     padding:16px;
     text-align:center;
-    background:#0b0d13;
+    background:rgba(10,12,18,0.7);
+    backdrop-filter:blur(12px);
     color:#3fa9f5;
     font-size:1.2rem;
     letter-spacing:0.12em;
     text-transform:uppercase;
-    border-bottom:1px solid #11131a;
-  }
-
-  .top-weather {
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin:12px;
-    padding:12px;
-    background:#0b0d13;
-    border-radius:14px;
-    border:1px solid #11131a;
-  }
-
-  .weather-item {
-    display:flex;
-    flex-direction:column;
-    text-align:center;
-    min-width:60px;
-  }
-
-  .weather-main {
-    font-size:1rem;
-    color:#3fa9f5;
-    font-weight:600;
-  }
-
-  .weather-sub {
-    font-size:0.7rem;
-    color:#9bbcd1;
+    border-bottom:1px solid rgba(255,255,255,0.06);
   }
 
   .btn {
     display:block;
-    background:#3fa9f5;
+    background:rgba(63,169,245,0.85);
     color:#000;
-    padding:10px;
-    border-radius:8px;
+    padding:12px;
+    border-radius:10px;
     text-align:center;
     font-weight:600;
-    font-size:0.85rem;
+    font-size:0.9rem;
     text-decoration:none;
+    box-shadow:0 0 12px rgba(63,169,245,0.35);
   }
 
   .panel {
-    background:#0b0d13;
-    border-radius:14px;
-    margin:10px;
-    padding:10px;
-    border:1px solid #11131a;
+    border-radius:16px;
+    margin:12px;
+    padding:12px;
   }
 
   .tools-row {
     display:flex;
-    gap:8px;
+    gap:10px;
   }
 
   .tools-row .btn {
     flex:1;
-    margin:0;
   }
 
   .section-title {
@@ -93,7 +87,7 @@
     letter-spacing:0.12em;
     text-transform:uppercase;
     color:#3fa9f5;
-    margin:10px 0 6px 14px;
+    margin:14px 0 6px 16px;
   }
 
   .section-title a {
@@ -101,178 +95,82 @@
     text-decoration:none;
   }
 
-  .radar-lock {
+  .radar-box {
+    position:relative;
     width:100%;
     height:360px;
-    background:#000;
-    border-radius:14px;
+    border-radius:16px;
     overflow:hidden;
-    margin:10px;
-    border:1px solid #11131a;
+    margin:12px;
+    border:1px solid rgba(255,255,255,0.06);
+    background:#000;
   }
 
-  .radar-lock iframe {
+  .radar-box iframe {
     width:100%;
     height:100%;
-    pointer-events:none;
+    border:none;
+    pointer-events:auto;
+    touch-action:none; /* disable scroll + zoom */
   }
 
-  .arrivals-unlocked iframe {
+  .arrivals-box {
+    height:420px;
+    margin:12px;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.06);
+    background:rgba(15,17,25,0.55);
+    backdrop-filter:blur(14px);
+  }
+
+  .arrivals-box iframe {
     width:100%;
     height:100%;
     border:none;
     pointer-events:auto;
   }
 
-  .flights {
-    padding:10px;
-  }
-
-  .col {
-    background:#0b0d13;
-    border-radius:14px;
-    border:1px solid #11131a;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    height:420px;
-  }
-
-  .col h3 {
-    text-align:center;
-    color:#3fa9f5;
-    margin:6px 0;
-    font-size:0.85rem;
-    letter-spacing:0.1em;
-  }
-
   @media (min-width:900px){
-    .col { height:600px; }
-    .radar-lock { height:500px; }
+    .radar-box { height:500px; }
+    .arrivals-box { height:600px; }
   }
 </style>
 </head>
 
 <body>
 
-<header>ATC Dashboard</header>
+<header class="glass">ATC Dashboard</header>
 
-<!-- WEATHER ROW -->
-<a href="https://www.meteoblue.com/en/weather/week/curacao_netherlands-antilles_3513090" target="_blank" style="text-decoration:none;">
-  <div class="top-weather">
-
-    <div class="weather-item">
-      <div class="weather-main" id="temp">--°C</div>
-      <div class="weather-sub">Temp</div>
-    </div>
-
-    <div class="weather-item">
-      <div class="weather-main" id="wind">--</div>
-      <div class="weather-sub">Wind</div>
-    </div>
-
-    <div class="weather-item">
-      <div class="weather-main" id="humidity">--%</div>
-      <div class="weather-sub">Humidity</div>
-    </div>
-
-    <div class="weather-item">
-      <div class="weather-main" id="condition">--</div>
-      <div class="weather-sub">Cond</div>
-    </div>
-
-  </div>
-</a>
-
-<script>
-// LIVE WEATHER — WIND IN KNOTS
-fetch("https://api.open-meteo.com/v1/forecast?latitude=12.1889&longitude=-68.9598&current_weather=true&hourly=relativehumidity_2m&timezone=auto")
-  .then(r => r.json())
-  .then(data => {
-
-    const t = data.current_weather.temperature;
-
-    // Convert km/h → knots
-    const w_kmh = data.current_weather.windspeed;
-    const w_knots = (w_kmh * 0.539957).toFixed(0);
-
-    const d = data.current_weather.winddirection;
-    const h = data.hourly.relativehumidity_2m[0];
-    const code = data.current_weather.weathercode;
-
-    const dirs = ["N","NE","E","SE","S","SW","W","NW"];
-    const compass = dirs[Math.round(d / 45) % 8];
-
-    const conditions = {
-      0:"Clear",1:"Clear",2:"Partly",3:"Cloudy",
-      45:"Fog",48:"Fog",
-      51:"Drizzle",53:"Drizzle",55:"Drizzle",
-      61:"Rain",63:"Rain",65:"Rain",
-      80:"Showers",81:"Showers",82:"Showers",
-      95:"Storm",96:"Storm",99:"Storm"
-    };
-
-    document.getElementById("temp").innerText = t + "°C";
-    document.getElementById("wind").innerText = w_knots + " kt " + compass;
-    document.getElementById("humidity").innerText = h + "%";
-    document.getElementById("condition").innerText = conditions[code] || "—";
-  });
-</script>
-
-<!-- REGIONAL WEATHER / HARMONIE / SATELLITE ROW -->
-<div class="panel tools-row">
-
-  <a class="btn" 
-     href="https://gniusweather.github.io/REGIONALDASHBOARD/"
-     target="_blank">🌍 Regional</a>
-
-  <a class="btn" 
-     href="https://www.ventusky.com/precipitation-map/3-hours#p=11.72;-69.01;8&m=harmonie_car"
-     target="_blank">🌧 Harmonie</a>
-
-  <!-- YOUR EXACT SATELLITE LINK -->
+<!-- BUTTON ROW -->
+<div class="panel glass tools-row">
+  <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
+  <a class="btn" href="https://www.ventusky.com" target="_blank">🌧 Harmonie</a>
   <a class="btn" 
      href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040318&initgefs=Off"
      target="_blank">🛰 Satellite</a>
-
 </div>
 
-<!-- ADSBexchange Radar -->
+<!-- ADSBEXCHANGE -->
 <div class="section-title">
-  <a href="https://globe.adsbexchange.com" target="_blank">ADSBexchange Radar</a>
+  <a href="https://globe.adsbexchange.com/?lat=12.1889&lon=-68.9598&zoom=9" target="_blank">ADSBexchange Radar</a>
 </div>
-<div class="radar-lock">
-  <iframe src="https://globe.adsbexchange.com"></iframe>
-</div>
-
-<!-- ATC -->
-<div class="section-title">ATC</div>
-<div class="panel">
-  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">▶ Tower 118.300</a>
-  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">▶ Terminal / Radar</a>
+<div class="radar-box glass">
+  <iframe src="https://globe.adsbexchange.com/?lat=12.1889&lon=-68.9598&zoom=9"></iframe>
 </div>
 
-<!-- WINDY RADAR -->
+<!-- WINDY -->
 <div class="section-title">
-  <a href="https://www.windy.com/-Weather-radar-radar?radar,11.904,-69.079,8,p:radiosonde" target="_blank">
-    Windy Radar
-  </a>
+  <a href="https://www.windy.com/?11.904,-69.079,7" target="_blank">Windy Radar</a>
 </div>
-
-<div class="radar-lock">
-  <iframe 
-    src="https://embed.windy.com/embed2.html?lat=11.904&lon=-69.079&zoom=8&overlay=radar"
-    scrolling="no">
-  </iframe>
+<div class="radar-box glass">
+  <iframe src="https://embed.windy.com/embed2.html?lat=11.904&lon=-69.079&zoom=7&overlay=radar"></iframe>
 </div>
 
 <!-- ARRIVALS -->
 <div class="section-title">Arrivals</div>
-<div class="flights arrivals-unlocked">
-  <div class="col">
-    <h3>Arrivals</h3>
-    <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
-  </div>
+<div class="arrivals-box glass">
+  <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
 </div>
 
 </body>
