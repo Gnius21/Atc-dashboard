@@ -3,396 +3,352 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</title>
-
 <style>
-  body {
-    margin:0;
-    background:#020305;
-    color:#e6e6e6;
-    font-family:-apple-system, BlinkMacSystemFont, system-ui;
-    overflow-y: scroll;
-    scrollbar-width: thin;
+  :root{
+    --accent:#3fa9f5;
+    --glass-bg: rgba(15,17,25,0.55);
+    --panel-bg: rgba(255,255,255,0.04);
   }
 
-  body::-webkit-scrollbar { width: 12px; }
-  body::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-  body::-webkit-scrollbar-thumb {
-    background: #3fa9f5;
-    border-radius: 10px;
-    box-shadow: 0 0 10px #3fa9f5;
-  }
+  html,body{height:100%;margin:0;background:#020305;color:#e6e6e6;font-family:-apple-system,BlinkMacSystemFont,system-ui,Segoe UI,Roboto,Helvetica,Arial; -webkit-font-smoothing:antialiased;}
+  body{overflow-y:auto; scrollbar-width:thin;}
+  body::-webkit-scrollbar{width:12px} body::-webkit-scrollbar-track{background:rgba(255,255,255,0.04)} body::-webkit-scrollbar-thumb{background:var(--accent);border-radius:10px;box-shadow:0 0 10px var(--accent)}
 
-  .glass {
-    background:rgba(15,17,25,0.55);
-    backdrop-filter:blur(14px);
-    border:1px solid rgba(255,255,255,0.06);
-    box-shadow:0 0 22px rgba(0,0,0,0.45);
-  }
+  .glass{background:var(--glass-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);box-shadow:0 0 22px rgba(0,0,0,0.45);border-radius:12px}
+  header{padding:14px;text-align:center;background:rgba(10,12,18,0.7);color:var(--accent);font-size:1.05rem;letter-spacing:0.12em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.04)}
 
-  header {
-    padding:16px;
-    text-align:center;
-    background:rgba(10,12,18,0.7);
-    color:#3fa9f5;
-    font-size:1.2rem;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    border-bottom:1px solid rgba(255,255,255,0.06);
-  }
+  /* Forecast strip (icons only clickable) */
+  .forecast-strip{margin:12px;padding:10px;border-radius:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .forecast-day{flex:1;text-align:center;background:var(--panel-bg);padding:8px;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:6px}
+  .forecast-day .icon{font-size:1.4rem}
+  .forecast-day .temp{font-size:0.82rem}
+  .forecast-day .rain{font-size:0.72rem;opacity:0.85}
+  .forecast-day .wind{font-size:0.82rem;opacity:0.95}
 
-  /* Forecast strip */
-  .forecast-strip {
-    margin:12px;
-    padding:12px;
-    border-radius:14px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:12px;
-  }
+  /* Row for dust / uv / heat index */
+  .env-row{display:flex;gap:12px;margin:12px}
+  .env-card{flex:1;padding:12px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+  .env-title{font-size:0.75rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase}
+  .env-value{font-weight:700;font-size:1rem}
 
-  .forecast-day {
-    flex:1;
-    text-align:center;
-    background:rgba(255,255,255,0.04);
-    padding:6px;
-    border-radius:10px;
-  }
+  .dust-clear{background:#0f5132;color:#d1e7dd}
+  .dust-light{background:#664d03;color:#fff3cd}
+  .dust-dusty{background:#7f3d00;color:#ffe5d0}
+  .dust-heavy{background:#842029;color:#f8d7da}
 
-  /* Dust indicator */
-  .dust-badge {
-    margin:12px;
-    padding:10px;
-    border-radius:12px;
-    text-align:center;
-    font-weight:600;
-    font-size:0.9rem;
-  }
+  .uv-low{background:#0f5132;color:#d1e7dd}
+  .uv-mod{background:#664d03;color:#fff3cd}
+  .uv-high{background:#7f3d00;color:#ffe5d0}
+  .uv-vhigh{background:#842029;color:#f8d7da}
+  .uv-extreme{background:#4b0082;color:#f3e8ff}
 
-  .dust-clear { background:#0f5132; color:#d1e7dd; }
-  .dust-light { background:#664d03; color:#fff3cd; }
-  .dust-dusty { background:#7f3d00; color:#ffe5d0; }
-  .dust-heavy { background:#842029; color:#f8d7da; }
+  .heat-cool{background:#0f5132;color:#d1e7dd}
+  .heat-warm{background:#664d03;color:#fff3cd}
+  .heat-hot{background:#7f3d00;color:#ffe5d0}
+  .heat-danger{background:#842029;color:#f8d7da}
 
-  /* UV Index */
-  .uv-badge {
-    margin:12px;
-    padding:12px;
-    border-radius:12px;
-    text-align:center;
-    font-weight:600;
-    font-size:1rem;
-  }
+  .toggle-container{position:fixed;top:16px;right:16px;padding:10px 12px;border-radius:12px;background:rgba(15,17,25,0.85);color:var(--accent);cursor:pointer;z-index:999}
+  .panel-row{display:flex;flex-direction:column;gap:8px}
+  .tools-row{display:flex;gap:10px;margin:12px}
+  .btn{flex:1;background:var(--accent);color:#000;padding:10px;border-radius:10px;text-align:center;text-decoration:none;font-weight:600;box-shadow:0 0 12px rgba(63,169,245,0.18)}
+  .section-title{font-size:0.8rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin:12px 16px 6px}
 
-  .uv-low { background:#0f5132; color:#d1e7dd; }
-  .uv-mod { background:#664d03; color:#fff3cd; }
-  .uv-high { background:#7f3d00; color:#ffe5d0; }
-  .uv-vhigh { background:#842029; color:#f8d7da; }
-  .uv-extreme { background:#4b0082; color:#f3e8ff; }
-
-  .toggle-container {
-    position: fixed;
-    top: 18px;
-    right: 18px;
-    padding: 10px 14px;
-    font-size: 20px;
-    border-radius: 12px;
-    cursor: pointer;
-    z-index: 9999;
-    color: #3fa9f5;
-    background: rgba(15,17,25,0.85);
-    box-shadow: 0 0 12px rgba(63,169,245,0.35);
-  }
-
-  .btn {
-    display:block;
-    background:rgba(63,169,245,0.85);
-    color:#000;
-    padding:12px;
-    border-radius:10px;
-    text-align:center;
-    font-weight:600;
-    font-size:0.9rem;
-    text-decoration:none;
-    box-shadow:0 0 12px rgba(63,169,245,0.35);
-  }
-
-  .panel {
-    border-radius:16px;
-    margin:12px;
-    padding:12px;
-  }
-
-  .tools-row {
-    display:flex;
-    gap:10px;
-  }
-
-  .section-title {
-    font-size:0.8rem;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    color:#3fa9f5;
-    margin:14px 0 6px 16px;
-  }
-
-  .radar-box {
-    position:relative;
-    width:100%;
-    height:360px;
-    border-radius:16px;
-    overflow:hidden;
-    margin:12px;
-    border:1px solid rgba(255,255,255,0.06);
-    background:#000;
-  }
-
-  .radar-box iframe {
-    width:100%;
-    height:100%;
-    border:none;
-  }
-
-  .radar-overlay {
-    position:absolute;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:10;
-    background:transparent;
-  }
-
-  .radar-overlay.hidden { display:none; }
-
-  @media (min-width:900px){
-    .radar-box { height:500px; }
-  }
+  .radar-box{position:relative;width:100%;height:360px;border-radius:12px;overflow:hidden;margin:12px;border:1px solid rgba(255,255,255,0.06);background:#000}
+  .radar-box iframe{width:100%;height:100%;border:0}
+  .radar-overlay{position:absolute;top:0;left:0;width:100%;height:100%;z-index:10;background:transparent}
+  @media(min-width:900px){.radar-box{height:500px}}
 </style>
 </head>
-
 <body>
 
 <header class="glass">🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</header>
 
-<!-- CLICKABLE FORECAST STRIP -->
-<a href="https://open-meteo.com/en/docs" target="_blank" style="text-decoration:none; color:inherit;">
-<div id="forecastStrip" class="forecast-strip glass" style="cursor:pointer;">
-
-  <div class="forecast-day">
-    <div id="icon1" style="font-size:1.4rem;">–</div>
-    <div id="temp1" style="font-size:0.8rem;">–</div>
-    <div id="rain1" style="font-size:0.7rem; opacity:0.8;">–</div>
-    <div id="wind1" style="font-size:0.8rem;">–</div>
+<!-- CLICKABLE FORECAST STRIP (icons only, opens Open‑Meteo docs/source) -->
+<a id="forecastLink" href="https://open-meteo.com/en/docs" target="_blank" style="text-decoration:none;color:inherit">
+  <div id="forecastStrip" class="forecast-strip glass" role="button" aria-label="Open forecast source">
+    <div class="forecast-day">
+      <div id="icon1" class="icon">–</div>
+      <div id="temp1" class="temp">–</div>
+      <div id="rain1" class="rain">–</div>
+      <div id="wind1" class="wind">–</div>
+    </div>
+    <div class="forecast-day">
+      <div id="icon2" class="icon">–</div>
+      <div id="temp2" class="temp">–</div>
+      <div id="rain2" class="rain">–</div>
+      <div id="wind2" class="wind">–</div>
+    </div>
+    <div class="forecast-day">
+      <div id="icon3" class="icon">–</div>
+      <div id="temp3" class="temp">–</div>
+      <div id="rain3" class="rain">–</div>
+      <div id="wind3" class="wind">–</div>
+    </div>
   </div>
-
-  <div class="forecast-day">
-    <div id="icon2" style="font-size:1.4rem;">–</div>
-    <div id="temp2" style="font-size:0.8rem;">–</div>
-    <div id="rain2" style="font-size:0.7rem; opacity:0.8;">–</div>
-    <div id="wind2" style="font-size:0.8rem;">–</div>
-  </div>
-
-  <div class="forecast-day">
-    <div id="icon3" style="font-size:1.4rem;">–</div>
-    <div id="temp3" style="font-size:0.8rem;">–</div>
-    <div id="rain3" style="font-size:0.7rem; opacity:0.8;">–</div>
-    <div id="wind3" style="font-size:0.8rem;">–</div>
-  </div>
-
-</div>
 </a>
 
-<!-- DUST / HAZE INDICATOR -->
-<div id="dustBox" class="dust-badge glass">Loading dust levels…</div>
+<!-- Dust, UV, Heat Index side-by-side -->
+<div class="env-row">
+  <div id="dustCard" class="env-card glass dust-clear">
+    <div class="env-title">Dust / PM10</div>
+    <div id="dustValue" class="env-value">Loading…</div>
+    <div id="dustNote" style="font-size:0.78rem;opacity:0.85">—</div>
+  </div>
 
-<!-- CURRENT UV INDEX -->
-<div id="uvBox" class="uv-badge glass">Loading UV Index…</div>
+  <div id="uvCard" class="env-card glass uv-low">
+    <div class="env-title">UV Index</div>
+    <div id="uvValue" class="env-value">Loading…</div>
+    <div id="uvNote" style="font-size:0.78rem;opacity:0.85">—</div>
+  </div>
+
+  <div id="heatCard" class="env-card glass heat-cool">
+    <div class="env-title">Heat Index</div>
+    <div id="heatValue" class="env-value">Loading…</div>
+    <div id="heatNote" style="font-size:0.78rem;opacity:0.85">—</div>
+  </div>
+</div>
 
 <div class="toggle-container glass" onclick="toggleRadarLock()">🔒</div>
 
-<!-- TOP TABS -->
-<div class="panel glass tools-row">
+<!-- Top quick links -->
+<div class="tools-row">
   <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
-  <a class="btn" href="https://www.ventusky.com/precipitation-map/3-hours" target="_blank">🌦 Weather</a>
+  <a class="btn" href="https://www.ventusky.com/precipitation-map/3-hours#p=12.00;-69.10;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank">🌦 Ventusky</a>
   <a class="btn" href="https://www.weathernerds.org/satellite/" target="_blank">🛰 Satellite</a>
   <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank">🛬 Arrivals</a>
 </div>
 
-<!-- ADSBEXCHANGE -->
-<div class="section-title">
-  <a href="https://globe.adsbexchange.com/?lat=12.1889&lon=-68.9598&zoom=9" target="_blank">ADSBexchange Radar</a>
-</div>
+<!-- ADSB (slightly zoomed in compared to previous wide view; shows Aruba, Bonaire, Curaçao together but a bit closer) -->
+<div class="section-title"><a href="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" target="_blank" style="color:var(--accent);text-decoration:none">ADSBexchange Radar</a></div>
 <div class="radar-box glass">
-  <iframe src="https://globe.adsbexchange.com/?lat=12.1889&lon=-68.9598&zoom=9"></iframe>
+  <iframe src="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" loading="lazy"></iframe>
   <div class="radar-overlay"></div>
 </div>
 
-<!-- LIVE ATC -->
+<!-- Live ATC (moved under ADSB) -->
 <div class="section-title">Live ATC</div>
-<div class="panel glass">
+<div class="panel glass" style="margin:12px">
   <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 Tower 118.300</a>
   <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 Radar / Approach</a>
 </div>
 
-<!-- WINDY -->
-<div class="section-title">
-  <a href="https://www.windy.com/?11.904,-69.079,7" target="_blank">Windy Radar</a>
-</div>
+<!-- Windy (zoomed in a little to show ABC islands clearly) -->
+<div class="section-title"><a href="https://www.windy.com/?12.00,-69.10,8" target="_blank" style="color:var(--accent);text-decoration:none">Windy Radar</a></div>
 <div class="radar-box glass">
-  <iframe src="https://embed.windy.com/embed2.html?lat=11.904&lon=-69.079&zoom=7&overlay=radar"></iframe>
+  <iframe src="https://embed.windy.com/embed2.html?lat=12.00&lon=-69.10&zoom=8&overlay=radar" loading="lazy"></iframe>
   <div class="radar-overlay"></div>
 </div>
 
-<!-- VENTUSKY WINDOW -->
-<div class="section-title">
-  <a href="https://www.ventusky.com/precipitation-map/3-hours#p=11.70;-69.09;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank">
-    Ventusky Model Viewer
-  </a>
-</div>
+<!-- Ventusky (zoomed in slightly so Aruba, Bonaire, Curaçao are visible but closer) -->
+<div class="section-title"><a href="https://www.ventusky.com/precipitation-map/3-hours#p=12.00;-69.10;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank" style="color:var(--accent);text-decoration:none">Ventusky Model Viewer</a></div>
 <div class="radar-box glass">
-  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.70;-69.09;8&t=20260409/0300&m=harmonie_car&w=off"></iframe>
+  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=12.00;-69.10;8&t=20260409/0300&m=harmonie_car&w=off" loading="lazy"></iframe>
   <div class="radar-overlay"></div>
 </div>
 
 <script>
+/* Toggle overlays */
 let radarLocked = true;
-
-function toggleRadarLock() {
+function toggleRadarLock(){
   radarLocked = !radarLocked;
-  document.querySelectorAll(".radar-overlay").forEach(o =>
-    o.classList.toggle("hidden", !radarLocked)
-  );
-  document.querySelector(".toggle-container").textContent = radarLocked ? "🔒" : "🔓";
+  document.querySelectorAll('.radar-overlay').forEach(o => o.classList.toggle('hidden', !radarLocked));
+  document.querySelector('.toggle-container').textContent = radarLocked ? '🔒' : '🔓';
 }
 
-/* WEATHER ICONS */
-function iconFromWeatherCode(code) {
-  if ([0].includes(code)) return "☀️";
-  if ([1,2].includes(code)) return "🌤";
-  if ([3].includes(code)) return "☁️";
-  if ([45,48].includes(code)) return "🌫";
-  if ([51,53,55].includes(code)) return "🌦";
-  if ([61,63,65].includes(code)) return "🌧";
-  if ([80,81,82].includes(code)) return "🌧";
-  if ([95,96,99].includes(code)) return "⛈";
-  return "🌤";
+/* Helpers */
+function iconFromWeatherCode(code){
+  if (code === 0) return '☀️';
+  if (code === 1 || code === 2) return '🌤';
+  if (code === 3) return '☁️';
+  if (code === 45 || code === 48) return '🌫';
+  if ([51,53,55].includes(code)) return '🌦';
+  if ([61,63,65].includes(code)) return '🌧';
+  if ([80,81,82].includes(code)) return '🌧';
+  if ([95,96,99].includes(code)) return '⛈';
+  return '🌤';
 }
 
-/* WIND ICONS */
-function windIcon(speed) {
-  if (speed < 6) return "🍃";
-  if (speed < 21) return "🌬";
-  if (speed < 39) return "💨";
-  return "🌀";
+/* Wind icon logic using knots */
+function windIconFromKnots(kn){
+  if (kn < 3) return '🍃';       // calm/light
+  if (kn < 11) return '🌬';      // breeze
+  if (kn < 21) return '💨';      // strong breeze
+  return '🌀';                   // high winds
+}
+function windArrow(deg){
+  const arrows = ['↑','↗','→','↘','↓','↙','←','↖'];
+  return arrows[Math.round(deg/45) % 8];
 }
 
-function windArrow(deg) {
-  const arrows = ["↑","↗","→","↘","↓","↙","←","↖"];
-  return arrows[Math.round(deg / 45) % 8];
+/* Heat index calculation (NOAA formula) - inputs in Celsius */
+function computeHeatIndexC(tempC, rh){
+  const T = tempC * 9/5 + 32;
+  const R = rh;
+  let HI = -42.379 + 2.04901523*T + 10.14333127*R - 0.22475541*T*R - 0.00683783*T*T - 0.05481717*R*R + 0.00122874*T*T*R + 0.00085282*T*R*R - 0.00000199*T*T*R*R;
+  if (R < 13 && T >= 80 && T <= 112){
+    HI -= ((13 - R)/4)*Math.sqrt((17 - Math.abs(T - 95))/17);
+  } else if (R > 85 && T >= 80 && T <= 87){
+    HI += ((R - 85)/10) * ((87 - T)/5);
+  }
+  const hiC = (HI - 32) * 5/9;
+  return hiC;
 }
 
-/* LOAD FORECAST — FIXED API FIELDS */
-async function loadForecast(lat, lon) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_mean,wind_speed_10m_max,wind_direction_10m_dominant&timezone=auto`;
+/* Load forecast (daily) — wind displayed in knots */
+async function loadForecast(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_mean,wind_speed_10m_max,wind_direction_10m_dominant&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Forecast fetch failed');
+    const data = await res.json();
+    const d = data.daily;
+    if(!d || !d.time || d.time.length < 3) return;
 
-  const res = await fetch(url);
-  const data = await res.json();
-  const d = data.daily;
+    document.getElementById('icon1').textContent = iconFromWeatherCode(d.weathercode[0]);
+    document.getElementById('icon2').textContent = iconFromWeatherCode(d.weathercode[1]);
+    document.getElementById('icon3').textContent = iconFromWeatherCode(d.weathercode[2]);
 
-  document.getElementById("icon1").textContent = iconFromWeatherCode(d.weathercode[0]);
-  document.getElementById("icon2").textContent = iconFromWeatherCode(d.weathercode[1]);
-  document.getElementById("icon3").textContent = iconFromWeatherCode(d.weathercode[2]);
+    document.getElementById('temp1').textContent = `${d.temperature_2m_max[0]}°/${d.temperature_2m_min[0]}°`;
+    document.getElementById('temp2').textContent = `${d.temperature_2m_max[1]}°/${d.temperature_2m_min[1]}°`;
+    document.getElementById('temp3').textContent = `${d.temperature_2m_max[2]}°/${d.temperature_2m_min[2]}°`;
 
-  document.getElementById("temp1").textContent = `${d.temperature_2m_max[0]}°/${d.temperature_2m_min[0]}°`;
-  document.getElementById("temp2").textContent = `${d.temperature_2m_max[1]}°/${d.temperature_2m_min[1]}°`;
-  document.getElementById("temp3").textContent = `${d.temperature_2m_max[2]}°/${d.temperature_2m_min[2]}°`;
+    document.getElementById('rain1').textContent = `${d.precipitation_probability_mean[0]}%`;
+    document.getElementById('rain2').textContent = `${d.precipitation_probability_mean[1]}%`;
+    document.getElementById('rain3').textContent = `${d.precipitation_probability_mean[2]}%`;
 
-  document.getElementById("rain1").textContent = `${d.precipitation_probability_mean[0]}%`;
-  document.getElementById("rain2").textContent = `${d.precipitation_probability_mean[1]}%`;
-  document.getElementById("rain3").textContent = `${d.precipitation_probability_mean[2]}%`;
+    // convert km/h to knots: 1 km/h = 0.539957 knots
+    const toKn = kmh => (kmh * 0.539957);
+    const w1k = toKn(d.wind_speed_10m_max[0]);
+    const w2k = toKn(d.wind_speed_10m_max[1]);
+    const w3k = toKn(d.wind_speed_10m_max[2]);
 
-  document.getElementById("wind1").textContent =
-    `${windIcon(d.wind_speed_10m_max[0])} ${windArrow(d.wind_direction_10m_dominant[0])}`;
-  document.getElementById("wind2").textContent =
-    `${windIcon(d.wind_speed_10m_max[1])} ${windArrow(d.wind_direction_10m_dominant[1])}`;
-  document.getElementById("wind3").textContent =
-    `${windIcon(d.wind_speed_10m_max[2])} ${windArrow(d.wind_direction_10m_dominant[2])}`;
-}
-
-/* LOAD DUST — FIXED */
-async function loadDust(lat, lon) {
-  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=dust,pm10&timezone=auto`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  const dust = data.hourly.dust[0];
-  const pm10 = data.hourly.pm10[0];
-
-  const box = document.getElementById("dustBox");
-
-  let level = "";
-  let cls = "";
-
-  if (dust < 20) { level = "🟢 Clear"; cls = "dust-clear"; }
-  else if (dust < 40) { level = "🟡 Light Haze"; cls = "dust-light"; }
-  else if (dust < 80) { level = "🟠 Dusty"; cls = "dust-dusty"; }
-  else { level = "🔴 Heavy Dust"; cls = "dust-heavy"; }
-
-  box.textContent = `${level} — Dust: ${dust.toFixed(1)} µg/m³ • PM10: ${pm10.toFixed(1)} µg/m³`;
-  box.className = `dust-badge glass ${cls}`;
-}
-
-/* LOAD UV — FIXED */
-async function loadUV(lat, lon) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=uv_index&timezone=auto`;
-
-  const res = await fetch(url);
-  const data = await res.json();
-
-  const uv = data.hourly.uv_index[0];
-  const box = document.getElementById("uvBox");
-
-  let label = "";
-  let cls = "";
-
-  if (uv <= 2) { label = "🟢 Low"; cls = "uv-low"; }
-  else if (uv <= 5) { label = "🟡 Moderate"; cls = "uv-mod"; }
-  else if (uv <= 7) { label = "🟠 High"; cls = "uv-high"; }
-  else if (uv <= 10) { label = "🔴 Very High"; cls = "uv-vhigh"; }
-  else { label = "🟣 Extreme"; cls = "uv-extreme"; }
-
-  box.textContent = `${label} — UV Now: ${uv.toFixed(1)}`;
-  box.className = `uv-badge glass ${cls}`;
-}
-
-/* INIT */
-function initWeather() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        loadForecast(lat, lon);
-        loadDust(lat, lon);
-        loadUV(lat, lon);
-      },
-      () => {
-        loadForecast(12.1889, -68.9598);
-        loadDust(12.1889, -68.9598);
-        loadUV(12.1889, -68.9598);
-      }
-    );
-  } else {
-    loadForecast(12.1889, -68.9598);
-    loadDust(12.1889, -68.9598);
-    loadUV(12.1889, -68.9598);
+    document.getElementById('wind1').textContent = `${windIconFromKnots(w1k)} ${windArrow(d.wind_direction_10m_dominant[0])} ${Math.round(w1k)} kt`;
+    document.getElementById('wind2').textContent = `${windIconFromKnots(w2k)} ${windArrow(d.wind_direction_10m_dominant[1])} ${Math.round(w2k)} kt`;
+    document.getElementById('wind3').textContent = `${windIconFromKnots(w3k)} ${windArrow(d.wind_direction_10m_dominant[2])} ${Math.round(w3k)} kt`;
+  }catch(e){
+    console.warn('loadForecast error', e);
   }
 }
 
-document.addEventListener("DOMContentLoaded", initWeather);
-</script>
+/* Load dust (air-quality API) */
+async function loadDust(lat, lon){
+  try{
+    const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=dust,pm10&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Dust fetch failed');
+    const data = await res.json();
+    const dust = data.hourly && data.hourly.dust ? data.hourly.dust[0] : null;
+    const pm10 = data.hourly && data.hourly.pm10 ? data.hourly.pm10[0] : null;
+    const card = document.getElementById('dustCard');
+    const val = document.getElementById('dustValue');
+    const note = document.getElementById('dustNote');
 
+    if(dust == null || pm10 == null){
+      val.textContent = 'N/A';
+      note.textContent = 'Data unavailable';
+      return;
+    }
+
+    val.textContent = `${dust.toFixed(1)} µg/m³ • PM10 ${pm10.toFixed(1)} µg/m³`;
+    if(dust < 20){ card.className = 'env-card glass dust-clear'; note.textContent = 'Clear'; }
+    else if(dust < 40){ card.className = 'env-card glass dust-light'; note.textContent = 'Light haze'; }
+    else if(dust < 80){ card.className = 'env-card glass dust-dusty'; note.textContent = 'Dusty'; }
+    else { card.className = 'env-card glass dust-heavy'; note.textContent = 'Heavy dust / Saharan plume'; }
+  }catch(e){
+    console.warn('loadDust error', e);
+    document.getElementById('dustValue').textContent = 'N/A';
+    document.getElementById('dustNote').textContent = 'Error';
+  }
+}
+
+/* Load current UV */
+async function loadUV(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=uv_index&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('UV fetch failed');
+    const data = await res.json();
+    const uv = data.hourly && data.hourly.uv_index ? data.hourly.uv_index[0] : null;
+    const card = document.getElementById('uvCard');
+    const val = document.getElementById('uvValue');
+    const note = document.getElementById('uvNote');
+
+    if(uv == null){
+      val.textContent = 'N/A';
+      note.textContent = 'Data unavailable';
+      return;
+    }
+
+    val.textContent = uv.toFixed(1);
+    if(uv <= 2){ card.className = 'env-card glass uv-low'; note.textContent = 'Low' }
+    else if(uv <= 5){ card.className = 'env-card glass uv-mod'; note.textContent = 'Moderate' }
+    else if(uv <= 7){ card.className = 'env-card glass uv-high'; note.textContent = 'High' }
+    else if(uv <= 10){ card.className = 'env-card glass uv-vhigh'; note.textContent = 'Very high' }
+    else { card.className = 'env-card glass uv-extreme'; note.textContent = 'Extreme' }
+  }catch(e){
+    console.warn('loadUV error', e);
+    document.getElementById('uvValue').textContent = 'N/A';
+    document.getElementById('uvNote').textContent = 'Error';
+  }
+}
+
+/* Load heat index using current hourly temp & humidity */
+async function loadHeatIndex(lat, lon){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relativehumidity_2m&timezone=auto`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('Heat fetch failed');
+    const data = await res.json();
+    const temp = data.hourly && data.hourly.temperature_2m ? data.hourly.temperature_2m[0] : null;
+    const rh = data.hourly && data.hourly.relativehumidity_2m ? data.hourly.relativehumidity_2m[0] : null;
+    const card = document.getElementById('heatCard');
+    const val = document.getElementById('heatValue');
+    const note = document.getElementById('heatNote');
+
+    if(temp == null || rh == null){
+      val.textContent = 'N/A';
+      note.textContent = 'Data unavailable';
+      return;
+    }
+
+    const hiC = computeHeatIndexC(temp, rh);
+    const hiRounded = Math.round(hiC*10)/10;
+    val.textContent = `${hiRounded} °C`;
+
+    if(hiC < 27){ card.className = 'env-card glass heat-cool'; note.textContent = 'Comfortable' }
+    else if(hiC < 32){ card.className = 'env-card glass heat-warm'; note.textContent = 'Warm' }
+    else if(hiC < 41){ card.className = 'env-card glass heat-hot'; note.textContent = 'Hot — take breaks' }
+    else { card.className = 'env-card glass heat-danger'; note.textContent = 'Danger — heat stress' }
+  }catch(e){
+    console.warn('loadHeatIndex error', e);
+    document.getElementById('heatValue').textContent = 'N/A';
+    document.getElementById('heatNote').textContent = 'Error';
+  }
+}
+
+/* Initialize all loaders with geolocation fallback */
+function initAll(){
+  function run(lat, lon){
+    loadForecast(lat, lon);
+    loadDust(lat, lon);
+    loadUV(lat, lon);
+    loadHeatIndex(lat, lon);
+    const fl = document.getElementById('forecastLink');
+    fl.href = `https://open-meteo.com/en/docs#latitude=${lat.toFixed(2)}&longitude=${lon.toFixed(2)}`;
+  }
+
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos => run(pos.coords.latitude, pos.coords.longitude),
+      () => run(12.1889, -68.9598),
+      {enableHighAccuracy:true, timeout:7000, maximumAge:600000}
+    );
+  } else {
+    run(12.1889, -68.9598);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initAll);
+</script>
 </body>
 </html>
