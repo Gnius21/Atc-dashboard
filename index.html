@@ -175,35 +175,33 @@
 
 <header class="glass">🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</header>
 
-<!-- 3-DAY FORECAST STRIP -->
-<div id="forecastStrip" class="forecast-strip glass">
-  <div style="display:flex; flex-direction:column;">
-    <div style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#3fa9f5;">
-      3‑Day Forecast
-    </div>
-    <div id="forecastLocation" style="font-size:0.7rem; opacity:0.8;">Loading…</div>
+<!-- CLICKABLE FORECAST STRIP -->
+<a href="https://open-meteo.com/en/docs" target="_blank" style="text-decoration:none; color:inherit;">
+<div id="forecastStrip" class="forecast-strip glass" style="cursor:pointer;">
+
+  <div class="forecast-day">
+    <div id="icon1" style="font-size:1.4rem;">–</div>
+    <div id="temp1" style="font-size:0.8rem;">–</div>
+    <div id="rain1" style="font-size:0.7rem; opacity:0.8;">–</div>
+    <div id="wind1" style="font-size:0.8rem;">–</div>
   </div>
 
-  <div style="display:flex; gap:10px; flex:1; justify-content:space-between;">
-    <div class="forecast-day">
-      <div id="icon1" style="font-size:1.2rem;">–</div>
-      <div id="temp1" style="font-size:0.8rem;">–</div>
-      <div id="label1" style="font-size:0.7rem; opacity:0.8;">Day 1</div>
-    </div>
-
-    <div class="forecast-day">
-      <div id="icon2" style="font-size:1.2rem;">–</div>
-      <div id="temp2" style="font-size:0.8rem;">–</div>
-      <div id="label2" style="font-size:0.7rem; opacity:0.8;">Day 2</div>
-    </div>
-
-    <div class="forecast-day">
-      <div id="icon3" style="font-size:1.2rem;">–</div>
-      <div id="temp3" style="font-size:0.8rem;">–</div>
-      <div id="label3" style="font-size:0.7rem; opacity:0.8;">Day 3</div>
-    </div>
+  <div class="forecast-day">
+    <div id="icon2" style="font-size:1.4rem;">–</div>
+    <div id="temp2" style="font-size:0.8rem;">–</div>
+    <div id="rain2" style="font-size:0.7rem; opacity:0.8;">–</div>
+    <div id="wind2" style="font-size:0.8rem;">–</div>
   </div>
+
+  <div class="forecast-day">
+    <div id="icon3" style="font-size:1.4rem;">–</div>
+    <div id="temp3" style="font-size:0.8rem;">–</div>
+    <div id="rain3" style="font-size:0.7rem; opacity:0.8;">–</div>
+    <div id="wind3" style="font-size:0.8rem;">–</div>
+  </div>
+
 </div>
+</a>
 
 <!-- DUST / HAZE INDICATOR -->
 <div id="dustBox" class="dust-badge glass">Loading dust levels…</div>
@@ -281,40 +279,56 @@ function iconFromWeatherCode(code) {
   return "🌤";
 }
 
-/* LOAD FORECAST */
+/* WIND ICONS */
+function windIcon(speed) {
+  if (speed < 6) return "🍃";
+  if (speed < 21) return "🌬";
+  if (speed < 39) return "💨";
+  return "🌀";
+}
+
+function windArrow(deg) {
+  const arrows = ["↑","↗","→","↘","↓","↙","←","↖"];
+  return arrows[Math.round(deg / 45) % 8];
+}
+
+/* LOAD FORECAST — FIXED API FIELDS */
 async function loadForecast(lat, lon) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_mean,wind_speed_10m_max,wind_direction_10m_dominant&timezone=auto`;
 
   const res = await fetch(url);
   const data = await res.json();
   const d = data.daily;
 
-  const labels = ["Today", "Tomorrow", new Date(d.time[2]).toLocaleDateString("en-US", { weekday: "short" })];
-
   document.getElementById("icon1").textContent = iconFromWeatherCode(d.weathercode[0]);
   document.getElementById("icon2").textContent = iconFromWeatherCode(d.weathercode[1]);
   document.getElementById("icon3").textContent = iconFromWeatherCode(d.weathercode[2]);
 
-  document.getElementById("temp1").textContent = `${d.temperature_2m_max[0]}° / ${d.temperature_2m_min[0]}°`;
-  document.getElementById("temp2").textContent = `${d.temperature_2m_max[1]}° / ${d.temperature_2m_min[1]}°`;
-  document.getElementById("temp3").textContent = `${d.temperature_2m_max[2]}° / ${d.temperature_2m_min[2]}°`;
+  document.getElementById("temp1").textContent = `${d.temperature_2m_max[0]}°/${d.temperature_2m_min[0]}°`;
+  document.getElementById("temp2").textContent = `${d.temperature_2m_max[1]}°/${d.temperature_2m_min[1]}°`;
+  document.getElementById("temp3").textContent = `${d.temperature_2m_max[2]}°/${d.temperature_2m_min[2]}°`;
 
-  document.getElementById("label1").textContent = labels[0];
-  document.getElementById("label2").textContent = labels[1];
-  document.getElementById("label3").textContent = labels[2];
+  document.getElementById("rain1").textContent = `${d.precipitation_probability_mean[0]}%`;
+  document.getElementById("rain2").textContent = `${d.precipitation_probability_mean[1]}%`;
+  document.getElementById("rain3").textContent = `${d.precipitation_probability_mean[2]}%`;
 
-  document.getElementById("forecastLocation").textContent = `Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)}`;
+  document.getElementById("wind1").textContent =
+    `${windIcon(d.wind_speed_10m_max[0])} ${windArrow(d.wind_direction_10m_dominant[0])}`;
+  document.getElementById("wind2").textContent =
+    `${windIcon(d.wind_speed_10m_max[1])} ${windArrow(d.wind_direction_10m_dominant[1])}`;
+  document.getElementById("wind3").textContent =
+    `${windIcon(d.wind_speed_10m_max[2])} ${windArrow(d.wind_direction_10m_dominant[2])}`;
 }
 
-/* LOAD DUST / HAZE */
+/* LOAD DUST — FIXED */
 async function loadDust(lat, lon) {
-  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,dust&timezone=auto`;
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=dust,pm10&timezone=auto`;
 
   const res = await fetch(url);
   const data = await res.json();
 
-  const pm10 = data.hourly.pm10[0];
   const dust = data.hourly.dust[0];
+  const pm10 = data.hourly.pm10[0];
 
   const box = document.getElementById("dustBox");
 
@@ -330,7 +344,7 @@ async function loadDust(lat, lon) {
   box.className = `dust-badge glass ${cls}`;
 }
 
-/* LOAD CURRENT UV INDEX */
+/* LOAD UV — FIXED */
 async function loadUV(lat, lon) {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=uv_index&timezone=auto`;
 
