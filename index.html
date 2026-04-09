@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ATC Dashboard</title>
+<title>🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</title>
 
 <style>
   body {
@@ -10,30 +10,19 @@
     background:#020305;
     color:#e6e6e6;
     font-family:-apple-system, BlinkMacSystemFont, system-ui;
-    overflow-y: scroll; /* FORCE SCROLLBAR */
+    overflow-y: scroll;
     scrollbar-width: thin;
   }
 
-  /* CUSTOM SCROLLBAR (Chrome, Edge, Safari) */
-  body::-webkit-scrollbar {
-    width: 12px;
-  }
-
-  body::-webkit-scrollbar-track {
-    background: rgba(255,255,255,0.05);
-  }
-
+  body::-webkit-scrollbar { width: 12px; }
+  body::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
   body::-webkit-scrollbar-thumb {
     background: #3fa9f5;
     border-radius: 10px;
     box-shadow: 0 0 10px #3fa9f5;
   }
+  body::-webkit-scrollbar-thumb:hover { background: #6bc4ff; }
 
-  body::-webkit-scrollbar-thumb:hover {
-    background: #6bc4ff;
-  }
-
-  /* DARK GLASS */
   .glass {
     background:rgba(15,17,25,0.55);
     backdrop-filter:blur(14px);
@@ -52,6 +41,20 @@
     letter-spacing:0.12em;
     text-transform:uppercase;
     border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+
+  .toggle-container {
+    position: fixed;
+    top: 18px;
+    right: 18px;
+    padding: 10px 14px;
+    font-size: 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    z-index: 9999;
+    color: #3fa9f5;
+    background: rgba(15,17,25,0.85);
+    box-shadow: 0 0 12px rgba(63,169,245,0.35);
   }
 
   .btn {
@@ -78,9 +81,7 @@
     gap:10px;
   }
 
-  .tools-row .btn {
-    flex:1;
-  }
+  .tools-row .btn { flex:1; }
 
   .section-title {
     font-size:0.8rem;
@@ -110,45 +111,48 @@
     width:100%;
     height:100%;
     border:none;
-    pointer-events:auto;
-    touch-action:none; /* disable scroll + zoom */
   }
 
-  .arrivals-box {
-    height:420px;
-    margin:12px;
-    border-radius:16px;
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,0.06);
-    background:rgba(15,17,25,0.55);
-    backdrop-filter:blur(14px);
-  }
-
-  .arrivals-box iframe {
+  .radar-overlay {
+    position:absolute;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
-    border:none;
-    pointer-events:auto;
+    z-index:10;
+    background:transparent;
+    display:block;
+  }
+
+  .radar-overlay.hidden {
+    display:none;
   }
 
   @media (min-width:900px){
     .radar-box { height:500px; }
-    .arrivals-box { height:600px; }
   }
 </style>
 </head>
 
 <body>
 
-<header class="glass">ATC Dashboard</header>
+<header class="glass">🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</header>
 
-<!-- BUTTON ROW -->
+<div class="toggle-container glass" onclick="toggleRadarLock()">🔒</div>
+
+<!-- TOP TABS -->
 <div class="panel glass tools-row">
   <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
-  <a class="btn" href="https://www.ventusky.com" target="_blank">🌧 Harmonie</a>
+
   <a class="btn" 
-     href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040318&initgefs=Off"
+     href="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off" 
+     target="_blank">🌦 Weather</a>
+
+  <a class="btn" 
+     href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=12.800:-70.500:11.600:-68.800&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040812&initgefs=Off"
      target="_blank">🛰 Satellite</a>
+
+  <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank">🛬 Arrivals</a>
 </div>
 
 <!-- ADSBEXCHANGE -->
@@ -157,6 +161,7 @@
 </div>
 <div class="radar-box glass">
   <iframe src="https://globe.adsbexchange.com/?lat=12.1889&lon=-68.9598&zoom=9"></iframe>
+  <div class="radar-overlay"></div>
 </div>
 
 <!-- WINDY -->
@@ -165,13 +170,45 @@
 </div>
 <div class="radar-box glass">
   <iframe src="https://embed.windy.com/embed2.html?lat=11.904&lon=-69.079&zoom=7&overlay=radar"></iframe>
+  <div class="radar-overlay"></div>
 </div>
 
-<!-- ARRIVALS -->
-<div class="section-title">Arrivals</div>
-<div class="arrivals-box glass">
-  <iframe src="https://curacao-airport.com/flights/?type=arrivals"></iframe>
+<!-- LIVE ATC -->
+<div class="section-title">Live ATC</div>
+<div class="panel glass">
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 Tower 118.300</a>
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 Radar / Approach</a>
 </div>
+
+<!-- WEATHER PANEL -->
+<div class="section-title">
+  <a href="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank">
+    Weather (Ventusky)
+  </a>
+</div>
+<div class="radar-box glass">
+  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off"></iframe>
+  <div class="radar-overlay"></div>
+</div>
+
+<script>
+let radarLocked = true;
+
+function toggleRadarLock() {
+  radarLocked = !radarLocked;
+
+  const overlays = document.querySelectorAll(".radar-overlay");
+  const toggle = document.querySelector(".toggle-container");
+
+  if (radarLocked) {
+    overlays.forEach(o => o.classList.remove("hidden"));
+    toggle.innerHTML = "🔒";
+  } else {
+    overlays.forEach(o => o.classList.add("hidden"));
+    toggle.innerHTML = "🔓";
+  }
+}
+</script>
 
 </body>
 </html>
