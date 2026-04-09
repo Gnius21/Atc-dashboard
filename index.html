@@ -21,12 +21,10 @@
     border-radius: 10px;
     box-shadow: 0 0 10px #3fa9f5;
   }
-  body::-webkit-scrollbar-thumb:hover { background: #6bc4ff; }
 
   .glass {
     background:rgba(15,17,25,0.55);
     backdrop-filter:blur(14px);
-    -webkit-backdrop-filter:blur(14px);
     border:1px solid rgba(255,255,255,0.06);
     box-shadow:0 0 22px rgba(0,0,0,0.45);
   }
@@ -35,13 +33,62 @@
     padding:16px;
     text-align:center;
     background:rgba(10,12,18,0.7);
-    backdrop-filter:blur(12px);
     color:#3fa9f5;
     font-size:1.2rem;
     letter-spacing:0.12em;
     text-transform:uppercase;
     border-bottom:1px solid rgba(255,255,255,0.06);
   }
+
+  /* Forecast strip */
+  .forecast-strip {
+    margin:12px;
+    padding:12px;
+    border-radius:14px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+  }
+
+  .forecast-day {
+    flex:1;
+    text-align:center;
+    background:rgba(255,255,255,0.04);
+    padding:6px;
+    border-radius:10px;
+  }
+
+  /* Dust indicator */
+  .dust-badge {
+    margin:12px;
+    padding:10px;
+    border-radius:12px;
+    text-align:center;
+    font-weight:600;
+    font-size:0.9rem;
+  }
+
+  .dust-clear { background:#0f5132; color:#d1e7dd; }
+  .dust-light { background:#664d03; color:#fff3cd; }
+  .dust-dusty { background:#7f3d00; color:#ffe5d0; }
+  .dust-heavy { background:#842029; color:#f8d7da; }
+
+  /* UV Index */
+  .uv-badge {
+    margin:12px;
+    padding:12px;
+    border-radius:12px;
+    text-align:center;
+    font-weight:600;
+    font-size:1rem;
+  }
+
+  .uv-low { background:#0f5132; color:#d1e7dd; }
+  .uv-mod { background:#664d03; color:#fff3cd; }
+  .uv-high { background:#7f3d00; color:#ffe5d0; }
+  .uv-vhigh { background:#842029; color:#f8d7da; }
+  .uv-extreme { background:#4b0082; color:#f3e8ff; }
 
   .toggle-container {
     position: fixed;
@@ -81,19 +128,12 @@
     gap:10px;
   }
 
-  .tools-row .btn { flex:1; }
-
   .section-title {
     font-size:0.8rem;
     letter-spacing:0.12em;
     text-transform:uppercase;
     color:#3fa9f5;
     margin:14px 0 6px 16px;
-  }
-
-  .section-title a {
-    color:#3fa9f5;
-    text-decoration:none;
   }
 
   .radar-box {
@@ -121,12 +161,9 @@
     height:100%;
     z-index:10;
     background:transparent;
-    display:block;
   }
 
-  .radar-overlay.hidden {
-    display:none;
-  }
+  .radar-overlay.hidden { display:none; }
 
   @media (min-width:900px){
     .radar-box { height:500px; }
@@ -138,20 +175,49 @@
 
 <header class="glass">🇦🇼🇧🇶🇨🇼 ATC & WEATHER DASHBOARD</header>
 
+<!-- 3-DAY FORECAST STRIP -->
+<div id="forecastStrip" class="forecast-strip glass">
+  <div style="display:flex; flex-direction:column;">
+    <div style="font-size:0.75rem; letter-spacing:0.12em; text-transform:uppercase; color:#3fa9f5;">
+      3‑Day Forecast
+    </div>
+    <div id="forecastLocation" style="font-size:0.7rem; opacity:0.8;">Loading…</div>
+  </div>
+
+  <div style="display:flex; gap:10px; flex:1; justify-content:space-between;">
+    <div class="forecast-day">
+      <div id="icon1" style="font-size:1.2rem;">–</div>
+      <div id="temp1" style="font-size:0.8rem;">–</div>
+      <div id="label1" style="font-size:0.7rem; opacity:0.8;">Day 1</div>
+    </div>
+
+    <div class="forecast-day">
+      <div id="icon2" style="font-size:1.2rem;">–</div>
+      <div id="temp2" style="font-size:0.8rem;">–</div>
+      <div id="label2" style="font-size:0.7rem; opacity:0.8;">Day 2</div>
+    </div>
+
+    <div class="forecast-day">
+      <div id="icon3" style="font-size:1.2rem;">–</div>
+      <div id="temp3" style="font-size:0.8rem;">–</div>
+      <div id="label3" style="font-size:0.7rem; opacity:0.8;">Day 3</div>
+    </div>
+  </div>
+</div>
+
+<!-- DUST / HAZE INDICATOR -->
+<div id="dustBox" class="dust-badge glass">Loading dust levels…</div>
+
+<!-- CURRENT UV INDEX -->
+<div id="uvBox" class="uv-badge glass">Loading UV Index…</div>
+
 <div class="toggle-container glass" onclick="toggleRadarLock()">🔒</div>
 
 <!-- TOP TABS -->
 <div class="panel glass tools-row">
   <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
-
-  <a class="btn" 
-     href="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off" 
-     target="_blank">🌦 Weather</a>
-
-  <a class="btn" 
-     href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=12.800:-70.500:11.600:-68.800&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040812&initgefs=Off"
-     target="_blank">🛰 Satellite</a>
-
+  <a class="btn" href="https://www.ventusky.com/precipitation-map/3-hours" target="_blank">🌦 Weather</a>
+  <a class="btn" href="https://www.weathernerds.org/satellite/" target="_blank">🛰 Satellite</a>
   <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank">🛬 Arrivals</a>
 </div>
 
@@ -164,6 +230,13 @@
   <div class="radar-overlay"></div>
 </div>
 
+<!-- LIVE ATC -->
+<div class="section-title">Live ATC</div>
+<div class="panel glass">
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 Tower 118.300</a>
+  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 Radar / Approach</a>
+</div>
+
 <!-- WINDY -->
 <div class="section-title">
   <a href="https://www.windy.com/?11.904,-69.079,7" target="_blank">Windy Radar</a>
@@ -173,21 +246,14 @@
   <div class="radar-overlay"></div>
 </div>
 
-<!-- LIVE ATC -->
-<div class="section-title">Live ATC</div>
-<div class="panel glass">
-  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 Tower 118.300</a>
-  <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 Radar / Approach</a>
-</div>
-
-<!-- WEATHER PANEL -->
+<!-- VENTUSKY WINDOW -->
 <div class="section-title">
-  <a href="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank">
-    Weather (Ventusky)
+  <a href="https://www.ventusky.com/precipitation-map/3-hours#p=11.70;-69.09;8&t=20260409/0300&m=harmonie_car&w=off" target="_blank">
+    Ventusky Model Viewer
   </a>
 </div>
 <div class="radar-box glass">
-  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.67;-69.23;8&t=20260409/0300&m=harmonie_car&w=off"></iframe>
+  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.70;-69.09;8&t=20260409/0300&m=harmonie_car&w=off"></iframe>
   <div class="radar-overlay"></div>
 </div>
 
@@ -196,18 +262,122 @@ let radarLocked = true;
 
 function toggleRadarLock() {
   radarLocked = !radarLocked;
+  document.querySelectorAll(".radar-overlay").forEach(o =>
+    o.classList.toggle("hidden", !radarLocked)
+  );
+  document.querySelector(".toggle-container").textContent = radarLocked ? "🔒" : "🔓";
+}
 
-  const overlays = document.querySelectorAll(".radar-overlay");
-  const toggle = document.querySelector(".toggle-container");
+/* WEATHER ICONS */
+function iconFromWeatherCode(code) {
+  if ([0].includes(code)) return "☀️";
+  if ([1,2].includes(code)) return "🌤";
+  if ([3].includes(code)) return "☁️";
+  if ([45,48].includes(code)) return "🌫";
+  if ([51,53,55].includes(code)) return "🌦";
+  if ([61,63,65].includes(code)) return "🌧";
+  if ([80,81,82].includes(code)) return "🌧";
+  if ([95,96,99].includes(code)) return "⛈";
+  return "🌤";
+}
 
-  if (radarLocked) {
-    overlays.forEach(o => o.classList.remove("hidden"));
-    toggle.innerHTML = "🔒";
+/* LOAD FORECAST */
+async function loadForecast(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=auto`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+  const d = data.daily;
+
+  const labels = ["Today", "Tomorrow", new Date(d.time[2]).toLocaleDateString("en-US", { weekday: "short" })];
+
+  document.getElementById("icon1").textContent = iconFromWeatherCode(d.weathercode[0]);
+  document.getElementById("icon2").textContent = iconFromWeatherCode(d.weathercode[1]);
+  document.getElementById("icon3").textContent = iconFromWeatherCode(d.weathercode[2]);
+
+  document.getElementById("temp1").textContent = `${d.temperature_2m_max[0]}° / ${d.temperature_2m_min[0]}°`;
+  document.getElementById("temp2").textContent = `${d.temperature_2m_max[1]}° / ${d.temperature_2m_min[1]}°`;
+  document.getElementById("temp3").textContent = `${d.temperature_2m_max[2]}° / ${d.temperature_2m_min[2]}°`;
+
+  document.getElementById("label1").textContent = labels[0];
+  document.getElementById("label2").textContent = labels[1];
+  document.getElementById("label3").textContent = labels[2];
+
+  document.getElementById("forecastLocation").textContent = `Lat ${lat.toFixed(2)}, Lon ${lon.toFixed(2)}`;
+}
+
+/* LOAD DUST / HAZE */
+async function loadDust(lat, lon) {
+  const url = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=pm10,dust&timezone=auto`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const pm10 = data.hourly.pm10[0];
+  const dust = data.hourly.dust[0];
+
+  const box = document.getElementById("dustBox");
+
+  let level = "";
+  let cls = "";
+
+  if (dust < 20) { level = "🟢 Clear"; cls = "dust-clear"; }
+  else if (dust < 40) { level = "🟡 Light Haze"; cls = "dust-light"; }
+  else if (dust < 80) { level = "🟠 Dusty"; cls = "dust-dusty"; }
+  else { level = "🔴 Heavy Dust"; cls = "dust-heavy"; }
+
+  box.textContent = `${level} — Dust: ${dust.toFixed(1)} µg/m³ • PM10: ${pm10.toFixed(1)} µg/m³`;
+  box.className = `dust-badge glass ${cls}`;
+}
+
+/* LOAD CURRENT UV INDEX */
+async function loadUV(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=uv_index&timezone=auto`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const uv = data.hourly.uv_index[0];
+  const box = document.getElementById("uvBox");
+
+  let label = "";
+  let cls = "";
+
+  if (uv <= 2) { label = "🟢 Low"; cls = "uv-low"; }
+  else if (uv <= 5) { label = "🟡 Moderate"; cls = "uv-mod"; }
+  else if (uv <= 7) { label = "🟠 High"; cls = "uv-high"; }
+  else if (uv <= 10) { label = "🔴 Very High"; cls = "uv-vhigh"; }
+  else { label = "🟣 Extreme"; cls = "uv-extreme"; }
+
+  box.textContent = `${label} — UV Now: ${uv.toFixed(1)}`;
+  box.className = `uv-badge glass ${cls}`;
+}
+
+/* INIT */
+function initWeather() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        loadForecast(lat, lon);
+        loadDust(lat, lon);
+        loadUV(lat, lon);
+      },
+      () => {
+        loadForecast(12.1889, -68.9598);
+        loadDust(12.1889, -68.9598);
+        loadUV(12.1889, -68.9598);
+      }
+    );
   } else {
-    overlays.forEach(o => o.classList.add("hidden"));
-    toggle.innerHTML = "🔓";
+    loadForecast(12.1889, -68.9598);
+    loadDust(12.1889, -68.9598);
+    loadUV(12.1889, -68.9598);
   }
 }
+
+document.addEventListener("DOMContentLoaded", initWeather);
 </script>
 
 </body>
