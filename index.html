@@ -101,7 +101,7 @@
   </div>
 </div>
 
-<!-- TOOLS (Ventusky removed) -->
+<!-- TOOLS (Ventusky removed from the top bar as requested) -->
 <div class="tools-row">
   <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
   <a class="btn" href="https://www.weathernerds.org/satellite/" target="_blank">🛰 Satellite</a>
@@ -127,6 +127,14 @@
 <div class="radar-box glass" data-radar="windy-radar">
   <iframe src="https://embed.windy.com/embed2.html?lat=12.00&lon=-69.10&zoom=8&overlay=radar" loading="lazy" title="Windy Radar"></iframe>
   <div class="overlay-blocker" data-overlay-for="windy-radar" aria-hidden="true"></div>
+</div>
+
+<!-- Ventusky — Precipitation 3 hours (restored window) -->
+<div class="section-title">Ventusky — Precipitation 3 hours</div>
+<div class="radar-box glass" data-radar="ventusky">
+  <!-- Ventusky window restored here; the top tools bar still does not include the Ventusky tab -->
+  <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.90;-68.98;8&m=harmonie_car&w=off" loading="lazy" title="Ventusky Precipitation"></iframe>
+  <div class="overlay-blocker" data-overlay-for="ventusky" aria-hidden="true"></div>
 </div>
 
 <!-- Windy AROME (Clouds) -->
