@@ -1,115 +1,346 @@
 <!doctype html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>ATC & WEATHER DASHBOARD — Curaçao</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet"/>
 <style>
-  :root{
-    --accent:#3fa9f5;
-    --glass-bg: rgba(15,17,25,0.55);
-    --panel-bg: rgba(255,255,255,0.04);
-    --muted:#9fbfe6;
-  }
-  html,body{height:100%;margin:0;background:#020305;color:#e6e6e6;font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial; -webkit-font-smoothing:antialiased;}
-  .glass{background:var(--glass-bg);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:12px;box-sizing:border-box}
-  header{padding:12px 16px;background:rgba(10,12,18,0.7);color:var(--accent);border-bottom:1px solid rgba(255,255,255,0.04);font-size:1.05rem;letter-spacing:0.12em;text-transform:uppercase;text-align:center}
-  .topbar{display:flex;gap:12px;align-items:center;justify-content:center;margin:12px}
-  .time-block{display:flex;flex-direction:column;align-items:center;min-width:140px}
-  .time-label{font-size:0.78rem;color:var(--accent);text-transform:uppercase}
-  .time-value{font-weight:700;font-size:1.25rem}
-  .date-value{font-size:0.78rem;opacity:0.9;text-align:center}
-  .tools-row{display:flex;gap:10px;margin:12px;padding:0 12px}
-  .btn{background:var(--accent);color:#000;padding:10px;border-radius:10px;text-align:center;text-decoration:none;font-weight:700;cursor:pointer;border:0}
-  .section-title{font-size:0.82rem;color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;margin:12px 16px 6px}
-  .layout{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:minmax(120px,auto);gap:12px;padding:12px}
-  .full{grid-column:1 / -1}
-  .col-6{grid-column: span 6}
-  .col-4{grid-column: span 4}
-  .col-3{grid-column: span 3}
-  .radar-box{position:relative;width:100%;height:360px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.06);background:#000}
-  .radar-box iframe{width:100%;height:100%;border:0;display:block}
-  .overlay-blocker{position:absolute;inset:0;z-index:1200;background:transparent;pointer-events:auto;display:block}
-  .overlay-blocker.unlocked{pointer-events:none;display:none}
-  .embed-fallback{position:absolute;inset:0;z-index:1250;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.6));color:#fff;text-align:center;padding:18px;gap:12px;flex-direction:column;display:none}
-  .embed-fallback a{color:var(--accent);text-decoration:underline;font-weight:700}
-  .small-btn{padding:8px;border-radius:8px;border:0;background:rgba(255,255,255,0.06);color:#dfefff;cursor:pointer;font-weight:700}
-  .panel{padding:12px;border-radius:12px}
-  @media (max-width:980px){
-    .col-6{grid-column:1 / -1}
-    .col-4{grid-column:1 / -1}
-    .col-3{grid-column:1 / -1}
-    .radar-box{height:300px}
-  }
-  /* lock toggle */
-  .toggle-container{position:fixed;top:16px;right:16px;padding:10px 12px;border-radius:12px;background:rgba(15,17,25,0.85);color:var(--accent);cursor:pointer;z-index:12000;display:flex;align-items:center;gap:8px;user-select:none}
-  .toggle-container button{background:transparent;border:0;color:var(--accent);font-size:1.05rem;cursor:pointer}
-  /* small helper */
-  .muted{color:var(--muted);font-size:0.9rem}
+:root {
+  --accent:      #3fa9f5;
+  --accent-bright: #72c4ff;
+  --accent-dim:  #1a5a8a;
+  --accent-glow: rgba(63,169,245,0.18);
+  --accent-glow2:rgba(63,169,245,0.32);
+  --cyan:        #00d4ff;
+  --bg:          #000000;
+  --bg2:         #04080f;
+  --bg3:         #080d18;
+  --border:      rgba(63,169,245,0.12);
+  --border-hi:   rgba(63,169,245,0.30);
+  --text:        #c0d8f0;
+  --muted:       #3d5878;
+  --mono: 'Share Tech Mono', monospace;
+  --cond: 'Barlow Condensed', sans-serif;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+
+html,body {
+min-height:100%;
+background: var(–bg);
+color: var(–text);
+font-family: var(–cond), system-ui, sans-serif;
+-webkit-font-smoothing: antialiased;
+}
+
+/* scanlines */
+body::before {
+content:’’;
+position:fixed; inset:0; pointer-events:none; z-index:9999;
+background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.15) 2px,rgba(0,0,0,0.15) 4px);
+opacity:.35;
+}
+/* vignette */
+body::after {
+content:’’;
+position:fixed; inset:0; pointer-events:none; z-index:9998;
+background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ── HEADER ── */
+header {
+display:flex; align-items:center; justify-content:center; gap:14px;
+padding:0 80px; height:52px;
+background: var(–bg2);
+border-bottom:1px solid var(–border-hi);
+position:relative; overflow:hidden;
+font-family:var(–cond); font-weight:900; font-size:1.1rem;
+letter-spacing:0.22em; text-transform:uppercase;
+color: var(–accent-bright);
+text-shadow: 0 0 22px var(–accent-glow2);
+}
+header::after {
+content:’’;
+position:absolute; bottom:0; left:0; right:0; height:1px;
+background:linear-gradient(90deg,transparent,var(–accent),var(–cyan),transparent);
+opacity:.45;
+}
+
+/* ── LOCK TOGGLE ── */
+.toggle-container {
+position:fixed; top:12px; right:14px; z-index:12000;
+display:flex; align-items:center; gap:8px;
+padding:7px 13px;
+background:var(–bg2); border:1px solid var(–border-hi); border-radius:4px;
+font-family:var(–cond); font-size:0.78rem; font-weight:700;
+letter-spacing:0.14em; text-transform:uppercase;
+color:var(–accent-bright); cursor:pointer; user-select:none;
+transition: border-color .15s, box-shadow .15s;
+}
+.toggle-container:hover { border-color:var(–accent-bright); box-shadow:0 0 12px var(–accent-glow); }
+.lock-led {
+width:7px; height:7px; border-radius:50%;
+background:var(–accent); box-shadow:0 0 5px var(–accent);
+transition:all .2s;
+}
+.lock-led.on { background:var(–cyan); box-shadow:0 0 7px var(–cyan),0 0 14px var(–cyan); }
+#lockToggleBtn {
+background:transparent; border:0; color:inherit; font:inherit;
+letter-spacing:inherit; cursor:pointer; padding:0;
+}
+
+/* ── TOPBAR (clocks) ── */
+.topbar {
+display:flex; align-items:stretch; gap:0;
+background:var(–bg2); border-bottom:1px solid var(–border);
+padding:0 20px;
+}
+.time-block {
+display:flex; align-items:center; gap:12px;
+padding:10px 22px 10px 0; border-right:1px solid var(–border);
+}
+.time-block:last-of-type { border-right:none; padding-left:22px; padding-right:0; }
+.time-label {
+font-family:var(–mono); font-size:0.6rem; color:var(–muted);
+letter-spacing:0.18em; text-transform:uppercase;
+writing-mode:vertical-rl; transform:rotate(180deg);
+}
+.time-value {
+font-family:var(–mono); font-size:1.5rem; color:var(–accent-bright);
+letter-spacing:0.05em; line-height:1;
+text-shadow:0 0 14px var(–accent-glow2);
+}
+.date-value {
+font-family:var(–mono); font-size:0.62rem; color:var(–muted);
+letter-spacing:0.04em; margin-top:3px;
+}
+.topbar-actions {
+display:flex; align-items:center; gap:8px; margin-left:auto; padding-left:22px;
+}
+
+/* ── BUTTONS ── */
+.btn {
+display:inline-flex; align-items:center; gap:6px;
+font-family:var(–cond); font-size:0.82rem; font-weight:700;
+letter-spacing:0.1em; text-transform:uppercase;
+text-decoration:none;
+color:var(–accent-bright); border:1px solid var(–border-hi);
+background:var(–accent-glow); padding:8px 14px; border-radius:3px;
+cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.btn:hover {
+background:var(–accent-glow2); border-color:var(–accent-bright);
+box-shadow:0 0 16px var(–accent-glow); color:#fff;
+}
+
+/* ── SECTION TITLE ── */
+.section-title {
+display:flex; align-items:center; gap:10px;
+font-family:var(–cond); font-size:0.68rem; font-weight:700;
+letter-spacing:0.24em; text-transform:uppercase;
+color:var(–accent-dim);
+padding:13px 18px 5px;
+}
+.section-title::after {
+content:’’; flex:1; height:1px; background:var(–border);
+}
+
+/* ── LAYOUT ── */
+.layout {
+display:grid; grid-template-columns:repeat(12,1fr);
+grid-auto-rows:minmax(100px,auto);
+gap:12px; padding:12px 16px 24px;
+}
+.full  { grid-column:1 / -1; }
+.col-6 { grid-column:span 6; }
+.col-4 { grid-column:span 4; }
+.col-3 { grid-column:span 3; }
+@media(max-width:960px) {
+.col-6,.col-4,.col-3 { grid-column:1 / -1; }
+}
+
+/* ── RADAR BOX ── */
+.radar-box {
+position:relative; width:100%; height:360px;
+border:1px solid var(–border-hi); border-radius:6px;
+overflow:hidden; background:#000;
+transition:border-color .2s;
+}
+.radar-box:hover { border-color:var(–accent); }
+.radar-box iframe {
+width:100%; height:100%; border:0; display:block;
+}
+
+/* corner brackets */
+.radar-box::before,
+.radar-box::after {
+content:’’; position:absolute; pointer-events:none; z-index:5;
+width:14px; height:14px;
+}
+.radar-box::before { top:0; left:0; border-top:1px solid var(–accent); border-left:1px solid var(–accent); opacity:.4; }
+.radar-box::after  { bottom:0; right:0; border-bottom:1px solid var(–accent); border-right:1px solid var(–accent); opacity:.4; }
+
+/* ── OVERLAY BLOCKER ── */
+.overlay-blocker {
+position:absolute; inset:0; z-index:1200;
+background:transparent; pointer-events:auto;
+}
+.overlay-blocker.unlocked { pointer-events:none; display:none; }
+
+/* ── EMBED FALLBACK ── */
+.embed-fallback {
+position:absolute; inset:0; z-index:1250;
+display:none; /* shown via JS */
+flex-direction:column; align-items:center; justify-content:center; gap:14px;
+background:rgba(0,4,14,0.94); padding:20px; text-align:center;
+}
+.embed-fallback-title {
+font-family:var(–cond); font-size:1rem; font-weight:700;
+letter-spacing:0.14em; color:var(–accent-bright); text-transform:uppercase;
+}
+.embed-fallback .muted { font-family:var(–mono); font-size:0.75rem; color:var(–muted); max-width:340px; line-height:1.55; }
+.embed-fallback a { color:var(–accent); }
+
+/* small button inside panels */
+.small-btn {
+padding:6px 11px; border-radius:3px; border:1px solid var(–border-hi);
+background:var(–accent-glow); color:var(–accent-bright);
+font-family:var(–cond); font-size:0.72rem; font-weight:700;
+letter-spacing:0.1em; text-transform:uppercase;
+cursor:pointer; transition:all .15s;
+}
+.small-btn:hover { background:var(–accent-glow2); border-color:var(–accent-bright); }
+
+/* ── ATC PANEL ── */
+.panel {
+border:1px solid var(–border); border-radius:6px;
+background:var(–bg2); padding:0; overflow:hidden;
+transition:border-color .2s;
+}
+.panel:hover { border-color:var(–border-hi); }
+.panel-inner {
+display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:12px 14px;
+}
+.atc-live {
+display:flex; align-items:center; gap:5px;
+font-family:var(–mono); font-size:0.58rem; color:var(–cyan);
+margin-left:auto;
+}
+.atc-dot {
+width:5px; height:5px; border-radius:50%;
+background:var(–cyan); box-shadow:0 0 5px var(–cyan);
+animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+.panel-hint {
+font-family:var(–mono); font-size:0.6rem; color:var(–muted);
+padding:8px 14px; border-top:1px solid var(–border);
+letter-spacing:.04em;
+}
+
+/* ── STATUS DOT header ── */
+.hdr-dot {
+width:7px; height:7px; border-radius:50%;
+background:var(–cyan); box-shadow:0 0 6px var(–cyan),0 0 14px var(–cyan);
+animation:pulse 2.4s ease-in-out infinite; flex-shrink:0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.a1{animation:fadeUp .35s ease both}
+.a2{animation:fadeUp .35s .07s ease both}
+.a3{animation:fadeUp .35s .14s ease both}
+.a4{animation:fadeUp .35s .21s ease both}
+.a5{animation:fadeUp .35s .28s ease both}
 </style>
+
 </head>
 <body data-locked="true">
 
-<header class="glass">🇦🇼 🇧🇶 🇨🇼 ATC & WEATHER DASHBOARD</header>
-
 <!-- Lock toggle -->
-<div class="toggle-container glass" role="toolbar" aria-label="Lock controls">
+
+<div class="toggle-container" id="toggleContainer" role="toolbar" aria-label="Lock controls">
+  <span class="lock-led" id="lockLed"></span>
   <span id="lockIcon">🔒</span>
   <button id="lockToggleBtn" aria-pressed="true" title="Toggle lock">Lock</button>
+  <span style="font-family:var(--mono);font-size:0.58rem;opacity:.35">[L]</span>
 </div>
 
-<!-- Top time bar -->
-<div class="topbar glass" role="region" aria-label="Local and UTC time">
-  <div class="time-block" aria-live="polite">
+<!-- Header -->
+
+<header class="a1">
+  <div class="hdr-dot"></div>
+  🇦🇼 🇧🇶 🇨🇼 &nbsp; ATC &amp; Weather Dashboard
+  <div class="hdr-dot"></div>
+</header>
+
+<!-- Clocks + actions -->
+
+<div class="topbar a2">
+  <div class="time-block">
     <div class="time-label">Local</div>
-    <div id="localTime" class="time-value">--:--:--</div>
-    <div id="localDate" class="date-value">Loading…</div>
+    <div>
+      <div id="localTime" class="time-value">--:--:--</div>
+      <div id="localDate" class="date-value">Loading…</div>
+    </div>
   </div>
-  <div class="time-block" aria-live="polite">
+  <div class="time-block">
     <div class="time-label">UTC</div>
-    <div id="utcTime" class="time-value">--:--:--</div>
-    <div id="utcDate" class="date-value">Loading…</div>
+    <div>
+      <div id="utcTime" class="time-value">--:--:--</div>
+      <div id="utcDate" class="date-value">Loading…</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank" rel="noopener">🌍 Regional</a>
+    <a class="btn" id="satelliteOpenBtn" href="#">🛰 Satellite</a>
+    <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank" rel="noopener">🛬 Arrivals</a>
   </div>
 </div>
 
-<!-- Tools row -->
-<div class="tools-row">
-  <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank" rel="noopener">🌍 Regional</a>
-  <a class="btn" id="satelliteOpenBtn" href="#" target="_blank" rel="noopener">🛰 Satellite</a>
-  <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank" rel="noopener">🛬 Arrivals</a>
-</div>
+<!-- LAYOUT -->
 
-<!-- Layout grid -->
 <div class="layout">
 
-  <!-- ADSBexchange full width (alone) -->
-  <div class="full">
+  <!-- ADSBexchange -->
+
+  <div class="full a3">
     <div class="section-title">ADSBexchange — Full Map</div>
-    <div class="radar-box glass" id="adsbBox">
-      <iframe src="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" loading="lazy" title="ADSBexchange"></iframe>
+    <div class="radar-box" id="adsbBox">
+      <iframe src="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" loading="lazy" title="ADSBexchange" referrerpolicy="no-referrer-when-downgrade"></iframe>
       <div class="overlay-blocker" data-overlay-for="adsb" aria-hidden="true"></div>
-      <div class="embed-fallback" style="display:none">
-        <div style="font-weight:700">ADSBembed unavailable</div>
-        <div class="muted">Open ADSBexchange in a new tab.</div>
-        <a class="btn" href="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" target="_blank" rel="noopener">Open ADSBexchange</a>
+      <div class="embed-fallback" id="adsbFallback">
+        <div class="embed-fallback-title">ADSBexchange unavailable</div>
+        <div class="muted">Open ADSBexchange directly in a new tab.</div>
+        <a class="btn" href="https://globe.adsbexchange.com/?lat=12.00&lon=-69.10&zoom=8" target="_blank" rel="noopener">Open ADSBexchange ↗</a>
       </div>
     </div>
   </div>
 
-  <!-- Live ATC under ADSBexchange (full width but compact) -->
-  <div class="full">
+  <!-- Live ATC -->
+
+  <div class="full a4">
     <div class="section-title">Live ATC</div>
-    <div class="glass panel" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-      <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank" rel="noopener">🎧 Tower 118.300</a>
-      <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank" rel="noopener">🎧 Radar / Approach</a>
-      <div class="muted" style="margin-left:auto">Tip: press the lock toggle to interact with embedded maps</div>
+    <div class="panel">
+      <div class="panel-inner">
+        <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank" rel="noopener">🎧 Tower 118.300</a>
+        <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank" rel="noopener">🎧 Radar / Approach</a>
+        <div class="atc-live"><div class="atc-dot"></div>LIVE · TNCC</div>
+      </div>
+      <div class="panel-hint">Press [L] or the lock toggle to interact with embedded maps</div>
     </div>
   </div>
 
-  <!-- Two-column row: Windy AROME (left) and Windy Satellite (right) -->
-  <div class="col-6">
+  <!-- Windy AROME -->
+
+  <div class="col-6 a4">
     <div class="section-title">Windy — AROME Antilles (Clouds)</div>
-    <div class="radar-box glass" id="windyAromeBox">
+    <div class="radar-box" id="windyAromeBox">
       <iframe id="windyAromeIframe"
         src="https://embed.windy.com/embed2.html?lat=12.049&lon=-69.024&zoom=8&product=aromeAntilles&overlay=clouds"
         loading="lazy"
@@ -118,53 +349,55 @@
       ></iframe>
       <div class="overlay-blocker" data-overlay-for="windy-arome" aria-hidden="true"></div>
       <div id="windyAromeFallback" class="embed-fallback" role="status" aria-live="polite">
-        <div style="font-size:1.05rem;font-weight:700">Windy embed unavailable</div>
-        <div style="max-width:640px;opacity:0.95">Windy may block embedding in some browsers. Open the AROME Antilles clouds view in a new tab.</div>
-        <div style="display:flex;gap:8px">
-          <a id="openWindyArome" class="btn" href="https://www.windy.com/-Clouds-clouds?aromeAntilles,clouds,12.049,-69.024,8,p:cities" target="_blank" rel="noopener">Open Windy AROME</a>
-          <button id="tryWindyReload" class="btn">Try reload</button>
+        <div class="embed-fallback-title">Windy embed unavailable</div>
+        <div class="muted">Windy may block embedding in some browsers. Open the AROME Antilles clouds view in a new tab.</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+          <a id="openWindyArome" class="btn" href="https://www.windy.com/-Clouds-clouds?aromeAntilles,clouds,12.049,-69.024,8,p:cities" target="_blank" rel="noopener">Open Windy AROME ↗</a>
+          <button id="tryWindyReload" class="btn">↺ Try reload</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="col-6">
+  <!-- Windy Satellite -->
+
+  <div class="col-6 a4">
     <div class="section-title">Windy Satellite (Infrared)</div>
-    <div class="radar-box glass" id="windySatBox">
-      <div style="position:absolute;right:12px;top:12px;z-index:1300;display:flex;gap:8px">
-        <button id="openWindyBtn" class="small-btn">Open Satellite</button>
-        <button id="tryEmbedBtn" class="small-btn">Try alternate</button>
+    <div class="radar-box" id="windySatBox">
+      <div style="position:absolute;right:10px;top:10px;z-index:1300;display:flex;gap:6px">
+        <button id="openWindyBtn" class="small-btn">🛰 Open Satellite</button>
+        <button id="tryEmbedBtn" class="small-btn">↺ Alt</button>
       </div>
-
-      <div id="satFallback" style="position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,0.6);color:#fff;padding:8px 10px;border-radius:8px;display:none;gap:8px">
+      <div id="satFallback" style="position:absolute;left:10px;bottom:10px;z-index:1300;background:rgba(0,4,14,0.85);border:1px solid var(--border-hi);color:var(--text);padding:8px 12px;border-radius:4px;display:none;gap:8px;align-items:center;font-family:var(--mono);font-size:0.65rem">
         <span id="satMsg">Satellite may not embed.</span>
-        <a id="satOpen" class="small-btn" href="#" target="_blank" rel="noopener">Open Satellite</a>
+        <a id="satOpen" class="small-btn" href="#" target="_blank" rel="noopener">Open ↗</a>
       </div>
-
       <iframe id="windySatIframe"
         src="https://embed.windy.com/embed2.html?lat=12.1696&lon=-68.99&zoom=9&overlay=satellite&product=infrared"
         loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
-        title="Windy Satellite - Curaçao Infrared"
+        title="Windy Satellite — Curaçao Infrared"
       ></iframe>
-
       <div class="overlay-blocker" data-overlay-for="windy-sat" aria-hidden="true"></div>
     </div>
   </div>
 
-  <!-- Additional panels: Windy Radar and Ventusky -->
-  <div class="col-6">
+  <!-- Windy Radar -->
+
+  <div class="col-6 a5">
     <div class="section-title">Windy Radar</div>
-    <div class="radar-box glass">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.00&lon=-69.10&zoom=8&overlay=radar" loading="lazy" title="Windy Radar"></iframe>
+    <div class="radar-box">
+      <iframe src="https://embed.windy.com/embed2.html?lat=12.00&lon=-69.10&zoom=8&overlay=radar" loading="lazy" title="Windy Radar" referrerpolicy="no-referrer-when-downgrade"></iframe>
       <div class="overlay-blocker" data-overlay-for="windy-radar" aria-hidden="true"></div>
     </div>
   </div>
 
-  <div class="col-6">
+  <!-- Ventusky -->
+
+  <div class="col-6 a5">
     <div class="section-title">Ventusky — Precipitation 3 hours</div>
-    <div class="radar-box glass">
-      <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.90;-68.98;8&m=harmonie_car&w=off" loading="lazy" title="Ventusky Precipitation"></iframe>
+    <div class="radar-box">
+      <iframe src="https://www.ventusky.com/precipitation-map/3-hours#p=11.90;-68.98;8&m=harmonie_car&w=off" loading="lazy" title="Ventusky Precipitation" referrerpolicy="no-referrer-when-downgrade"></iframe>
       <div class="overlay-blocker" data-overlay-for="ventusky" aria-hidden="true"></div>
     </div>
   </div>
@@ -172,125 +405,138 @@
 </div>
 
 <script>
-/* LOCK TOGGLE */
+/* ── LOCK TOGGLE ── */
 const lockToggleBtn = document.getElementById('lockToggleBtn');
-const lockIcon = document.getElementById('lockIcon');
-function setLockState(locked){
+const lockIcon      = document.getElementById('lockIcon');
+const lockLed       = document.getElementById('lockLed');
+
+function setLockState(locked) {
   document.body.setAttribute('data-locked', locked ? 'true' : 'false');
   lockToggleBtn.setAttribute('aria-pressed', locked ? 'true' : 'false');
-  lockIcon.textContent = locked ? '🔒' : '🔓';
+  lockIcon.textContent  = locked ? '🔒' : '🔓';
   lockToggleBtn.textContent = locked ? 'Lock' : 'Unlock';
+  locked ? lockLed.classList.remove('on') : lockLed.classList.add('on');
   document.querySelectorAll('.overlay-blocker').forEach(el => {
-    if (locked) { el.classList.remove('unlocked'); el.style.display='block'; el.style.pointerEvents='auto'; el.setAttribute('aria-hidden','true'); }
-    else { el.classList.add('unlocked'); el.style.pointerEvents='none'; el.style.display='none'; el.setAttribute('aria-hidden','false'); }
+    if (locked) {
+      el.classList.remove('unlocked');
+      el.style.display = 'block';
+      el.style.pointerEvents = 'auto';
+      el.setAttribute('aria-hidden','true');
+    } else {
+      el.classList.add('unlocked');
+      el.style.pointerEvents = 'none';
+      el.style.display = 'none';
+      el.setAttribute('aria-hidden','false');
+    }
   });
 }
 setLockState(true);
-lockToggleBtn.addEventListener('click', ()=>{ const cur = document.body.getAttribute('data-locked')==='true'; setTimeout(()=>setLockState(!cur),10); });
-lockIcon.addEventListener('click', ()=> lockToggleBtn.click());
-
-/* CLOCKS */
-function updateClocks(){
-  const now = new Date();
-  document.getElementById('localTime').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('localDate').textContent = now.toLocaleDateString([], {weekday:'short',year:'numeric',month:'short',day:'numeric'});
-  const utc = new Date(now.getTime() + now.getTimezoneOffset()*60000);
-  document.getElementById('utcTime').textContent = utc.toISOString().substring(11,19);
-  document.getElementById('utcDate').textContent = utc.toUTCString().split(' GMT')[0] + ' UTC';
-}
-setInterval(updateClocks,1000);
-updateClocks();
-
-/* WINDY AROME EMBED HANDLING (fallback if blocked) */
-(function setupWindyArome(){
-  const iframe = document.getElementById('windyAromeIframe');
-  const fallback = document.getElementById('windyAromeFallback');
-  const tryReload = document.getElementById('tryWindyReload');
-  if(!iframe) return;
-  let loaded = false;
-  iframe.addEventListener('load', ()=>{ loaded = true; setTimeout(checkIframe,700); });
-  const loadTimeout = setTimeout(()=>{ if(!loaded) showFallback('Embed did not finish loading.'); },3500);
-  function checkIframe(){
-    try{
-      const rect = iframe.getBoundingClientRect();
-      if(rect.width===0 || rect.height===0){ showFallback('Embed not visible.'); return; }
-      try{ const cw = iframe.contentWindow; if(cw && typeof cw.location === 'object'){ if(fallback) fallback.style.display='none'; clearTimeout(loadTimeout); return; } }
-      catch(err){ if(fallback) fallback.style.display='none'; clearTimeout(loadTimeout); return; }
-    }catch(e){ showFallback('Embed check failed.'); }
-  }
-  function showFallback(message){ if(fallback){ fallback.style.display='flex'; const title = fallback.querySelector('div:first-child'); if(message) title.textContent = message; } clearTimeout(loadTimeout); }
-  if(tryReload) tryReload.addEventListener('click', ()=>{ if(fallback) fallback.style.display='none'; const src = iframe.getAttribute('src').split('&_reload=')[0]; iframe.setAttribute('src', src + '&_reload=' + Date.now()); loaded=false; setTimeout(()=>{ if(!loaded) showFallback('Still not loading. Open in Windy instead.'); },3500); });
-})();
-
-/* WINDY SATELLITE CONTROLS (open WeatherNerds) */
-(function setupWindySatellite(){
-  const iframe = document.getElementById('windySatIframe');
-  const openBtn = document.getElementById('openWindyBtn');
-  const tryBtn = document.getElementById('tryEmbedBtn');
-  const fallback = document.getElementById('satFallback');
-  const fallbackLink = document.getElementById('satOpen');
-  const weatherNerdsUrl = 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040912&initgefs=Off';
-  const embedInfrared = 'https://embed.windy.com/embed2.html?lat=12.1696&lon=-68.99&zoom=9&overlay=satellite&product=infrared';
-  const embedSatellite = 'https://embed.windy.com/embed2.html?lat=12.1696&lon=-68.99&zoom=9&overlay=satellite&product=satellite';
-
-  if(openBtn) openBtn.addEventListener('click', ()=> window.open(weatherNerdsUrl,'_blank','noopener'));
-  if(fallbackLink){ fallbackLink.setAttribute('href', weatherNerdsUrl); fallbackLink.setAttribute('target','_blank'); fallbackLink.setAttribute('rel','noopener'); }
-
-  if(tryBtn && iframe){
-    tryBtn.addEventListener('click', ()=> {
-      const current = iframe.getAttribute('src') || '';
-      iframe.style.display='none';
-      if (current.includes('product=infrared')) iframe.setAttribute('src', embedSatellite);
-      else iframe.setAttribute('src', embedInfrared);
-      iframe.style.display='block';
-      setTimeout(checkIframeVisibility,1200);
-    });
-  }
-
-  let loaded=false;
-  if(iframe) iframe.addEventListener('load', ()=>{ loaded=true; setTimeout(checkIframeVisibility,900); });
-  const loadTimeout = setTimeout(()=>{ if(!loaded) showFallback('Satellite embed did not finish loading.'); },4500);
-
-  function checkIframeVisibility(){
-    const rect = iframe ? iframe.getBoundingClientRect() : {width:0,height:0};
-    if(rect.width===0||rect.height===0){ showFallback('Satellite embed not visible.'); return; }
-    const src = iframe ? iframe.getAttribute('src') || '' : '';
-    if(src.includes('windy.com/-Satellite-satellite')){ showFallback('Windy blocks embedding for this view.'); return; }
-    if(fallback) fallback.style.display='none';
-    clearTimeout(loadTimeout);
-  }
-
-  function showFallback(message){
-    if(fallback){ document.getElementById('satMsg').textContent = message; fallback.style.display='flex'; if(fallbackLink) fallbackLink.setAttribute('href', weatherNerdsUrl); }
-  }
-})();
-
-/* TOP SATELLITE BUTTON (opens WeatherNerds) */
-(function setupTopSatelliteButton(){
-  const topBtn = document.getElementById('satelliteOpenBtn');
-  const weatherNerdsUrl = 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040912&initgefs=Off';
-  if(topBtn){
-    topBtn.addEventListener('click', (e) => {
-      window.open(weatherNerdsUrl, '_blank', 'noopener');
-      e.preventDefault();
-    });
-  }
-  // also set small fallback link if present
-  const smallFallback = document.getElementById('satOpen');
-  if(smallFallback){
-    smallFallback.setAttribute('href', weatherNerdsUrl);
-    smallFallback.setAttribute('target', '_blank');
-    smallFallback.setAttribute('rel', 'noopener');
-  }
-})();
-
-/* OPTIONAL: keyboard L toggles overlays for quick interaction */
-window.addEventListener('keydown', (e) => {
-  if(e.key === 'L' || e.key === 'l'){
+lockToggleBtn.addEventListener('click', () => {
+  const cur = document.body.getAttribute('data-locked') === 'true';
+  setTimeout(() => setLockState(!cur), 10);
+});
+lockIcon.addEventListener('click', () => lockToggleBtn.click());
+window.addEventListener('keydown', e => {
+  if (e.key === 'L' || e.key === 'l') {
     const locked = document.body.getAttribute('data-locked') === 'true';
     setLockState(!locked);
   }
 });
+
+/* ── CLOCKS ── */
+function updateClocks() {
+  const now = new Date();
+  document.getElementById('localTime').textContent = now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('localDate').textContent = now.toLocaleDateString([], {weekday:'short',year:'numeric',month:'short',day:'numeric'});
+  const utc = new Date(now.getTime() + now.getTimezoneOffset() * 60000);
+  document.getElementById('utcTime').textContent = utc.toISOString().substring(11,19);
+  document.getElementById('utcDate').textContent  = utc.toUTCString().split(' GMT')[0] + ' UTC';
+}
+setInterval(updateClocks, 1000);
+updateClocks();
+
+/* ── WINDY AROME FALLBACK ── */
+(function setupWindyArome() {
+  const iframe   = document.getElementById('windyAromeIframe');
+  const fallback = document.getElementById('windyAromeFallback');
+  const tryReload = document.getElementById('tryWindyReload');
+  if (!iframe) return;
+  let loaded = false;
+  iframe.addEventListener('load', () => { loaded = true; setTimeout(checkIframe, 700); });
+  const loadTimeout = setTimeout(() => { if (!loaded) showFallback('Embed did not finish loading.'); }, 3500);
+  function checkIframe() {
+    try {
+      const rect = iframe.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) { showFallback('Embed not visible.'); return; }
+      try {
+        const cw = iframe.contentWindow;
+        if (cw && typeof cw.location === 'object') { if (fallback) fallback.style.display = 'none'; clearTimeout(loadTimeout); return; }
+      } catch(err) { if (fallback) fallback.style.display = 'none'; clearTimeout(loadTimeout); return; }
+    } catch(e) { showFallback('Embed check failed.'); }
+  }
+  function showFallback(msg) {
+    if (fallback) { fallback.style.display = 'flex'; const t = fallback.querySelector('.embed-fallback-title'); if (msg && t) t.textContent = msg; }
+    clearTimeout(loadTimeout);
+  }
+  if (tryReload) tryReload.addEventListener('click', () => {
+    if (fallback) fallback.style.display = 'none';
+    const src = iframe.getAttribute('src').split('&_reload=')[0];
+    iframe.setAttribute('src', src + '&_reload=' + Date.now());
+    loaded = false;
+    setTimeout(() => { if (!loaded) showFallback('Still not loading. Open in Windy instead.'); }, 3500);
+  });
+})();
+
+/* ── WINDY SATELLITE ── */
+(function setupWindySatellite() {
+  const iframe       = document.getElementById('windySatIframe');
+  const openBtn      = document.getElementById('openWindyBtn');
+  const tryBtn       = document.getElementById('tryEmbedBtn');
+  const fallback     = document.getElementById('satFallback');
+  const fallbackLink = document.getElementById('satOpen');
+  const wnUrl = 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040912&initgefs=Off';
+  const embedIR  = 'https://embed.windy.com/embed2.html?lat=12.1696&lon=-68.99&zoom=9&overlay=satellite&product=infrared';
+  const embedSAT = 'https://embed.windy.com/embed2.html?lat=12.1696&lon=-68.99&zoom=9&overlay=satellite&product=satellite';
+
+  if (openBtn) openBtn.addEventListener('click', () => window.open(wnUrl, '_blank', 'noopener'));
+  if (fallbackLink) { fallbackLink.href = wnUrl; fallbackLink.target = '_blank'; fallbackLink.rel = 'noopener'; }
+
+  if (tryBtn && iframe) {
+    tryBtn.addEventListener('click', () => {
+      const cur = iframe.getAttribute('src') || '';
+      iframe.style.display = 'none';
+      iframe.setAttribute('src', cur.includes('product=infrared') ? embedSAT : embedIR);
+      iframe.style.display = 'block';
+      setTimeout(checkVis, 1200);
+    });
+  }
+
+  let loaded = false;
+  if (iframe) iframe.addEventListener('load', () => { loaded = true; setTimeout(checkVis, 900); });
+  const t = setTimeout(() => { if (!loaded) showFallback('Satellite embed did not finish loading.'); }, 4500);
+
+  function checkVis() {
+    const rect = iframe ? iframe.getBoundingClientRect() : {width:0,height:0};
+    if (rect.width === 0 || rect.height === 0) { showFallback('Satellite embed not visible.'); return; }
+    const src = iframe ? (iframe.getAttribute('src') || '') : '';
+    if (src.includes('windy.com/-Satellite')) { showFallback('Windy blocks embedding for this view.'); return; }
+    if (fallback) fallback.style.display = 'none';
+    clearTimeout(t);
+  }
+  function showFallback(msg) {
+    if (fallback) { document.getElementById('satMsg').textContent = msg; fallback.style.display = 'flex'; }
+  }
+})();
+
+/* ── TOP SATELLITE BUTTON ── */
+(function() {
+  const btn = document.getElementById('satelliteOpenBtn');
+  const url = 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=559&initrange=13.000:-71.250:11.000:-66.750&initloop=False&initnframes=20&initlightningge=On&initlightninggw=On&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=On&initecens=2026040912&initgefs=Off';
+  if (btn) btn.addEventListener('click', e => { e.preventDefault(); window.open(url, '_blank', 'noopener'); });
+  const satOpen = document.getElementById('satOpen');
+  if (satOpen) { satOpen.href = url; satOpen.target = '_blank'; satOpen.rel = 'noopener'; }
+})();
 </script>
+
 </body>
 </html>
