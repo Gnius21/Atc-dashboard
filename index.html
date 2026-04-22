@@ -10,16 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet"/>
 
 <style>
-:root {
+:root{
   --accent:#3fa9f5;
   --accent-bright:#72c4ff;
   --accent-dim:#1a5a8a;
   --accent-glow:rgba(63,169,245,0.16);
-  --accent-glow2:rgba(63,169,245,0.30);
   --cyan:#00d4ff;
   --bg:#000;
   --bg2:#03060d;
-  --bg3:#060b16;
   --border:rgba(63,169,245,0.11);
   --border-hi:rgba(63,169,245,0.28);
   --text:#b8d0ec;
@@ -31,200 +29,134 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 html,body{
-min-height:100%;
-background:#000;
-color:var(--text);
-font-family:var(--cond),system-ui,sans-serif;
-}
-
-/* scanline */
-body::before{
-content:'';
-position:fixed;inset:0;pointer-events:none;z-index:9000;
-background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.13) 2px,rgba(0,0,0,.13) 4px);
-opacity:.32;
-}
-
-/* vignette */
-body::after{
-content:'';
-position:fixed;inset:0;pointer-events:none;z-index:8999;
-background:radial-gradient(ellipse at center,transparent 48%,rgba(0,0,0,.58) 100%);
+  min-height:100%;
+  background:#000;
+  color:var(--text);
+  font-family:var(--cond),system-ui,sans-serif;
 }
 
 /* HEADER */
 header{
-display:flex;align-items:center;justify-content:center;gap:16px;
-height:52px;padding:0 90px;
-background:var(--bg2);
-border-bottom:1px solid var(--border-hi);
-font-family:var(--cond);
-font-weight:900;
-font-size:1.1rem;
-letter-spacing:.22em;
-text-transform:uppercase;
-color:var(--accent-bright);
-text-shadow:0 0 24px var(--accent-glow2);
-position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  height:52px;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border-hi);
+  font-weight:900;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--accent-bright);
 }
 
-.hdr-dot{
-width:7px;height:7px;border-radius:50%;
-background:var(--cyan);
-box-shadow:0 0 6px var(--cyan),0 0 14px var(--cyan);
-animation:pulse-dot 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse-dot{
-0%,100%{opacity:1}
-50%{opacity:.2}
-}
-
-/* LOCK TOGGLE */
+/* LOCK */
 .toggle-container{
-position:fixed;top:12px;right:14px;z-index:12000;
-display:flex;align-items:center;gap:8px;
-padding:7px 13px;
-background:var(--bg2);
-border:1px solid var(--border-hi);
-border-radius:4px;
-font-family:var(--cond);
-font-size:.76rem;
-font-weight:700;
-letter-spacing:.14em;
-text-transform:uppercase;
-color:var(--accent-bright);
-cursor:pointer;
+  position:fixed;
+  top:12px;
+  right:14px;
+  z-index:12000;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 13px;
+  background:var(--bg2);
+  border:1px solid var(--border-hi);
+  border-radius:4px;
+  font-family:var(--cond);
+  font-size:.76rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--accent-bright);
+  cursor:pointer;
 }
 
 .lock-led{
-width:7px;height:7px;border-radius:50%;
-background:var(--accent);
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:var(--accent);
 }
 
 .lock-led.unlocked{
-background:var(--cyan);
+  background:var(--cyan);
 }
 
-/* TOPBAR */
-.topbar{
-display:flex;align-items:stretch;
-background:var(--bg2);
-border-bottom:1px solid var(--border);
-padding:0 20px;
-}
-
-.time-block{
-display:flex;align-items:center;gap:14px;
-padding:10px 24px 10px 0;
-border-right:1px solid var(--border);
-}
-
-.time-value{
-font-family:var(--mono);
-font-size:1.5rem;
-color:var(--accent-bright);
-}
-
-.date-value{
-font-family:var(--mono);
-font-size:.65rem;
-color:var(--muted);
-}
-
-.topbar-right{
-margin-left:auto;
-display:flex;
-gap:8px;
-align-items:center;
-}
-
+/* BUTTONS */
 .btn{
-display:inline-flex;align-items:center;
-font-family:var(--cond);
-font-size:.8rem;
-font-weight:700;
-letter-spacing:.1em;
-text-transform:uppercase;
-color:var(--accent-bright);
-border:1px solid var(--border-hi);
-background:var(--accent-glow);
-padding:8px 14px;
-text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  font-family:var(--cond);
+  font-size:.8rem;
+  font-weight:700;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  color:var(--accent-bright);
+  border:1px solid var(--border-hi);
+  background:var(--accent-glow);
+  padding:8px 14px;
+  text-decoration:none;
 }
 
 /* LAYOUT */
 .layout{
-display:grid;
-grid-template-columns:repeat(12,1fr);
-gap:12px;
-padding:10px 16px 28px;
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:12px;
+  padding:10px 16px 28px;
 }
 
 .full{grid-column:1/-1}
 .col-6{grid-column:span 6}
 
-/* RADAR BOX */
+/* RADAR */
 .radar-box{
-position:relative;
-width:100%;height:360px;
-border:1px solid var(--border-hi);
-border-radius:6px;
-overflow:hidden;
-background:#000;
+  position:relative;
+  width:100%;
+  height:360px;
+  border:1px solid var(--border-hi);
+  border-radius:6px;
+  overflow:hidden;
+  background:#000;
 }
 
 .radar-box iframe{
-position:absolute;inset:0;
-width:100%;height:100%;
-border:0;
-background:#000;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
 }
 
-/* overlay blocker */
 .overlay-blocker{
-position:absolute;inset:0;
-z-index:1000;
-background:transparent;
+  position:absolute;
+  inset:0;
+  z-index:1000;
+  background:transparent;
 }
 
-/* SECTION TITLE */
-.section-title{
-font-family:var(--cond);
-font-size:.7rem;
-letter-spacing:.2em;
-text-transform:uppercase;
-color:var(--accent-dim);
-padding:14px 18px 5px;
-}
-
-.section-title::before{
-content:'';
-display:inline-block;
-width:4px;height:4px;
-background:var(--accent);
-margin-right:8px;
-}
-
-/* PANEL */
+/* ATC */
 .panel{
-border:1px solid var(--border);
-background:var(--bg2);
-border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  border-radius:6px;
 }
 
 .panel-body{
-padding:12px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
+  padding:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
-.panel-live{
-margin-left:auto;
-font-family:var(--mono);
-font-size:.6rem;
-color:var(--cyan);
+.section-title{
+  font-family:var(--cond);
+  font-size:.7rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--accent-dim);
+  padding:14px 18px 5px;
 }
 </style>
 </head>
@@ -233,35 +165,21 @@ color:var(--cyan);
 
 <!-- LOCK -->
 <div class="toggle-container" id="lockToggle">
-<span class="lock-led" id="lockLed"></span>
-<span id="lockIcon">🔒</span>
-<span>Lock</span>
+  <span class="lock-led" id="lockLed"></span>
+  <span id="lockIcon">🔒</span>
+  <span>Lock</span>
 </div>
 
 <header>
-<div class="hdr-dot"></div>
-🇦🇼 🇧🇶 🇨🇼 ATC & WEATHER DASHBOARD
-<div class="hdr-dot"></div>
+ATC & WEATHER DASHBOARD
 </header>
 
 <div class="topbar">
-<div class="time-block">
-<div>
-<div id="localTime" class="time-value">--:--</div>
-<div id="localDate" class="date-value">Loading</div>
-</div>
-</div>
-
-<div class="time-block">
-<div>
-<div id="utcTime" class="time-value">--:--</div>
-<div id="utcDate" class="date-value">Loading</div>
-</div>
-</div>
-
 <div class="topbar-right">
 <a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
-<a class="btn" id="satBtn" href="#">🛰 Satellite</a>
+
+<a class="btn" id="satBtn" href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off" target="_blank">🛰 Satellite</a>
+
 <a class="btn" href="https://curacao-airport.com/flights/?type=arrivals" target="_blank">🛬 Arrivals</a>
 </div>
 </div>
@@ -282,7 +200,6 @@ color:var(--cyan);
 <div class="panel-body">
 <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 TWR 118.300</a>
 <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 APP/RDR</a>
-<div class="panel-live">LIVE · TNCC</div>
 </div>
 </div>
 </div>
@@ -298,7 +215,7 @@ color:var(--cyan);
 <div class="col-6">
 <div class="section-title">Windy Radar</div>
 <div class="radar-box">
-<iframe src="https://embed.windy.com/embed2.html?lat=12&lon=-69&zoom=8&overlay=radar"></iframe>
+<iframe src="https://embed.windy.com/embed2.html?lat=12.092&lon=-69.089&zoom=8&overlay=radar"></iframe>
 <div class="overlay-blocker"></div>
 </div>
 </div>
@@ -306,7 +223,6 @@ color:var(--cyan);
 </div>
 
 <script>
-/* LOCK SYSTEM */
 const toggle=document.getElementById('lockToggle');
 const led=document.getElementById('lockLed');
 const icon=document.getElementById('lockIcon');
@@ -324,32 +240,6 @@ setLock(true);
 
 toggle.onclick=()=>{
 setLock(document.body.dataset.locked!=='true');
-};
-
-window.addEventListener('keydown',e=>{
-if(e.key.toLowerCase()==='l'){
-setLock(document.body.dataset.locked!=='true');
-}
-});
-
-/* CLOCKS */
-function updateClocks(){
-const now=new Date();
-document.getElementById('localTime').textContent=now.toLocaleTimeString();
-document.getElementById('localDate').textContent=now.toDateString();
-
-const utc=new Date(now.getTime()+now.getTimezoneOffset()*60000);
-document.getElementById('utcTime').textContent=utc.toISOString().substring(11,19);
-document.getElementById('utcDate').textContent=utc.toUTCString();
-}
-
-setInterval(updateClocks,1000);
-updateClocks();
-
-/* SAT BUTTON */
-document.getElementById('satBtn').onclick=e=>{
-e.preventDefault();
-window.open('https://www.weathernerds.org/satellite/?initsatsrc=On','_blank');
 };
 </script>
 
