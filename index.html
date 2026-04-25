@@ -30,6 +30,122 @@
   --cond:'Barlow Condensed', sans-serif;
 }
 
+/* ── NIGHT MODE ── */
+body.night{
+  --accent:#ff6b35;
+  --accent-bright:#ff8c5a;
+  --accent-dim:#5a2010;
+  --accent-glow:rgba(255,107,53,0.14);
+  --cyan:#ff4400;
+  --cyan-glow:rgba(255,68,0,0.2);
+  --green:#ff6600;
+  --bg:#000;
+  --bg2:#0d0400;
+  --border:rgba(255,107,53,0.12);
+  --border-hi:rgba(255,107,53,0.3);
+  --text:#c8a090;
+  --muted:#5a3020;
+}
+body.night::before{
+  background-image:
+    linear-gradient(rgba(255,80,0,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,80,0,0.04) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+body.night::after{
+  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(255,60,0,0.06) 0%,transparent 60%);
+}
+body.night .scanline{
+  background:linear-gradient(90deg,transparent,rgba(255,80,0,0.4),transparent);
+}
+
+/* NOTAM PANEL */
+.notam-panel{
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--bg2);
+  overflow:hidden;
+}
+.notam-body{
+  padding:10px 12px 12px;
+}
+.notam-list{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-height:220px;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--border-hi) transparent;
+}
+.notam-item{
+  padding:8px 10px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:rgba(0,0,0,0.35);
+  border-left:3px solid var(--cyan);
+  font-family:var(--mono);
+  font-size:.62rem;
+  line-height:1.6;
+  color:var(--text);
+  word-break:break-word;
+}
+.notam-item .notam-id{
+  display:block;
+  color:var(--cyan);
+  font-size:.65rem;
+  letter-spacing:.08em;
+  margin-bottom:3px;
+}
+.notam-item.warn{ border-left-color:#ffb347; }
+.notam-item.warn .notam-id{ color:#ffb347; }
+.notam-status{
+  font-family:var(--mono);
+  font-size:.65rem;
+  color:var(--muted);
+  padding:8px 0 2px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.notam-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 6px var(--green);
+  animation:pulse 2s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.notam-link{
+  font-family:var(--mono);
+  font-size:.62rem;
+  color:var(--accent-bright);
+  text-decoration:none;
+  border-bottom:1px solid var(--border-hi);
+  transition:color .15s;
+  margin-left:auto;
+}
+.notam-link:hover{color:var(--cyan)}
+
+/* NIGHT TOGGLE BTN */
+.night-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:5px 10px;
+  background:rgba(0,0,0,0.3);
+  border:1px solid var(--border-hi);
+  border-radius:3px;
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--accent-bright);
+  cursor:pointer;
+  transition:border-color .2s,box-shadow .2s,color .2s;
+}
+.night-btn:hover{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-glow)}
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 html,body{
@@ -318,6 +434,67 @@ header::after{right:0}
   margin-top:2px;
 }
 
+/* ── SYNOP PANEL ── */
+.synop-panel{
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--bg2);
+  overflow:hidden;
+}
+.synop-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  padding:10px 12px 12px;
+}
+.synop-card{
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:4px;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  position:relative;
+  overflow:hidden;
+}
+.synop-card::before{
+  content:'';
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:2px;
+  background:var(--cyan);
+  box-shadow:0 0 8px var(--cyan);
+}
+.synop-lbl{font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+.synop-val{font-family:var(--orb);font-size:1.15rem;font-weight:700;color:var(--accent-bright);line-height:1}
+.synop-unit{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.06em}
+.synop-raw-box{
+  margin:0 12px 12px;padding:8px 10px;
+  background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:4px;
+  font-family:var(--mono);font-size:.62rem;color:var(--cyan);
+  letter-spacing:.04em;line-height:1.7;word-break:break-all;
+}
+.synop-status-row{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px 4px;
+  font-family:var(--mono);font-size:.62rem;color:var(--muted);
+}
+.synop-condition{
+  grid-column:1/-1;display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:rgba(0,212,255,0.05);border:1px solid var(--border);border-radius:4px;
+  font-family:var(--cond);font-size:.9rem;font-weight:700;
+  letter-spacing:.1em;color:var(--accent-bright);text-transform:uppercase;
+}
+.wx-icon{font-size:1.4rem;line-height:1}
+.wind-arrow{display:inline-block;font-size:1.1rem;transition:transform .5s ease}
+.synop-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 6px var(--green);
+  animation:pulse 2s ease-in-out infinite;flex-shrink:0;
+}
+
 /* Entry animations */
 .layout > *{
   animation:fadeUp .45s ease both;
@@ -352,7 +529,8 @@ header::after{right:0}
     </div>
   </div>
   <span class="header-title">ATC &amp; WEATHER DASHBOARD</span>
-  <div style="display:flex;justify-content:flex-end">
+  <div style="display:flex;justify-content:flex-end;gap:6px;align-items:center">
+    <div class="night-btn" id="nightToggle">🌙 Night</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
       <span id="lockIcon">🔒</span>
@@ -363,7 +541,7 @@ header::after{right:0}
 
 <div class="topbar">
 <div class="topbar-right">
-<a class="btn" href="https://gniusweather.github.io/REGIONALDASHBOARD/" target="_blank">🌍 Regional</a>
+<a class="btn" href="#" id="regionalBtn">🌍 Regional</a>
 
 <a class="btn" id="satBtn" href="https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off" target="_blank">🛰 Satellite</a>
 
@@ -392,10 +570,43 @@ header::after{right:0}
 </div>
 </div>
 
+<div class="full">
+<div class="section-title">NOTAMs — TNCC · notamify.com</div>
+<div class="notam-panel">
+<div class="notam-body">
+  <div class="notam-status">
+    <span class="notam-dot" id="notamDot"></span>
+    <span id="notamStatusText">Loading NOTAMs…</span>
+    <a class="notam-link" href="https://notamify.com/notams/TNCC" target="_blank">↗ notamify.com</a>
+  </div>
+  <div class="notam-list" id="notamList">
+    <div class="notam-item" style="color:var(--muted);border-left-color:var(--muted)">Loading…</div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="full">
+<div class="section-title">SYNOP Station 78988 — Curaçao / Hato</div>
+<div class="synop-panel">
+  <div class="synop-status-row">
+    <span class="synop-dot" id="synopDot"></span>
+    <span id="synopStatusText">Fetching live observation…</span>
+    <span style="margin-left:auto;font-size:.55rem;letter-spacing:.12em" id="synopUpdated"></span>
+  </div>
+  <div class="synop-grid" id="synopGrid">
+    <div class="synop-card" style="grid-column:1/-1;justify-content:center;align-items:center;min-height:60px">
+      <span class="synop-lbl">Connecting to Open-Meteo API…</span>
+    </div>
+  </div>
+  <div class="synop-raw-box" id="synopRaw" style="display:none"></div>
+</div>
+</div>
+
 <div class="col-6">
 <div class="section-title">Windy Clouds</div>
 <div class="radar-box">
-<iframe src="https://embed.windy.com/embed2.html?lat=12&lon=-69&zoom=8&overlay=clouds"></iframe>
+<iframe src="https://embed.windy.com/embed2.html?lat=12.3&lon=-68.8&zoom=7&overlay=clouds"></iframe>
 <div class="overlay-blocker"></div>
 </div>
 </div>
@@ -403,7 +614,7 @@ header::after{right:0}
 <div class="col-6">
 <div class="section-title">Windy Radar</div>
 <div class="radar-box">
-<iframe src="https://embed.windy.com/embed2.html?lat=12.092&lon=-69.089&zoom=8&overlay=radar"></iframe>
+<iframe src="https://embed.windy.com/embed2.html?lat=12.3&lon=-68.8&zoom=7&overlay=radar"></iframe>
 <div class="overlay-blocker"></div>
 </div>
 </div>
@@ -415,10 +626,8 @@ header::after{right:0}
 function updateClocks(){
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
-  // UTC
   document.getElementById('clockUtc').textContent=
     `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
-  // Local (Curaçao is AST = UTC-4, no DST)
   const ast=new Date(now.toLocaleString('en-US',{timeZone:'America/Curacao'}));
   document.getElementById('clockLocal').textContent=
     `${pad(ast.getHours())}:${pad(ast.getMinutes())}:${pad(ast.getSeconds())}`;
@@ -426,24 +635,291 @@ function updateClocks(){
 setInterval(updateClocks,1000);
 updateClocks();
 
+/* ── Night Mode ── */
+const nightBtn = document.getElementById('nightToggle');
+let isNight = false;
+nightBtn.onclick = () => {
+  isNight = !isNight;
+  document.body.classList.toggle('night', isNight);
+  nightBtn.textContent = isNight ? '☀️ Day' : '🌙 Night';
+};
+
+/* ── Lock ── */
 const toggle=document.getElementById('lockToggle');
 const led=document.getElementById('lockLed');
 const icon=document.getElementById('lockIcon');
-
 function setLock(locked){
-document.body.dataset.locked=locked;
-document.querySelectorAll('.overlay-blocker').forEach(el=>{
-el.style.display=locked?'block':'none';
-});
-icon.textContent=locked?'🔒':'🔓';
-locked?led.classList.remove('unlocked'):led.classList.add('unlocked');
+  document.body.dataset.locked=locked;
+  document.querySelectorAll('.overlay-blocker').forEach(el=>{
+    el.style.display=locked?'block':'none';
+  });
+  icon.textContent=locked?'🔒':'🔓';
+  locked?led.classList.remove('unlocked'):led.classList.add('unlocked');
+}
+setLock(true);
+toggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
+
+/* ═══════════════════════════════════
+   NOTAMs — notamify.com data
+═══════════════════════════════════ */
+const notamData = [
+  { tag:'AD · Apron',    text:'Apron painting in progress.',                                                                           warn:false, time:'Apr 25 02:00–10:00', status:'FRESH'  },
+  { tag:'AD · Taxiway',  text:'Painting in progress on TWY ALPHA (west part).',                                                       warn:false, time:'Apr 25 02:00–10:00', status:'FRESH'  },
+  { tag:'OBS · Crane',   text:'Crane activity near GA apron.',                                                                        warn:true,  time:'Apr 24 23:37–Apr 25 01:00', status:'FRESH'  },
+  { tag:'AD · Apron',    text:'Work in progress on the general aviation apron with personnel and equipment present.',                  warn:true,  time:'Apr 24 02:00–Apr 26 10:00 (Fri–Sun)', status:'RECENT' },
+  { tag:'Ops · Proc',    text:'Arrivals from the east must follow a right-hand downwind via southern water and south coast to base for RWY 11.', warn:false, time:'Apr 7 – Jul 3 23:59', status:'AGING'  },
+  { tag:'Ops · Restr',   text:'Code C or higher landings must roll to end or exit as instructed on RWY 11/29. No intersection holding for arrivals.', warn:true,  time:'Apr 7 – Jul 3 23:59', status:'AGING'  },
+  { tag:'Ops · Special', text:'Parachute jumping expected in the SINT JORIS area coordinated with HATO TWR. Daily sunrise to sunset.', warn:false, time:'Mar 4 – Jun 1 22:00', status:'AGING'  },
+  { tag:'COM · ATS',     text:'Controller OJT underway at TNCC TWR under supervision.',                                               warn:false, time:'Mar 2 – Jun 1 23:59', status:'AGING'  },
+  { tag:'AD · Taxiway',  text:'Intermediate holding position markings on TWY A at INT B, C, and D are not in use.',                   warn:false, time:'Feb 27 – May 25 04:00', status:'AGING'  },
+  { tag:'SAF · Safety',  text:'Kite flying in the vicinity of the aerodrome.',                                                        warn:false, time:'Feb 25 – Apr 30 12:00', status:'AGING'  },
+  { tag:'OTH · Wildlife',text:'Bird activity near TWY ALPHA WEST and Holding Bay 11.',                                                warn:false, time:'Feb 19 – May 16 10:00', status:'AGING'  },
+  { tag:'ASP · Military',text:'Blasting near southwest area of aerodrome — coordinated by CAP OPS and ATC. Weekly Thu 15:00–16:00Z.',  warn:false, time:'Apr 2 – Apr 30 16:00', status:'AGING'  },
+];
+
+function renderNotams(){
+  const list = document.getElementById('notamList');
+  const fresh  = notamData.filter(n=>n.status==='FRESH').length;
+  const recent = notamData.filter(n=>n.status==='RECENT').length;
+  document.getElementById('notamStatusText').textContent =
+    `${notamData.length} active · ${fresh} fresh · ${recent} recent — notamify.com`;
+  list.innerHTML = notamData.map(n => {
+    const badge = n.status==='FRESH'  ? `<span style="color:#39ff8a;font-size:.5rem;border:1px solid #39ff8a;padding:1px 4px;border-radius:2px;margin-left:4px">FRESH</span>`
+                : n.status==='RECENT' ? `<span style="color:#ffb347;font-size:.5rem;border:1px solid #ffb347;padding:1px 4px;border-radius:2px;margin-left:4px">RECENT</span>`
+                : '';
+    return `<div class="notam-item${n.warn?' warn':''}">
+      <span class="notam-id">${n.tag}${badge} <span style="opacity:.45;font-size:.55rem">${n.time}</span></span>
+      ${n.text}
+    </div>`;
+  }).join('');
+}
+renderNotams();
+
+/* ═══════════════════════════════════
+   SYNOP 78988 — Web Worker pattern
+   Uses Open-Meteo (free, CORS, no key)
+   Station 78988 = TNCC Hato: 12.118N, 68.888W
+═══════════════════════════════════ */
+const WX_CODE = {
+  0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Fog',48:'Rime fog',
+  51:'Light drizzle',53:'Moderate drizzle',55:'Dense drizzle',
+  61:'Slight rain',63:'Moderate rain',65:'Heavy rain',
+  71:'Slight snow',73:'Moderate snow',75:'Heavy snow',
+  80:'Slight showers',81:'Moderate showers',82:'Violent showers',
+  95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail'
+};
+const WX_ICON = {
+  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+  45:'🌫',48:'🌫',
+  51:'🌦',53:'🌦',55:'🌧',
+  61:'🌧',63:'🌧',65:'🌧',
+  71:'🌨',73:'🌨',75:'❄️',
+  80:'🌦',81:'🌧',82:'⛈',
+  95:'⛈',96:'⛈',99:'⛈'
+};
+
+function degToCard(d){
+  const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round(d/22.5)%16];
 }
 
-setLock(true);
-
-toggle.onclick=()=>{
-setLock(document.body.dataset.locked!=='true');
+// Inline worker via Blob so no separate file needed
+const workerCode = `
+self.onmessage = async function(e) {
+  const { lat, lon } = e.data;
+  const url = 'https://api.open-meteo.com/v1/forecast?'
+    + 'latitude=' + lat + '&longitude=' + lon
+    + '&current=temperature_2m,relative_humidity_2m,dew_point_2m,'
+    + 'apparent_temperature,precipitation,weather_code,cloud_cover,'
+    + 'wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,surface_pressure'
+    + '&hourly=temperature_2m,pressure_msl,wind_speed_10m'
+    + '&wind_speed_unit=kn&timezone=America%2FCuracao&forecast_days=1';
+  try {
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    self.postMessage({ ok: true, data });
+  } catch(err) {
+    self.postMessage({ ok: false, error: err.message });
+  }
 };
+`;
+const blob = new Blob([workerCode], {type:'application/javascript'});
+const workerUrl = URL.createObjectURL(blob);
+const synopWorker = new Worker(workerUrl);
+
+synopWorker.onmessage = function(e) {
+  if(!e.data.ok){
+    document.getElementById('synopStatusText').textContent = 'Fetch error: ' + e.data.error;
+    document.getElementById('synopDot').style.background = '#ff4757';
+    return;
+  }
+  renderSynop(e.data.data);
+};
+
+function fetchSynop(){
+  synopWorker.postMessage({ lat: 12.118, lon: -68.888 });
+}
+fetchSynop();
+setInterval(fetchSynop, 10 * 60 * 1000); // refresh every 10 min
+
+function renderSynop(d){
+  const c = d.current;
+  const now = new Date(c.time);
+  const pad = n=>String(n).padStart(2,'0');
+  const timeStr = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}Z`;
+
+  document.getElementById('synopStatusText').textContent =
+    `Station 78988 · Open-Meteo · Updated ${timeStr}`;
+  document.getElementById('synopDot').style.background = 'var(--green)';
+  document.getElementById('synopDot').style.boxShadow = '0 0 8px var(--green)';
+
+  // Dewpoint depression
+  const dd = (c.temperature_2m - c.dew_point_2m).toFixed(1);
+  // QNH hPa
+  const qnh = Math.round(c.pressure_msl);
+  const qfe = Math.round(c.surface_pressure);
+  // Wind
+  const wdCard = degToCard(c.wind_direction_10m);
+  const wdDeg  = Math.round(c.wind_direction_10m);
+  // Cloud cover → oktas
+  const oktas  = Math.round(c.cloud_cover / 12.5);
+  // WX
+  const wxCode = c.weather_code;
+  const wxDesc = WX_CODE[wxCode] || 'Unknown';
+  const wxIcon = WX_ICON[wxCode] || '🌡';
+
+  // Trend from hourly (last 3 values available so far today)
+  const hrs = d.hourly;
+  const trendTemps = hrs.temperature_2m.slice(0,6);
+  const trendPres  = hrs.pressure_msl.slice(0,6);
+
+  const grid = document.getElementById('synopGrid');
+  grid.innerHTML = `
+    <!-- Condition strip -->
+    <div class="synop-condition">
+      <span class="wx-icon">${wxIcon}</span>
+      <span>${wxDesc}</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.65rem;opacity:.6">${wdCard} ${Math.round(c.wind_speed_10m)}KT G${Math.round(c.wind_gusts_10m)}KT · ${oktas}/8 OKT</span>
+    </div>
+
+    <!-- Temp -->
+    <div class="synop-card">
+      <span class="synop-lbl">Temperature</span>
+      <span class="synop-val" style="color:${c.temperature_2m>30?'#ff6b35':'var(--accent-bright)'}">${c.temperature_2m.toFixed(1)}</span>
+      <span class="synop-unit">°C / ${(c.temperature_2m*9/5+32).toFixed(1)}°F</span>
+    </div>
+
+    <!-- Feels like -->
+    <div class="synop-card">
+      <span class="synop-lbl">Feels Like</span>
+      <span class="synop-val">${c.apparent_temperature.toFixed(1)}</span>
+      <span class="synop-unit">°C apparent</span>
+    </div>
+
+    <!-- Dewpoint -->
+    <div class="synop-card">
+      <span class="synop-lbl">Dew Point</span>
+      <span class="synop-val">${c.dew_point_2m.toFixed(1)}</span>
+      <span class="synop-unit">°C · DD ${dd}</span>
+    </div>
+
+    <!-- Humidity -->
+    <div class="synop-card">
+      <span class="synop-lbl">Rel. Humidity</span>
+      <span class="synop-val" style="color:${c.relative_humidity_2m>85?'#ffb347':'var(--accent-bright)'}">${c.relative_humidity_2m}</span>
+      <span class="synop-unit">%</span>
+    </div>
+
+    <!-- Wind -->
+    <div class="synop-card">
+      <span class="synop-lbl">Wind</span>
+      <span class="synop-val">${Math.round(c.wind_speed_10m)}<span style="font-size:.7rem;font-weight:400"> KT</span></span>
+      <span class="synop-unit">${pad(wdDeg)}° ${wdCard}</span>
+    </div>
+
+    <!-- Gusts -->
+    <div class="synop-card">
+      <span class="synop-lbl">Gusts</span>
+      <span class="synop-val" style="color:${c.wind_gusts_10m>25?'#ff4757':'var(--accent-bright)'}">${Math.round(c.wind_gusts_10m)}<span style="font-size:.7rem;font-weight:400"> KT</span></span>
+      <span class="synop-unit">max gust</span>
+    </div>
+
+    <!-- QNH -->
+    <div class="synop-card">
+      <span class="synop-lbl">QNH / MSL</span>
+      <span class="synop-val">${qnh}</span>
+      <span class="synop-unit">hPa · ${(qnh*0.02953).toFixed(2)} inHg</span>
+    </div>
+
+    <!-- QFE -->
+    <div class="synop-card">
+      <span class="synop-lbl">QFE / SFC</span>
+      <span class="synop-val">${qfe}</span>
+      <span class="synop-unit">hPa surface</span>
+    </div>
+
+    <!-- Cloud -->
+    <div class="synop-card">
+      <span class="synop-lbl">Cloud Cover</span>
+      <span class="synop-val">${c.cloud_cover}</span>
+      <span class="synop-unit">% · ${oktas}/8 oktas</span>
+    </div>
+
+    <!-- Precip -->
+    <div class="synop-card">
+      <span class="synop-lbl">Precip (1h)</span>
+      <span class="synop-val" style="color:${c.precipitation>0?'#3fa9f5':'var(--accent-bright)'}">${c.precipitation.toFixed(1)}</span>
+      <span class="synop-unit">mm</span>
+    </div>
+
+    <!-- Temp trend sparkline -->
+    <div class="synop-card" style="grid-column:span 2">
+      <span class="synop-lbl">Temp trend (6h)</span>
+      <svg class="sparkline" viewBox="0 0 120 36" preserveAspectRatio="none">
+        ${sparklinePath(trendTemps,'#3fa9f5')}
+      </svg>
+      <span class="synop-unit">${trendTemps.map(t=>t.toFixed(1)+'°').join(' › ')}</span>
+    </div>
+
+    <!-- Pressure trend sparkline -->
+    <div class="synop-card" style="grid-column:span 2">
+      <span class="synop-lbl">QNH trend (6h)</span>
+      <svg class="sparkline" viewBox="0 0 120 36" preserveAspectRatio="none">
+        ${sparklinePath(trendPres,'#00d4ff')}
+      </svg>
+      <span class="synop-unit">${trendPres.map(p=>Math.round(p)).join(' › ')} hPa</span>
+    </div>
+  `;
+
+  // Raw SYNOP-style decode line
+  const rawEl = document.getElementById('synopRaw');
+  rawEl.style.display = 'block';
+  rawEl.textContent =
+    `SYNOP 78988 ${timeStr} · `
+    + `T:${c.temperature_2m.toFixed(1)}°C `
+    + `TD:${c.dew_point_2m.toFixed(1)}°C `
+    + `RH:${c.relative_humidity_2m}% `
+    + `FF:${Math.round(c.wind_speed_10m)}KT `
+    + `DD:${pad(wdDeg)}° `
+    + `FX:${Math.round(c.wind_gusts_10m)}KT `
+    + `QNH:${qnh}hPa `
+    + `N:${oktas}/8 `
+    + `WW:${wxCode}(${wxDesc}) `
+    + `RR:${c.precipitation.toFixed(1)}mm`;
+}
+
+function sparklinePath(vals, color){
+  if(!vals||vals.length<2) return '';
+  const mn=Math.min(...vals), mx=Math.max(...vals), rng=mx-mn||1;
+  const pts = vals.map((v,i)=>{
+    const x = (i/(vals.length-1))*120;
+    const y = 36 - ((v-mn)/rng)*30 - 3;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>`;
+}
 </script>
 
 </body>
