@@ -434,65 +434,94 @@ header::after{right:0}
   margin-top:2px;
 }
 
-/* ── SYNOP PANEL ── */
-.synop-panel{
+/* ── ISLAND WEATHER CARDS ── */
+.island-card{
   border:1px solid var(--border);
   border-radius:5px;
   background:var(--bg2);
   overflow:hidden;
-}
-.synop-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  padding:10px 12px 12px;
-}
-.synop-card{
-  padding:10px 12px;
-  border:1px solid var(--border);
-  border-radius:4px;
-  background:rgba(0,0,0,0.4);
-  display:flex;
-  flex-direction:column;
-  gap:4px;
   position:relative;
-  overflow:hidden;
 }
-.synop-card::before{
+.island-card::before{
   content:'';
   position:absolute;
   left:0;top:0;bottom:0;
-  width:2px;
+  width:3px;
   background:var(--cyan);
-  box-shadow:0 0 8px var(--cyan);
+  box-shadow:0 0 10px var(--cyan);
 }
-.synop-lbl{font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
-.synop-val{font-family:var(--orb);font-size:1.15rem;font-weight:700;color:var(--accent-bright);line-height:1}
-.synop-unit{font-family:var(--mono);font-size:.55rem;color:var(--muted);letter-spacing:.06em}
-.synop-raw-box{
-  margin:0 12px 12px;padding:8px 10px;
-  background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:4px;
-  font-family:var(--mono);font-size:.62rem;color:var(--cyan);
-  letter-spacing:.04em;line-height:1.7;word-break:break-all;
+.island-name{
+  font-family:var(--orb);
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.14em;
+  color:var(--accent-bright);
+  padding:12px 14px 4px 16px;
+  text-transform:uppercase;
 }
-.synop-status-row{
-  display:flex;align-items:center;gap:8px;
-  padding:10px 12px 4px;
-  font-family:var(--mono);font-size:.62rem;color:var(--muted);
+.island-icao{
+  font-family:var(--mono);
+  font-size:.55rem;
+  color:var(--muted);
+  letter-spacing:.14em;
+  padding:0 14px 8px 16px;
 }
-.synop-condition{
-  grid-column:1/-1;display:flex;align-items:center;gap:10px;
-  padding:8px 12px;
-  background:rgba(0,212,255,0.05);border:1px solid var(--border);border-radius:4px;
-  font-family:var(--cond);font-size:.9rem;font-weight:700;
-  letter-spacing:.1em;color:var(--accent-bright);text-transform:uppercase;
+.island-wx-strip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 14px 10px 16px;
+  background:rgba(0,212,255,0.04);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
 }
-.wx-icon{font-size:1.4rem;line-height:1}
-.wind-arrow{display:inline-block;font-size:1.1rem;transition:transform .5s ease}
-.synop-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--green);box-shadow:0 0 6px var(--green);
-  animation:pulse 2s ease-in-out infinite;flex-shrink:0;
+.island-wx-icon{font-size:1.6rem;line-height:1;filter:drop-shadow(0 0 6px rgba(0,212,255,0.3))}
+.island-wx-desc{
+  font-family:var(--cond);
+  font-size:.85rem;
+  font-weight:700;
+  letter-spacing:.08em;
+  color:var(--accent-bright);
+  text-transform:uppercase;
+}
+.island-stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+}
+.island-stat{
+  padding:8px 10px 8px 16px;
+  border-bottom:1px solid var(--border);
+  border-right:1px solid var(--border);
+}
+.island-stat:nth-child(even){border-right:none;padding-left:12px}
+.island-stat:last-child,.island-stat:nth-last-child(2):nth-child(odd){border-bottom:none}
+.island-stat-lbl{
+  font-family:var(--mono);
+  font-size:.48rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:2px;
+}
+.island-stat-val{
+  font-family:var(--orb);
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--accent-bright);
+  line-height:1;
+}
+.island-stat-unit{
+  font-family:var(--mono);
+  font-size:.48rem;
+  color:var(--muted);
+}
+.island-updated{
+  padding:5px 14px 6px 16px;
+  font-family:var(--mono);
+  font-size:.5rem;
+  color:var(--muted);
+  letter-spacing:.1em;
 }
 
 /* Entry animations */
@@ -509,6 +538,57 @@ header::after{right:0}
   from{opacity:0;transform:translateY(12px)}
   to  {opacity:1;transform:translateY(0)}
 }
+/* ── LOGIN MODAL ── */
+.login-modal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.78);
+  display:flex;align-items:center;justify-content:center;
+  z-index:99999;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s ease;
+}
+.login-modal.active{opacity:1;pointer-events:auto}
+.login-box{
+  width:300px;
+  background:var(--bg2);
+  border:1px solid var(--border-hi);
+  border-radius:5px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(0,0,0,0.9),0 0 24px var(--cyan-glow);
+  display:flex;flex-direction:column;gap:12px;
+}
+.login-header{
+  font-family:var(--orb);font-size:.78rem;letter-spacing:.2em;
+  color:var(--accent-bright);text-align:center;
+  text-shadow:0 0 16px rgba(114,196,255,0.35);
+}
+.login-sub{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;
+  color:var(--muted);text-align:center;text-transform:uppercase;
+}
+#loginInput{
+  background:#000;border:1px solid var(--border-hi);
+  color:var(--cyan);font-family:var(--mono);font-size:.8rem;
+  padding:10px;border-radius:3px;text-align:center;
+  outline:none;transition:border-color .2s,box-shadow .2s;
+  letter-spacing:.15em;
+}
+#loginInput:focus{border-color:var(--cyan);box-shadow:0 0 12px var(--cyan-glow)}
+.login-actions{display:flex;gap:8px}
+.login-actions .btn{flex:1;justify-content:center;cursor:pointer;border:none}
+.login-error{
+  font-family:var(--mono);font-size:.62rem;color:#ff4d4d;
+  text-align:center;letter-spacing:.12em;
+  opacity:0;transition:opacity .2s;
+}
+.login-error.show{opacity:1}
+
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%,60%{transform:translateX(-6px)}
+  40%,80%{transform:translateX(6px)}
+}
+.login-box.shake{animation:shake .35s ease}
 </style>
 
 </head>
@@ -560,6 +640,22 @@ header::after{right:0}
 </div>
 </div>
 
+<div class="col-6">
+<div class="section-title">Windy Clouds</div>
+<div class="radar-box">
+<iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+<div class="overlay-blocker"></div>
+</div>
+</div>
+
+<div class="col-6">
+<div class="section-title">Windy Radar</div>
+<div class="radar-box">
+<iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+<div class="overlay-blocker"></div>
+</div>
+</div>
+
 <div class="full">
 <div class="section-title">Live ATC</div>
 <div class="panel">
@@ -583,39 +679,6 @@ header::after{right:0}
     <div class="notam-item" style="color:var(--muted);border-left-color:var(--muted)">Loading…</div>
   </div>
 </div>
-</div>
-</div>
-
-<div class="full">
-<div class="section-title">SYNOP Station 78988 — Curaçao / Hato</div>
-<div class="synop-panel">
-  <div class="synop-status-row">
-    <span class="synop-dot" id="synopDot"></span>
-    <span id="synopStatusText">Fetching live observation…</span>
-    <span style="margin-left:auto;font-size:.55rem;letter-spacing:.12em" id="synopUpdated"></span>
-  </div>
-  <div class="synop-grid" id="synopGrid">
-    <div class="synop-card" style="grid-column:1/-1;justify-content:center;align-items:center;min-height:60px">
-      <span class="synop-lbl">Connecting to Open-Meteo API…</span>
-    </div>
-  </div>
-  <div class="synop-raw-box" id="synopRaw" style="display:none"></div>
-</div>
-</div>
-
-<div class="col-6">
-<div class="section-title">Windy Clouds</div>
-<div class="radar-box">
-<iframe src="https://embed.windy.com/embed2.html?lat=12.3&lon=-68.8&zoom=7&overlay=clouds"></iframe>
-<div class="overlay-blocker"></div>
-</div>
-</div>
-
-<div class="col-6">
-<div class="section-title">Windy Radar</div>
-<div class="radar-box">
-<iframe src="https://embed.windy.com/embed2.html?lat=12.3&lon=-68.8&zoom=7&overlay=radar"></iframe>
-<div class="overlay-blocker"></div>
 </div>
 </div>
 
@@ -695,232 +758,68 @@ function renderNotams(){
 }
 renderNotams();
 
-/* ═══════════════════════════════════
-   SYNOP 78988 — Web Worker pattern
-   Uses Open-Meteo (free, CORS, no key)
-   Station 78988 = TNCC Hato: 12.118N, 68.888W
-═══════════════════════════════════ */
-const WX_CODE = {
-  0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
-  45:'Fog',48:'Rime fog',
-  51:'Light drizzle',53:'Moderate drizzle',55:'Dense drizzle',
-  61:'Slight rain',63:'Moderate rain',65:'Heavy rain',
-  71:'Slight snow',73:'Moderate snow',75:'Heavy snow',
-  80:'Slight showers',81:'Moderate showers',82:'Violent showers',
-  95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail'
-};
-const WX_ICON = {
-  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
-  45:'🌫',48:'🌫',
-  51:'🌦',53:'🌦',55:'🌧',
-  61:'🌧',63:'🌧',65:'🌧',
-  71:'🌨',73:'🌨',75:'❄️',
-  80:'🌦',81:'🌧',82:'⛈',
-  95:'⛈',96:'⛈',99:'⛈'
-};
+/* ── Regional Dashboard Login ── */
+const regionalBtn  = document.getElementById('regionalBtn');
+const loginModal   = document.getElementById('loginModal');
+const loginBox     = document.getElementById('loginBox');
+const loginInput   = document.getElementById('loginInput');
+const loginSubmit  = document.getElementById('loginSubmit');
+const loginCancel  = document.getElementById('loginCancel');
+const loginError   = document.getElementById('loginError');
+const ACCESS_CODE  = 'Gnius1234';
 
-function degToCard(d){
-  const dirs=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
-  return dirs[Math.round(d/22.5)%16];
-}
+regionalBtn.addEventListener('click', function(e){
+  e.preventDefault();
+  loginModal.classList.add('active');
+  loginInput.value = '';
+  loginError.classList.remove('show');
+  setTimeout(() => loginInput.focus(), 120);
+});
 
-// Inline worker via Blob so no separate file needed
-const workerCode = `
-self.onmessage = async function(e) {
-  const { lat, lon } = e.data;
-  const url = 'https://api.open-meteo.com/v1/forecast?'
-    + 'latitude=' + lat + '&longitude=' + lon
-    + '&current=temperature_2m,relative_humidity_2m,dew_point_2m,'
-    + 'apparent_temperature,precipitation,weather_code,cloud_cover,'
-    + 'wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,surface_pressure'
-    + '&hourly=temperature_2m,pressure_msl,wind_speed_10m'
-    + '&wind_speed_unit=kn&timezone=America%2FCuracao&forecast_days=1';
-  try {
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
-    self.postMessage({ ok: true, data });
-  } catch(err) {
-    self.postMessage({ ok: false, error: err.message });
+loginCancel.addEventListener('click', function(){
+  loginModal.classList.remove('active');
+});
+
+loginModal.addEventListener('click', function(e){
+  if(e.target === loginModal) loginModal.classList.remove('active');
+});
+
+function checkAccess(){
+  if(loginInput.value === ACCESS_CODE){
+    loginModal.classList.remove('active');
+    window.open('https://gniusweather.github.io/REGIONALDASHBOARD/', '_blank');
+  } else {
+    loginError.classList.add('show');
+    loginInput.value = '';
+    loginBox.classList.remove('shake');
+    void loginBox.offsetWidth; // reflow to retrigger animation
+    loginBox.classList.add('shake');
+    setTimeout(() => loginInput.focus(), 50);
   }
-};
-`;
-const blob = new Blob([workerCode], {type:'application/javascript'});
-const workerUrl = URL.createObjectURL(blob);
-const synopWorker = new Worker(workerUrl);
-
-synopWorker.onmessage = function(e) {
-  if(!e.data.ok){
-    document.getElementById('synopStatusText').textContent = 'Fetch error: ' + e.data.error;
-    document.getElementById('synopDot').style.background = '#ff4757';
-    return;
-  }
-  renderSynop(e.data.data);
-};
-
-function fetchSynop(){
-  synopWorker.postMessage({ lat: 12.118, lon: -68.888 });
-}
-fetchSynop();
-setInterval(fetchSynop, 10 * 60 * 1000); // refresh every 10 min
-
-function renderSynop(d){
-  const c = d.current;
-  const now = new Date(c.time);
-  const pad = n=>String(n).padStart(2,'0');
-  const timeStr = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}Z`;
-
-  document.getElementById('synopStatusText').textContent =
-    `Station 78988 · Open-Meteo · Updated ${timeStr}`;
-  document.getElementById('synopDot').style.background = 'var(--green)';
-  document.getElementById('synopDot').style.boxShadow = '0 0 8px var(--green)';
-
-  // Dewpoint depression
-  const dd = (c.temperature_2m - c.dew_point_2m).toFixed(1);
-  // QNH hPa
-  const qnh = Math.round(c.pressure_msl);
-  const qfe = Math.round(c.surface_pressure);
-  // Wind
-  const wdCard = degToCard(c.wind_direction_10m);
-  const wdDeg  = Math.round(c.wind_direction_10m);
-  // Cloud cover → oktas
-  const oktas  = Math.round(c.cloud_cover / 12.5);
-  // WX
-  const wxCode = c.weather_code;
-  const wxDesc = WX_CODE[wxCode] || 'Unknown';
-  const wxIcon = WX_ICON[wxCode] || '🌡';
-
-  // Trend from hourly (last 3 values available so far today)
-  const hrs = d.hourly;
-  const trendTemps = hrs.temperature_2m.slice(0,6);
-  const trendPres  = hrs.pressure_msl.slice(0,6);
-
-  const grid = document.getElementById('synopGrid');
-  grid.innerHTML = `
-    <!-- Condition strip -->
-    <div class="synop-condition">
-      <span class="wx-icon">${wxIcon}</span>
-      <span>${wxDesc}</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:.65rem;opacity:.6">${wdCard} ${Math.round(c.wind_speed_10m)}KT G${Math.round(c.wind_gusts_10m)}KT · ${oktas}/8 OKT</span>
-    </div>
-
-    <!-- Temp -->
-    <div class="synop-card">
-      <span class="synop-lbl">Temperature</span>
-      <span class="synop-val" style="color:${c.temperature_2m>30?'#ff6b35':'var(--accent-bright)'}">${c.temperature_2m.toFixed(1)}</span>
-      <span class="synop-unit">°C / ${(c.temperature_2m*9/5+32).toFixed(1)}°F</span>
-    </div>
-
-    <!-- Feels like -->
-    <div class="synop-card">
-      <span class="synop-lbl">Feels Like</span>
-      <span class="synop-val">${c.apparent_temperature.toFixed(1)}</span>
-      <span class="synop-unit">°C apparent</span>
-    </div>
-
-    <!-- Dewpoint -->
-    <div class="synop-card">
-      <span class="synop-lbl">Dew Point</span>
-      <span class="synop-val">${c.dew_point_2m.toFixed(1)}</span>
-      <span class="synop-unit">°C · DD ${dd}</span>
-    </div>
-
-    <!-- Humidity -->
-    <div class="synop-card">
-      <span class="synop-lbl">Rel. Humidity</span>
-      <span class="synop-val" style="color:${c.relative_humidity_2m>85?'#ffb347':'var(--accent-bright)'}">${c.relative_humidity_2m}</span>
-      <span class="synop-unit">%</span>
-    </div>
-
-    <!-- Wind -->
-    <div class="synop-card">
-      <span class="synop-lbl">Wind</span>
-      <span class="synop-val">${Math.round(c.wind_speed_10m)}<span style="font-size:.7rem;font-weight:400"> KT</span></span>
-      <span class="synop-unit">${pad(wdDeg)}° ${wdCard}</span>
-    </div>
-
-    <!-- Gusts -->
-    <div class="synop-card">
-      <span class="synop-lbl">Gusts</span>
-      <span class="synop-val" style="color:${c.wind_gusts_10m>25?'#ff4757':'var(--accent-bright)'}">${Math.round(c.wind_gusts_10m)}<span style="font-size:.7rem;font-weight:400"> KT</span></span>
-      <span class="synop-unit">max gust</span>
-    </div>
-
-    <!-- QNH -->
-    <div class="synop-card">
-      <span class="synop-lbl">QNH / MSL</span>
-      <span class="synop-val">${qnh}</span>
-      <span class="synop-unit">hPa · ${(qnh*0.02953).toFixed(2)} inHg</span>
-    </div>
-
-    <!-- QFE -->
-    <div class="synop-card">
-      <span class="synop-lbl">QFE / SFC</span>
-      <span class="synop-val">${qfe}</span>
-      <span class="synop-unit">hPa surface</span>
-    </div>
-
-    <!-- Cloud -->
-    <div class="synop-card">
-      <span class="synop-lbl">Cloud Cover</span>
-      <span class="synop-val">${c.cloud_cover}</span>
-      <span class="synop-unit">% · ${oktas}/8 oktas</span>
-    </div>
-
-    <!-- Precip -->
-    <div class="synop-card">
-      <span class="synop-lbl">Precip (1h)</span>
-      <span class="synop-val" style="color:${c.precipitation>0?'#3fa9f5':'var(--accent-bright)'}">${c.precipitation.toFixed(1)}</span>
-      <span class="synop-unit">mm</span>
-    </div>
-
-    <!-- Temp trend sparkline -->
-    <div class="synop-card" style="grid-column:span 2">
-      <span class="synop-lbl">Temp trend (6h)</span>
-      <svg class="sparkline" viewBox="0 0 120 36" preserveAspectRatio="none">
-        ${sparklinePath(trendTemps,'#3fa9f5')}
-      </svg>
-      <span class="synop-unit">${trendTemps.map(t=>t.toFixed(1)+'°').join(' › ')}</span>
-    </div>
-
-    <!-- Pressure trend sparkline -->
-    <div class="synop-card" style="grid-column:span 2">
-      <span class="synop-lbl">QNH trend (6h)</span>
-      <svg class="sparkline" viewBox="0 0 120 36" preserveAspectRatio="none">
-        ${sparklinePath(trendPres,'#00d4ff')}
-      </svg>
-      <span class="synop-unit">${trendPres.map(p=>Math.round(p)).join(' › ')} hPa</span>
-    </div>
-  `;
-
-  // Raw SYNOP-style decode line
-  const rawEl = document.getElementById('synopRaw');
-  rawEl.style.display = 'block';
-  rawEl.textContent =
-    `SYNOP 78988 ${timeStr} · `
-    + `T:${c.temperature_2m.toFixed(1)}°C `
-    + `TD:${c.dew_point_2m.toFixed(1)}°C `
-    + `RH:${c.relative_humidity_2m}% `
-    + `FF:${Math.round(c.wind_speed_10m)}KT `
-    + `DD:${pad(wdDeg)}° `
-    + `FX:${Math.round(c.wind_gusts_10m)}KT `
-    + `QNH:${qnh}hPa `
-    + `N:${oktas}/8 `
-    + `WW:${wxCode}(${wxDesc}) `
-    + `RR:${c.precipitation.toFixed(1)}mm`;
 }
 
-function sparklinePath(vals, color){
-  if(!vals||vals.length<2) return '';
-  const mn=Math.min(...vals), mx=Math.max(...vals), rng=mx-mn||1;
-  const pts = vals.map((v,i)=>{
-    const x = (i/(vals.length-1))*120;
-    const y = 36 - ((v-mn)/rng)*30 - 3;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>`;
-}
+loginSubmit.addEventListener('click', checkAccess);
+loginInput.addEventListener('keydown', function(e){
+  if(e.key === 'Enter') checkAccess();
+  if(e.key === 'Escape') loginModal.classList.remove('active');
+});
+
 </script>
+
+<!-- LOGIN MODAL -->
+
+<div id="loginModal" class="login-modal">
+  <div class="login-box" id="loginBox">
+    <div class="login-header">🔐 SECURE ACCESS</div>
+    <div class="login-sub">Regional Dashboard · Restricted</div>
+    <input type="password" id="loginInput" placeholder="· · · · · · · ·" autocomplete="off"/>
+    <div class="login-actions">
+      <div class="btn" id="loginSubmit" style="cursor:pointer">Unlock</div>
+      <div class="btn" id="loginCancel" style="cursor:pointer">Cancel</div>
+    </div>
+    <div class="login-error" id="loginError">⛔ ACCESS DENIED</div>
+  </div>
+</div>
 
 </body>
 </html>
