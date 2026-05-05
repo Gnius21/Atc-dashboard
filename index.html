@@ -178,23 +178,6 @@ body::after{
   z-index:0;
 }
 
-/* ── SCANLINE ── */
-.scanline{
-  position:fixed;
-  left:0;right:0;
-  height:2px;
-  background:linear-gradient(90deg,transparent,rgba(0,212,255,0.5),transparent);
-  z-index:9999;
-  pointer-events:none;
-  animation:scan 9s linear infinite;
-}
-@keyframes scan{
-  0%  {top:0;   opacity:0}
-  3%  {opacity:.7}
-  97% {opacity:.1}
-  100%{top:100vh;opacity:0}
-}
-
 /* HEADER */
 header{
   position:relative;
@@ -404,35 +387,194 @@ header::after{right:0}
 /* CLOCK */
 .clock-display{
   display:flex;
-  gap:6px;
+  gap:8px;
   align-items:center;
 }
 .clock-block{
   display:flex;
   flex-direction:column;
   align-items:center;
-  padding:3px 8px;
-  background:rgba(0,0,0,0.3);
-  border:1px solid var(--border);
+  padding:5px 12px;
+  background:rgba(0,0,0,0.5);
+  border:1px solid var(--border-hi);
   border-radius:3px;
   line-height:1.1;
 }
 .clock-time{
   font-family:var(--orb);
-  font-size:.72rem;
+  font-size:1.05rem;
   font-weight:700;
   color:var(--cyan);
-  text-shadow:0 0 14px rgba(0,212,255,0.5);
-  letter-spacing:.06em;
+  text-shadow:0 0 18px rgba(0,212,255,0.7);
+  letter-spacing:.1em;
 }
 .clock-label{
   font-family:var(--mono);
-  font-size:.46rem;
-  letter-spacing:.15em;
-  color:var(--muted);
+  font-size:.52rem;
+  letter-spacing:.18em;
+  color:var(--accent-bright);
   text-transform:uppercase;
-  margin-top:2px;
+  margin-top:3px;
+  opacity:.8;
 }
+
+/* ── TAB SYSTEM ── */
+.tab-bar{
+  position:relative;z-index:10;
+  display:flex;gap:4px;
+  padding:8px 16px 0;
+  background:rgba(3,6,13,0.9);
+  border-bottom:1px solid var(--border-hi);
+}
+.tab-btn{
+  padding:8px 18px;
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+  border:1px solid transparent;border-bottom:none;
+  border-radius:4px 4px 0 0;
+  cursor:pointer;transition:color .18s,background .18s,border-color .18s;
+  background:transparent;
+  position:relative;bottom:-1px;
+}
+.tab-btn:hover{color:var(--accent-bright)}
+.tab-btn.active{
+  color:var(--cyan);border-color:var(--border-hi);
+  background:var(--bg2);
+  box-shadow:0 0 12px rgba(0,212,255,0.08);
+}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ── METAR CARDS ── */
+.metar-strip{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:12px;
+}
+.metar-card{
+  border:1px solid var(--border);border-radius:5px;
+  background:rgba(0,0,0,0.4);overflow:hidden;
+  position:relative;
+}
+.metar-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);
+}
+.metar-icao{
+  font-family:var(--orb);font-size:.85rem;font-weight:700;
+  letter-spacing:.16em;color:var(--cyan);
+  padding:10px 12px 3px 14px;
+  text-shadow:0 0 16px rgba(0,212,255,0.4);
+}
+.metar-airport{
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.12em;
+  color:var(--muted);padding:0 12px 8px 14px;
+}
+.metar-raw{
+  font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);
+  line-height:1.7;letter-spacing:.03em;word-break:break-all;
+  padding:8px 12px 8px 14px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.3);
+}
+.metar-decoded{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1px solid var(--border);
+}
+.metar-field{
+  padding:7px 10px 7px 14px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.metar-field:nth-child(3n){border-right:none}
+.metar-field:nth-last-child(-n+3){border-bottom:none}
+.metar-field-lbl{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:2px;
+}
+.metar-field-val{
+  font-family:var(--orb);font-size:.88rem;font-weight:700;
+  color:var(--accent-bright);line-height:1;
+}
+.metar-field-unit{font-family:var(--mono);font-size:.46rem;color:var(--muted)}
+.metar-age{
+  font-family:var(--mono);font-size:.5rem;color:var(--muted);
+  letter-spacing:.1em;padding:5px 12px 6px 14px;
+  border-top:1px solid var(--border);
+}
+
+/* ── ABC WEATHER CARDS ── */
+.abc-grid{
+  display:flex;
+  flex-direction:column;
+  gap:12px;padding:12px;
+}
+.abc-card{
+  border:1px solid var(--border);border-radius:5px;
+  background:rgba(0,0,0,0.35);overflow:hidden;position:relative;
+}
+.abc-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:3px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);
+}
+.abc-header{
+  padding:12px 14px 8px 16px;
+  background:rgba(0,212,255,0.03);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.abc-flag{font-size:1.5rem;line-height:1}
+.abc-name{
+  font-family:var(--orb);font-size:.78rem;font-weight:700;
+  letter-spacing:.12em;color:var(--accent-bright);text-transform:uppercase;
+}
+.abc-icao{
+  font-family:var(--mono);font-size:.52rem;color:var(--muted);
+  letter-spacing:.12em;margin-top:1px;
+}
+.abc-wx{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px 10px 16px;
+  border-bottom:1px solid var(--border);
+}
+.abc-wx-icon{font-size:2rem;line-height:1;filter:drop-shadow(0 0 8px rgba(0,212,255,0.35))}
+.abc-wx-desc{
+  font-family:var(--cond);font-size:1rem;font-weight:700;
+  letter-spacing:.08em;color:var(--accent-bright);text-transform:uppercase;
+}
+.abc-wx-temp{
+  margin-left:auto;font-family:var(--orb);font-size:1.4rem;font-weight:700;
+  color:var(--cyan);text-shadow:0 0 16px rgba(0,212,255,0.4);
+}
+.abc-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+}
+.abc-stat{
+  padding:8px 10px 8px 14px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.abc-stat:nth-child(3n){border-right:none}
+.abc-stat:nth-last-child(-n+3){border-bottom:none}
+.abc-stat-lbl{font-family:var(--mono);font-size:.48rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.abc-stat-val{font-family:var(--orb);font-size:.9rem;font-weight:700;color:var(--accent-bright);line-height:1}
+.abc-stat-unit{font-family:var(--mono);font-size:.46rem;color:var(--muted)}
+/* ── NOTAM TAB ── */
+.notam-tab-header{
+  display:flex;align-items:center;gap:10px;padding:12px 16px 6px;
+  font-family:var(--mono);font-size:.62rem;color:var(--muted);
+}
+.notam-open-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;font-family:var(--mono);font-size:.65rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--cyan);border:1px solid var(--border-cyan,var(--border-hi));
+  border-radius:3px;background:rgba(0,212,255,0.07);
+  text-decoration:none;transition:background .18s,box-shadow .18s;
+  margin-left:auto;
+}
+.notam-open-btn:hover{background:rgba(0,212,255,0.15);box-shadow:0 0 14px rgba(0,212,255,0.2)}
 
 /* Entry animations */
 .layout > *{
@@ -453,8 +595,6 @@ header::after{right:0}
 </head>
 
 <body data-locked="true">
-
-<div class="scanline"></div>
 
 <header>
   <div class="clock-display">
@@ -489,12 +629,23 @@ header::after{right:0}
 </div>
 </div>
 
+<!-- TAB BAR -->
+
+<div class="tab-bar">
+  <div class="tab-btn active" data-tab="atc">📡 ATC</div>
+  <div class="tab-btn" data-tab="weather">🌤 ABC Weather</div>
+  <div class="tab-btn" data-tab="notams">📋 NOTAMs</div>
+</div>
+
+<!-- ═══ TAB: ATC ═══ -->
+
+<div class="tab-pane active" id="tab-atc">
 <div class="layout">
 
 <div class="full">
 <div class="section-title">ADSBexchange</div>
 <div class="radar-box">
-<iframe src="https://globe.adsbexchange.com/?lat=12&lon=-69&zoom=8"></iframe>
+<iframe src="https://globe.adsbexchange.com/?lat=12.2&lon=-69&zoom=9"></iframe>
 <div class="overlay-blocker"></div>
 </div>
 </div>
@@ -526,22 +677,136 @@ header::after{right:0}
 </div>
 
 <div class="full">
-<div class="section-title">NOTAMs — TNCC · notamify.com</div>
-<div class="notam-panel">
-<div class="notam-body">
-  <div class="notam-status">
-    <span class="notam-dot" id="notamDot"></span>
-    <span id="notamStatusText">Loading NOTAMs…</span>
-    <a class="notam-link" href="https://notamify.com/notams/TNCC" target="_blank">↗ notamify.com</a>
-    <a class="btn" href="https://notamify.com/notams/TNCC" target="_blank" style="padding:4px 10px;font-size:.62rem;margin-left:6px">🔗 Open Live NOTAMs</a>
+<div class="section-title">METAR — TNCA · TNCC · TNCB</div>
+<div class="panel">
+<div class="metar-strip">
+  <div class="metar-card" id="metar-tnca">
+    <div class="metar-icao">TNCA</div>
+    <div class="metar-airport">Queen Beatrix · Aruba 🇦🇼</div>
+    <div class="metar-raw" id="metar-raw-tnca">Fetching…</div>
+    <div class="metar-decoded" id="metar-dec-tnca"></div>
+    <div class="metar-age" id="metar-age-tnca"></div>
   </div>
-  <div class="notam-list" id="notamList">
-    <div class="notam-item" style="color:var(--muted);border-left-color:var(--muted)">Loading…</div>
+  <div class="metar-card" id="metar-tncc">
+    <div class="metar-icao">TNCC</div>
+    <div class="metar-airport">Hato International · Curaçao 🇨🇼</div>
+    <div class="metar-raw" id="metar-raw-tncc">Fetching…</div>
+    <div class="metar-decoded" id="metar-dec-tncc"></div>
+    <div class="metar-age" id="metar-age-tncc"></div>
+  </div>
+  <div class="metar-card" id="metar-tncb">
+    <div class="metar-icao">TNCB</div>
+    <div class="metar-airport">Flamingo · Bonaire 🇧🇶</div>
+    <div class="metar-raw" id="metar-raw-tncb">Fetching…</div>
+    <div class="metar-decoded" id="metar-dec-tncb"></div>
+    <div class="metar-age" id="metar-age-tncb"></div>
   </div>
 </div>
 </div>
 </div>
 
+</div>
+</div>
+
+<!-- ═══ TAB: ABC WEATHER ═══ -->
+
+<div class="tab-pane" id="tab-weather">
+<div class="layout">
+
+<!-- Consensus current conditions -->
+
+<div class="full">
+  <div class="section-title">Consensus Current Conditions — Curaçao · ECMWF + GFS + ICON</div>
+  <div class="panel">
+    <div id="wx-consensus-status" style="padding:8px 14px;font-family:var(--mono);font-size:.58rem;color:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
+      <span class="synop-dot"></span><span id="wx-ts">Fetching consensus models…</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px" id="wx-current-grid">
+      <div class="wx-cell" style="grid-column:1/-1;padding:10px 14px;background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;gap:12px">
+        <span id="wx-icon" style="font-size:2rem">⏳</span>
+        <span id="wx-condition" style="font-family:var(--cond);font-size:1.1rem;font-weight:700;letter-spacing:.1em;color:var(--accent-bright)">Loading…</span>
+        <span id="wx-temp-big" style="margin-left:auto;font-family:var(--orb);font-size:1.8rem;font-weight:700;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.5)">--°C</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3-day forecast -->
+
+<div class="full">
+  <div class="section-title">3-Day Forecast — Consensus</div>
+  <div class="panel">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px" id="wx-forecast-grid">
+      <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center">Loading forecast…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Island comparison row -->
+
+<div class="full">
+  <div class="section-title">Live Conditions — Aruba · Curaçao · Bonaire · weatherapi.com</div>
+  <div class="panel">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0" id="wx-islands-row">
+      <div id="abc-aruba"  style="border-right:1px solid var(--border);padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Aruba…</div>
+      <div id="abc-curacao" style="border-right:1px solid var(--border);padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Curaçao…</div>
+      <div id="abc-bonaire" style="padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Bonaire…</div>
+    </div>
+  </div>
+</div>
+
+<!-- Windy maps -->
+
+<div class="col-6">
+  <div class="section-title">Radar</div>
+  <div class="radar-box">
+    <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+    <div class="overlay-blocker"></div>
+  </div>
+</div>
+<div class="col-6">
+  <div class="section-title">Clouds</div>
+  <div class="radar-box">
+    <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+    <div class="overlay-blocker"></div>
+  </div>
+</div>
+<div class="col-6">
+  <div class="section-title">Satellite</div>
+  <div class="radar-box">
+    <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=satellite"></iframe>
+    <div class="overlay-blocker"></div>
+  </div>
+</div>
+<div class="col-6">
+  <div class="section-title">Saharan Dust</div>
+  <div class="radar-box">
+    <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=dust"></iframe>
+    <div class="overlay-blocker"></div>
+  </div>
+</div>
+
+</div>
+</div>
+
+<!-- ═══ TAB: NOTAMs ═══ -->
+
+<div class="tab-pane" id="tab-notams">
+<div class="layout">
+<div class="full">
+<div class="section-title">NOTAMs — TNCC · Curaçao / Hato</div>
+<div class="notam-panel">
+<div class="notam-tab-header">
+  <span class="notam-dot" id="notamDot"></span>
+  <span id="notamStatusText">Loading…</span>
+  <a class="notam-open-btn" href="https://notamify.com/notams/TNCC" target="_blank">🔗 Open Live on notamify.com</a>
+</div>
+<div class="notam-body">
+  <div class="notam-list" id="notamList"></div>
+</div>
+</div>
+</div>
+</div>
 </div>
 
 <script>
@@ -549,78 +814,309 @@ header::after{right:0}
 function updateClocks(){
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
-  document.getElementById('clockUtc').textContent=
-    `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+  document.getElementById('clockUtc').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
   const ast=new Date(now.toLocaleString('en-US',{timeZone:'America/Curacao'}));
-  document.getElementById('clockLocal').textContent=
-    `${pad(ast.getHours())}:${pad(ast.getMinutes())}:${pad(ast.getSeconds())}`;
+  document.getElementById('clockLocal').textContent=`${pad(ast.getHours())}:${pad(ast.getMinutes())}:${pad(ast.getSeconds())}`;
 }
 setInterval(updateClocks,1000);
 updateClocks();
 
 /* ── Night Mode ── */
-const nightBtn = document.getElementById('nightToggle');
-let isNight = false;
-nightBtn.onclick = () => {
-  isNight = !isNight;
-  document.body.classList.toggle('night', isNight);
-  nightBtn.textContent = isNight ? '☀️ Day' : '🌙 Night';
-};
+const nightBtn=document.getElementById('nightToggle');
+let isNight=false;
+nightBtn.onclick=()=>{ isNight=!isNight; document.body.classList.toggle('night',isNight); nightBtn.textContent=isNight?'☀️ Day':'🌙 Night'; };
 
-/* ── Lock ── */
+/* ── Map Lock ── */
 const toggle=document.getElementById('lockToggle');
 const led=document.getElementById('lockLed');
 const icon=document.getElementById('lockIcon');
 function setLock(locked){
   document.body.dataset.locked=locked;
-  document.querySelectorAll('.overlay-blocker').forEach(el=>{
-    el.style.display=locked?'block':'none';
-  });
+  document.querySelectorAll('.overlay-blocker').forEach(el=>{ el.style.display=locked?'block':'none'; });
   icon.textContent=locked?'🔒':'🔓';
   locked?led.classList.remove('unlocked'):led.classList.add('unlocked');
 }
 setLock(true);
 toggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
 
+/* ── Tabs ── */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
 /* ═══════════════════════════════════
-   NOTAMs — notamify.com data
+   NOTAMs
 ═══════════════════════════════════ */
-const notamData = [
-  { tag:'AD · Apron',    text:'Apron painting in progress.',                                                                           warn:false, time:'Apr 25 02:00–10:00', status:'FRESH'  },
-  { tag:'AD · Taxiway',  text:'Painting in progress on TWY ALPHA (west part).',                                                       warn:false, time:'Apr 25 02:00–10:00', status:'FRESH'  },
-  { tag:'OBS · Crane',   text:'Crane activity near GA apron.',                                                                        warn:true,  time:'Apr 24 23:37–Apr 25 01:00', status:'FRESH'  },
-  { tag:'AD · Apron',    text:'Work in progress on the general aviation apron with personnel and equipment present.',                  warn:true,  time:'Apr 24 02:00–Apr 26 10:00 (Fri–Sun)', status:'RECENT' },
-  { tag:'Ops · Proc',    text:'Arrivals from the east must follow a right-hand downwind via southern water and south coast to base for RWY 11.', warn:false, time:'Apr 7 – Jul 3 23:59', status:'AGING'  },
-  { tag:'Ops · Restr',   text:'Code C or higher landings must roll to end or exit as instructed on RWY 11/29. No intersection holding for arrivals.', warn:true,  time:'Apr 7 – Jul 3 23:59', status:'AGING'  },
-  { tag:'Ops · Special', text:'Parachute jumping expected in the SINT JORIS area coordinated with HATO TWR. Daily sunrise to sunset.', warn:false, time:'Mar 4 – Jun 1 22:00', status:'AGING'  },
-  { tag:'COM · ATS',     text:'Controller OJT underway at TNCC TWR under supervision.',                                               warn:false, time:'Mar 2 – Jun 1 23:59', status:'AGING'  },
-  { tag:'AD · Taxiway',  text:'Intermediate holding position markings on TWY A at INT B, C, and D are not in use.',                   warn:false, time:'Feb 27 – May 25 04:00', status:'AGING'  },
-  { tag:'SAF · Safety',  text:'Kite flying in the vicinity of the aerodrome.',                                                        warn:false, time:'Feb 25 – Apr 30 12:00', status:'AGING'  },
-  { tag:'OTH · Wildlife',text:'Bird activity near TWY ALPHA WEST and Holding Bay 11.',                                                warn:false, time:'Feb 19 – May 16 10:00', status:'AGING'  },
-  { tag:'ASP · Military',text:'Blasting near southwest area of aerodrome — coordinated by CAP OPS and ATC. Weekly Thu 15:00–16:00Z.',  warn:false, time:'Apr 2 – Apr 30 16:00', status:'AGING'  },
+const notamData=[
+  {tag:'AD · Apron',   text:'Apron painting in progress.',warn:false,time:'Apr 25 02:00–10:00',status:'FRESH'},
+  {tag:'AD · Taxiway', text:'Painting in progress on TWY ALPHA (west part).',warn:false,time:'Apr 25 02:00–10:00',status:'FRESH'},
+  {tag:'OBS · Crane',  text:'Crane activity near GA apron.',warn:true,time:'Apr 24 23:37–Apr 25 01:00',status:'FRESH'},
+  {tag:'AD · Apron',   text:'Work in progress on the general aviation apron with personnel and equipment present.',warn:true,time:'Apr 24 02:00–Apr 26 10:00',status:'RECENT'},
+  {tag:'Ops · Proc',   text:'Arrivals from the east must follow a right-hand downwind via southern water and south coast to base for RWY 11.',warn:false,time:'Apr 7 – Jul 3 23:59',status:'AGING'},
+  {tag:'Ops · Restr',  text:'Code C or higher landings must roll to end or exit as instructed on RWY 11/29. No intersection holding for arrivals.',warn:true,time:'Apr 7 – Jul 3 23:59',status:'AGING'},
+  {tag:'Ops · Special',text:'Parachute jumping expected in the SINT JORIS area coordinated with HATO TWR. Daily sunrise to sunset.',warn:false,time:'Mar 4 – Jun 1 22:00',status:'AGING'},
+  {tag:'COM · ATS',    text:'Controller OJT underway at TNCC TWR under supervision.',warn:false,time:'Mar 2 – Jun 1 23:59',status:'AGING'},
+  {tag:'AD · Taxiway', text:'Intermediate holding position markings on TWY A at INT B, C, and D are not in use.',warn:false,time:'Feb 27 – May 25 04:00',status:'AGING'},
+  {tag:'SAF · Safety', text:'Kite flying in the vicinity of the aerodrome.',warn:false,time:'Feb 25 – Apr 30 12:00',status:'AGING'},
+  {tag:'OTH · Wildlife',text:'Bird activity near TWY ALPHA WEST and Holding Bay 11.',warn:false,time:'Feb 19 – May 16 10:00',status:'AGING'},
+  {tag:'ASP · Military',text:'Blasting near southwest area of aerodrome — coordinated by CAP OPS and ATC. Weekly Thu 15:00–16:00Z.',warn:false,time:'Apr 2 – Apr 30 16:00',status:'AGING'},
+];
+(function renderNotams(){
+  const fresh=notamData.filter(n=>n.status==='FRESH').length;
+  const recent=notamData.filter(n=>n.status==='RECENT').length;
+  document.getElementById('notamStatusText').textContent=`${notamData.length} active · ${fresh} fresh · ${recent} recent`;
+  document.getElementById('notamList').innerHTML=notamData.map(n=>{
+    const badge=n.status==='FRESH'?`<span style="color:#39ff8a;font-size:.5rem;border:1px solid #39ff8a;padding:1px 4px;border-radius:2px;margin-left:4px">FRESH</span>`
+               :n.status==='RECENT'?`<span style="color:#ffb347;font-size:.5rem;border:1px solid #ffb347;padding:1px 4px;border-radius:2px;margin-left:4px">RECENT</span>`:'';
+    return `<div class="notam-item${n.warn?' warn':''}"><span class="notam-id">${n.tag}${badge} <span style="opacity:.45;font-size:.55rem">${n.time}</span></span>${n.text}</div>`;
+  }).join('');
+})();
+
+/* ═══════════════════════════════════
+   METAR — CheckWX API (live, decoded JSON, CORS-enabled)
+   Key: fb135a94c0574db4b26082b70705b4af
+═══════════════════════════════════ */
+const CHECKWX_KEY = 'fb135a94c0574db4b26082b70705b4af';
+const WX_API      = 'fef2a58ed5fa4b2ea08221244260405';
+
+const METAR_STATIONS={
+  tnca:{raw:'metar-raw-tnca',dec:'metar-dec-tnca',age:'metar-age-tnca'},
+  tncc:{raw:'metar-raw-tncc',dec:'metar-dec-tncc',age:'metar-age-tncc'},
+  tncb:{raw:'metar-raw-tncb',dec:'metar-dec-tncb',age:'metar-age-tncb'},
+};
+
+function flightCatColor(cat){
+  return{VFR:'#39ff8a',MVFR:'#3fa9f5',IFR:'#ff4757',LIFR:'#ff00ff'}[cat]||'var(--muted)';
+}
+
+function renderMetarFromCheckwx(icao, d){
+  const ids = METAR_STATIONS[icao.toLowerCase()];
+
+  // Raw string
+  document.getElementById(ids.raw).textContent = d.raw_text || '—';
+
+  // Observed time
+  const obs = d.observed ? new Date(d.observed) : null;
+  const pad  = n => String(n).padStart(2,'0');
+  const obsStr = obs ? `${pad(obs.getUTCDate())}/${pad(obs.getUTCHours())}:${pad(obs.getUTCMinutes())}Z` : '—';
+
+  // Age check — warn if older than 90 min
+  const ageMin = obs ? Math.round((Date.now()-obs.getTime())/60000) : null;
+  const ageWarn = ageMin !== null && ageMin > 90;
+  document.getElementById(ids.age).innerHTML =
+    `CheckWX · Observed ${obsStr}` +
+    (ageMin!==null ? ` · <span style="color:${ageWarn?'#ff4757':'#39ff8a'}">${ageMin} min ago</span>` : '') +
+    ` · auto-refreshes every 5 min`;
+
+  // Wind
+  const wind = d.wind || {};
+  const wdeg  = wind.degrees !== undefined ? pad(wind.degrees)+'°' : (wind.direction==='VRB'?'VRB':'—');
+  const wspd  = wind.speed_kts !== undefined ? wind.speed_kts+' KT' : '—';
+  const wgst  = wind.gust_kts  !== undefined ? 'G'+wind.gust_kts+' KT' : '—';
+
+  // Temp / Dew
+  const temp  = d.temperature?.celsius !== undefined ? d.temperature.celsius+'°C' : '—';
+  const dew   = d.dewpoint?.celsius    !== undefined ? d.dewpoint.celsius+'°C'    : '—';
+  const rh    = d.humidity?.percent    !== undefined ? d.humidity.percent+'%'     : '—';
+
+  // Pressure
+  const qnh   = d.barometer?.hpa !== undefined ? d.barometer.hpa+' hPa' : '—';
+  const qnhHg = d.barometer?.hg  !== undefined ? d.barometer.hg+' inHg' : '';
+
+  // Visibility
+  const vis   = d.visibility?.meters !== undefined
+    ? (d.visibility.meters >= 9999 ? '>10 km' : (d.visibility.meters/1000).toFixed(1)+' km')
+    : (d.visibility?.miles !== undefined ? d.visibility.miles+'SM' : '—');
+
+  // Clouds
+  const clouds = (d.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · ') || 'CAVOK';
+  const ceil   = d.ceiling?.feet !== undefined ? d.ceiling.feet+'ft' : 'No ceiling';
+
+  // Flight category
+  const cat    = d.flight_category || '—';
+  const catCol = flightCatColor(cat);
+
+  // Conditions
+  const cond   = (d.conditions||[]).map(c=>c.text||c.code).join(', ') || '—';
+
+  document.getElementById(ids.dec).innerHTML = `
+    <div class="metar-field" style="grid-column:1/-1;background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;padding:8px 14px">
+      <span style="font-family:var(--orb);font-size:1rem;font-weight:700;color:${catCol};text-shadow:0 0 12px ${catCol}">${cat}</span>
+      <span style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Flight Category</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--muted)">${cond}</span>
+    </div>
+    <div class="metar-field"><div class="metar-field-lbl">Temperature</div><div class="metar-field-val">${temp}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Dew Point</div><div class="metar-field-val">${dew}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Humidity</div><div class="metar-field-val">${rh}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Wind Dir</div><div class="metar-field-val">${wdeg}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Wind Spd</div><div class="metar-field-val">${wspd}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Gust</div><div class="metar-field-val" style="color:${wind.gust_kts>25?'#ff4757':'var(--accent-bright)'}">${wgst}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">QNH</div><div class="metar-field-val">${qnh}</div><div class="metar-field-unit">${qnhHg}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Visibility</div><div class="metar-field-val">${vis}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Ceiling</div><div class="metar-field-val">${ceil}</div></div>
+    <div class="metar-field" style="grid-column:span 3"><div class="metar-field-lbl">Clouds</div><div class="metar-field-val" style="font-size:.75rem">${clouds}</div></div>
+  `;
+}
+
+async function fetchMetars(){
+  try{
+    const res = await fetch(
+      'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded',
+      { headers:{ 'X-API-Key': CHECKWX_KEY }, cache:'no-store' }
+    );
+    if(!res.ok) throw new Error('CheckWX HTTP '+res.status);
+    const json = await res.json();
+    (json.data||[]).forEach(d=>{
+      const icao = (d.icao||'').toLowerCase();
+      if(METAR_STATIONS[icao]) renderMetarFromCheckwx(d.icao, d);
+    });
+  }catch(err){
+    ['tnca','tncc','tncb'].forEach(id=>{
+      document.getElementById(METAR_STATIONS[id].raw).textContent = '❌ '+err.message;
+    });
+  }
+}
+fetchMetars();
+setInterval(fetchMetars, 5*60*1000);
+
+/* ═══════════════════════════════════
+   ABC WEATHER — weatherapi.com (live)
+═══════════════════════════════════ */
+const ABC_ISLANDS=[
+  {id:'abc-aruba',   name:'Aruba',   flag:'🇦🇼', icao:'TNCA', q:'Oranjestad,Aruba'},
+  {id:'abc-curacao', name:'Curaçao', flag:'🇨🇼', icao:'TNCC', q:'Willemstad,Curacao'},
+  {id:'abc-bonaire', name:'Bonaire', flag:'🇧🇶', icao:'TNCB', q:'Kralendijk,Bonaire'},
 ];
 
-function renderNotams(){
-  const list = document.getElementById('notamList');
-  const fresh  = notamData.filter(n=>n.status==='FRESH').length;
-  const recent = notamData.filter(n=>n.status==='RECENT').length;
-  document.getElementById('notamStatusText').textContent =
-    `${notamData.length} active · ${fresh} fresh · ${recent} recent — notamify.com`;
-  list.innerHTML = notamData.map(n => {
-    const badge = n.status==='FRESH'  ? `<span style="color:#39ff8a;font-size:.5rem;border:1px solid #39ff8a;padding:1px 4px;border-radius:2px;margin-left:4px">FRESH</span>`
-                : n.status==='RECENT' ? `<span style="color:#ffb347;font-size:.5rem;border:1px solid #ffb347;padding:1px 4px;border-radius:2px;margin-left:4px">RECENT</span>`
-                : '';
-    return `<div class="notam-item${n.warn?' warn':''}">
-      <span class="notam-id">${n.tag}${badge} <span style="opacity:.45;font-size:.55rem">${n.time}</span></span>
-      ${n.text}
-    </div>`;
-  }).join('');
+function uvLabel(uv){ return uv<=2?'Low':uv<=5?'Moderate':uv<=7?'High':uv<=10?'Very High':'Extreme'; }
+function uvCol(uv){ return uv<=2?'#39ff8a':uv<=5?'#ffee58':uv<=7?'#ffb347':uv<=10?'#ff6b35':'#ff4757'; }
+function wdCard(d){ return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16]; }
+
+function renderAbcCard(island, data){
+  const c   = data.current;
+  const loc = data.location;
+  const windKt  = Math.round(c.wind_kph  * 0.53996);
+  const gustKt  = Math.round(c.gust_kph  * 0.53996);
+  const pad = n => String(n).padStart(2,'0');
+  const now = new Date();
+  const utc = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}Z`;
+
+  // Local time from API
+  const localTime = loc.localtime ? loc.localtime.split(' ')[1] : '—';
+
+  document.getElementById(island.id).innerHTML = `
+    <!-- Header -->
+    <div class="abc-header">
+      <span class="abc-flag">${island.flag}</span>
+      <div style="flex:1">
+        <div class="abc-name">${island.name}</div>
+        <div class="abc-icao">${island.icao} · ${loc.name}, ${loc.country}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--orb);font-size:.72rem;color:var(--cyan);text-shadow:0 0 10px rgba(0,212,255,0.5)">${localTime} local</div>
+        <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:2px">${utc} UTC</div>
+      </div>
+    </div>
+
+    <!-- Condition bar -->
+    <div class="abc-wx">
+      <img src="https:${c.condition.icon}" style="width:52px;height:52px;filter:drop-shadow(0 0 8px rgba(0,212,255,0.4))">
+      <div style="flex:1">
+        <div class="abc-wx-desc">${c.condition.text}</div>
+        <div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:3px">
+          ${windKt>0?'Wind: '+windKt+' KT '+wdCard(c.wind_degree):'Calm'} · Vis: ${c.vis_km} km
+        </div>
+      </div>
+      <div style="text-align:right">
+        <div class="abc-wx-temp">${c.temp_c}°C</div>
+        <div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:2px">${c.temp_f}°F</div>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="abc-stats">
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Feels Like</div>
+        <div class="abc-stat-val">${c.feelslike_c}°<span class="abc-stat-unit">C</span></div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Dew Point</div>
+        <div class="abc-stat-val">${c.dewpoint_c}°<span class="abc-stat-unit">C</span></div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Humidity</div>
+        <div class="abc-stat-val" style="color:${c.humidity>85?'#ffb347':'var(--accent-bright)'}">${c.humidity}<span class="abc-stat-unit">%</span></div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Wind</div>
+        <div class="abc-stat-val">${windKt}<span class="abc-stat-unit"> KT</span></div>
+        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${pad(c.wind_degree)}° ${c.wind_dir}</div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Gust</div>
+        <div class="abc-stat-val" style="color:${gustKt>25?'#ff4757':'var(--accent-bright)'}">${gustKt}<span class="abc-stat-unit"> KT</span></div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Pressure</div>
+        <div class="abc-stat-val">${c.pressure_mb}<span class="abc-stat-unit"> hPa</span></div>
+        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${c.pressure_in} inHg</div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Visibility</div>
+        <div class="abc-stat-val">${c.vis_km}<span class="abc-stat-unit"> km</span></div>
+        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${c.vis_miles} mi</div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Cloud Cover</div>
+        <div class="abc-stat-val">${c.cloud}<span class="abc-stat-unit">%</span></div>
+      </div>
+      <div class="abc-stat">
+        <div class="abc-stat-lbl">Precip</div>
+        <div class="abc-stat-val" style="color:${c.precip_mm>0?'#3fa9f5':'var(--accent-bright)'}">${c.precip_mm}<span class="abc-stat-unit"> mm</span></div>
+      </div>
+    </div>
+
+    <!-- UV + extras bar -->
+    <div class="abc-uv">
+      <span>
+        UV: <span style="font-family:var(--orb);font-size:.72rem;font-weight:700;color:${uvCol(c.uv)}">${c.uv}</span>
+        <span style="color:${uvCol(c.uv)};font-size:.55rem"> ${uvLabel(c.uv)}</span>
+      </span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.52rem;color:var(--muted)">
+        Last obs: ${c.last_updated}
+      </span>
+    </div>
+    <div class="abc-updated">⚡ weatherapi.com · live · refreshes every 10 min</div>
+  `;
 }
-renderNotams();
 
-/* ── Regional Dashboard Login ── */
-</script>
+async function fetchAbcWeather(island){
+  try{
+    const res = await fetch(
+      `https://api.weatherapi.com/v1/current.json?key=${WX_API}&q=${encodeURIComponent(island.q)}&aqi=no`,
+      {cache:'no-store'}
+    );
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    renderAbcCard(island, data);
+  }catch(err){
+    const el = document.getElementById(island.id);
+    const hdr = el.querySelector('.abc-header');
+    if(hdr) hdr.insertAdjacentHTML('afterend',`<div style="padding:12px 16px;font-family:var(--mono);font-size:.6rem;color:#ff4757">❌ ${err.message}</div>`);
+  }
+}
 
+function fetchAllAbc(){ ABC_ISLANDS.forEach(fetchAbcWeather); }
+fetchAllAbc();
+setInterval(fetchAllAbc, 10*60*1000);
+
+/* ── Auto reload entire page every 30 minutes ── */
+setTimeout(()=>location.reload(), 30*60*1000);
 </script>
 
 </body>
