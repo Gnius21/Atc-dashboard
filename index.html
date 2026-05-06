@@ -1,62 +1,92 @@
 <!doctype html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#000010"/>
+<meta name="theme-color" content="#05080f"/>
 <title>ATC &amp; WEATHER DASHBOARD — Curaçao</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@700;900&family=Barlow+Condensed:wght@400;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 
 <style>
 :root{
-  --accent:#3fa9f5;
-  --accent-bright:#72c4ff;
-  --accent-dim:#1a5a8a;
-  --accent-glow:rgba(63,169,245,0.16);
-  --cyan:#00d4ff;
-  --cyan-glow:rgba(0,212,255,0.18);
-  --green:#39ff8a;
-  --bg:#000;
-  --bg2:#03060d;
-  --border:rgba(63,169,245,0.11);
-  --border-hi:rgba(63,169,245,0.28);
-  --text:#b8d0ec;
-  --muted:#354e6a;
-  --mono:'Share Tech Mono',monospace;
-  --orb:'Orbitron',monospace;
-  --cond:'Barlow Condensed',sans-serif;
+  /* Day palette — refined deep navy with electric cyan */
+  --accent:#5ab8ff;
+  --accent-bright:#9bd4ff;
+  --accent-dim:#1e4a73;
+  --accent-glow:rgba(90,184,255,0.10);
+  --cyan:#22d3ee;
+  --cyan-glow:rgba(34,211,238,0.22);
+  --green:#4ade80;
+  --amber:#fbbf24;
+  --red:#f87171;
+  --magenta:#e879f9;
+
+  --bg:#04060b;
+  --bg2:#080c14;
+  --bg3:#0c1320;
+  --panel:rgba(12,19,32,0.65);
+  --panel-hi:rgba(18,28,46,0.85);
+
+  --border:rgba(90,184,255,0.08);
+  --border-hi:rgba(90,184,255,0.18);
+  --border-bright:rgba(34,211,238,0.4);
+
+  --text:#cbd9ec;
+  --text-dim:#7a8fa8;
+  --muted:#3d536f;
+
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --body:'Inter',system-ui,sans-serif;
+
+  --radius:6px;
+  --radius-lg:10px;
+  --shadow-panel:0 1px 0 rgba(255,255,255,0.03) inset, 0 0 0 1px rgba(90,184,255,0.04), 0 20px 40px -20px rgba(0,0,0,0.5);
+  --shadow-glow:0 0 30px -8px var(--cyan-glow);
 }
 
-/* ── NIGHT MODE ── */
+/* ── NIGHT MODE — warm tactical amber ── */
 body.night{
-  --accent:#ff6b35;
-  --accent-bright:#ff8c5a;
-  --accent-dim:#5a2010;
-  --accent-glow:rgba(255,107,53,0.14);
-  --cyan:#ff4400;
-  --cyan-glow:rgba(255,68,0,0.2);
-  --green:#ff6600;
-  --bg:#000;
-  --bg2:#0d0400;
-  --border:rgba(255,107,53,0.12);
-  --border-hi:rgba(255,107,53,0.3);
-  --text:#c8a090;
-  --muted:#5a3020;
+  --accent:#ff8a4c;
+  --accent-bright:#ffb088;
+  --accent-dim:#5a2810;
+  --accent-glow:rgba(255,138,76,0.10);
+  --cyan:#ff6b35;
+  --cyan-glow:rgba(255,107,53,0.22);
+  --green:#ff8c42;
+  --amber:#ffaa55;
+  --magenta:#ff5577;
+
+  --bg:#05030a;
+  --bg2:#0c0604;
+  --bg3:#150a06;
+  --panel:rgba(20,8,4,0.7);
+  --panel-hi:rgba(28,12,6,0.88);
+
+  --border:rgba(255,138,76,0.08);
+  --border-hi:rgba(255,138,76,0.2);
+  --border-bright:rgba(255,107,53,0.4);
+
+  --text:#e8c8b0;
+  --text-dim:#a08070;
+  --muted:#5a3525;
 }
 body.night::before{
   background-image:
-    linear-gradient(rgba(255,80,0,0.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,80,0,0.04) 1px,transparent 1px);
-  background-size:44px 44px;
+    linear-gradient(rgba(255,107,53,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,107,53,0.035) 1px,transparent 1px);
 }
 body.night::after{
-  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(255,60,0,0.06) 0%,transparent 60%);
+  background:
+    radial-gradient(ellipse 70% 35% at 50% -5%,rgba(255,107,53,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 100% 100%,rgba(255,68,0,0.04) 0%,transparent 60%);
 }
 body.night .scanline{
-  background:linear-gradient(transparent,rgba(255,80,0,0.025) 50%,transparent);
+  background:linear-gradient(transparent,rgba(255,107,53,0.025) 50%,transparent);
 }
 
 /* ── RESET ── */
@@ -64,25 +94,32 @@ body.night .scanline{
 
 html,body{
   min-height:100%;
-  background:#000;
+  background:var(--bg);
   color:var(--text);
-  font-family:var(--cond),system-ui,sans-serif;
+  font-family:var(--body);
+  font-feature-settings:'cv11','ss01','ss03';
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
 }
 
-/* ── GRID TEXTURE ── */
+/* ── ATMOSPHERIC GRID ── */
 body::before{
   content:'';position:fixed;inset:0;
   background-image:
-    linear-gradient(rgba(63,169,245,0.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(63,169,245,0.04) 1px,transparent 1px);
-  background-size:44px 44px;
+    linear-gradient(rgba(90,184,255,0.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(90,184,255,0.035) 1px,transparent 1px);
+  background-size:48px 48px;
   pointer-events:none;z-index:0;
+  mask-image:radial-gradient(ellipse 100% 80% at 50% 30%,#000 30%,transparent 95%);
 }
 
-/* ── TOP VIGNETTE GLOW ── */
+/* ── AMBIENT GLOW ── */
 body::after{
   content:'';position:fixed;inset:0;
-  background:radial-gradient(ellipse 80% 40% at 50% -10%,rgba(0,212,255,0.07) 0%,transparent 60%);
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%,rgba(34,211,238,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 0% 100%,rgba(90,184,255,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 100% 100%,rgba(34,211,238,0.04) 0%,transparent 60%);
   pointer-events:none;z-index:0;
 }
 
@@ -90,8 +127,8 @@ body::after{
 .scanline{
   position:fixed;top:-200px;left:0;right:0;
   height:200px;
-  background:linear-gradient(transparent,rgba(0,212,255,0.025) 50%,transparent);
-  animation:scanSweep 12s linear infinite;
+  background:linear-gradient(transparent,rgba(34,211,238,0.025) 50%,transparent);
+  animation:scanSweep 14s linear infinite;
   pointer-events:none;z-index:1;
 }
 @keyframes scanSweep{
@@ -103,12 +140,13 @@ body::after{
 .refresh-bar{
   position:relative;z-index:10;
   height:2px;
-  background:rgba(0,212,255,0.08);
+  background:rgba(34,211,238,0.06);
+  overflow:hidden;
 }
 .refresh-progress{
   height:100%;width:0%;
-  background:linear-gradient(90deg,var(--accent-dim),var(--cyan));
-  box-shadow:0 0 8px var(--cyan);
+  background:linear-gradient(90deg,transparent,var(--accent-dim) 20%,var(--cyan));
+  box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan-glow);
   transition:width 1s linear;
 }
 
@@ -117,297 +155,353 @@ header{
   position:relative;z-index:10;
   display:grid;grid-template-columns:1fr auto 1fr;
   align-items:center;
-  height:56px;padding:0 12px;
-  background:linear-gradient(180deg,rgba(0,20,40,0.95) 0%,rgba(3,6,13,0.98) 100%);
+  height:64px;padding:0 18px;
+  background:linear-gradient(180deg,rgba(8,12,20,0.95) 0%,rgba(4,6,11,0.92) 100%);
   border-bottom:1px solid var(--border-hi);
-  overflow:hidden;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
 }
-header::before,header::after{
-  content:'';position:absolute;bottom:-1px;
-  width:60px;height:2px;
-  background:var(--cyan);box-shadow:0 0 12px var(--cyan);
+header::before{
+  content:'';position:absolute;left:0;right:0;bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan) 20%,var(--cyan) 80%,transparent);
+  opacity:.5;
+  box-shadow:0 0 20px var(--cyan-glow);
 }
-header::before{left:0}
-header::after{right:0}
 
 .header-title{
   grid-column:2;
-  font-family:var(--orb);font-weight:900;font-size:.78rem;
-  letter-spacing:.16em;text-transform:uppercase;
+  font-family:var(--display);font-weight:700;font-size:.78rem;
+  letter-spacing:.32em;text-transform:uppercase;
   color:var(--accent-bright);
-  text-shadow:0 0 24px rgba(114,196,255,0.45);
-  white-space:nowrap;text-align:center;padding:0 8px;
+  text-shadow:0 0 30px rgba(155,212,255,0.4);
+  white-space:nowrap;text-align:center;padding:0 14px;
+  position:relative;
 }
+.header-title::before,.header-title::after{
+  content:'';position:absolute;top:50%;width:24px;height:1px;
+  background:var(--border-hi);
+}
+.header-title::before{right:100%;margin-right:14px}
+.header-title::after{left:100%;margin-left:14px}
 
-/* ── CLOCK ── */
+/* ── CLOCKS ── */
 .clock-display{display:flex;gap:8px;align-items:center}
 .clock-block{
   display:flex;flex-direction:column;align-items:center;
-  padding:5px 12px;
-  background:rgba(0,0,0,0.5);
-  border:1px solid var(--border-hi);border-radius:3px;
+  padding:7px 14px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
+  border:1px solid var(--border-hi);border-radius:var(--radius);
   line-height:1.1;
+  position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .clock-time{
-  font-family:var(--orb);font-size:1.05rem;font-weight:700;
-  color:var(--cyan);text-shadow:0 0 18px rgba(0,212,255,0.7);
-  letter-spacing:.1em;
+  font-family:var(--mono);font-size:1.05rem;font-weight:600;
+  color:var(--cyan);
+  text-shadow:0 0 24px rgba(34,211,238,0.6);
+  letter-spacing:.06em;
+  font-variant-numeric:tabular-nums;
 }
 .clock-label{
-  font-family:var(--mono);font-size:.52rem;letter-spacing:.18em;
-  color:var(--accent-bright);text-transform:uppercase;
-  margin-top:3px;opacity:.8;
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;
+  color:var(--text-dim);text-transform:uppercase;
+  margin-top:4px;font-weight:500;
 }
 
-/* ── NIGHT TOGGLE ── */
-.night-btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:5px 10px;
-  background:rgba(0,0,0,0.3);
-  border:1px solid var(--border-hi);border-radius:3px;
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--accent-bright);
-  cursor:pointer;transition:border-color .2s,box-shadow .2s,color .2s;
-  user-select:none;
+/* ── HEADER BUTTONS ── */
+.header-actions{
+  display:flex;justify-content:flex-end;gap:8px;align-items:center;
 }
-.night-btn:hover{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-glow)}
-
-/* ── LOCK ── */
-.toggle-container{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:5px 10px;
-  background:rgba(0,0,0,0.3);
-  border:1px solid var(--border-hi);border-radius:3px;
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
+.night-btn,.toggle-container{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 12px;
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
+  border:1px solid var(--border-hi);border-radius:var(--radius);
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:500;
   text-transform:uppercase;color:var(--accent-bright);
-  cursor:pointer;transition:border-color .2s,box-shadow .2s;
+  cursor:pointer;
   user-select:none;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
 }
-.toggle-container:hover{border-color:var(--cyan);box-shadow:0 0 14px var(--cyan-glow)}
+.night-btn:hover,.toggle-container:hover{
+  border-color:var(--border-bright);
+  color:var(--cyan);
+  box-shadow:0 0 20px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
+  transform:translateY(-1px);
+}
 
 .lock-led{
   width:7px;height:7px;border-radius:50%;
   background:var(--accent);
-  transition:background .25s,box-shadow .25s;
+  transition:all .25s;
+  box-shadow:0 0 6px currentColor;
+  color:var(--accent);
 }
 .lock-led.unlocked{
-  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
-  animation:blink 1.6s ease-in-out infinite;
+  background:var(--cyan);
+  color:var(--cyan);
+  box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan-glow);
+  animation:pulseLed 1.6s ease-in-out infinite;
 }
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes pulseLed{0%,100%{opacity:1}50%{opacity:.35}}
 
 /* ── TOPBAR ── */
 .topbar{
   position:relative;z-index:10;
   display:flex;justify-content:flex-end;
-  padding:8px 16px;
-  background:rgba(3,6,13,0.85);
+  padding:10px 20px;
+  background:rgba(4,6,11,0.7);
   border-bottom:1px solid var(--border);
   gap:8px;flex-wrap:wrap;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
 .topbar-right{display:flex;gap:8px;flex-wrap:wrap}
 
 /* ── BUTTONS ── */
 .btn{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:.75rem;letter-spacing:.1em;
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;font-weight:500;
   text-transform:uppercase;color:var(--accent-bright);
-  border:1px solid var(--border-hi);border-radius:3px;
-  background:var(--accent-glow);padding:7px 14px;
+  border:1px solid var(--border-hi);border-radius:var(--radius);
+  background:linear-gradient(180deg,var(--accent-glow),rgba(0,0,0,0.3));
+  padding:8px 14px;
   text-decoration:none;
-  transition:border-color .18s,background .18s,box-shadow .18s,color .18s,transform .15s;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.12),transparent);
+  transform:translateX(-100%);
+  transition:transform .5s;
 }
 .btn:hover{
-  border-color:var(--cyan);background:rgba(0,212,255,0.1);
-  color:var(--cyan);box-shadow:0 0 14px var(--cyan-glow);
+  border-color:var(--border-bright);color:var(--cyan);
+  box-shadow:0 0 20px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.08);
   transform:translateY(-1px);
 }
+.btn:hover::before{transform:translateX(100%)}
 
 /* ── TAB BAR ── */
 .tab-bar{
   position:relative;z-index:10;
-  display:flex;gap:4px;
-  padding:8px 16px 0;
-  background:rgba(3,6,13,0.9);
+  display:flex;gap:2px;
+  padding:10px 20px 0;
+  background:rgba(4,6,11,0.85);
   border-bottom:1px solid var(--border-hi);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
 }
 .tab-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:8px 18px;
-  font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--muted);
+  display:flex;align-items:center;gap:8px;
+  padding:10px 22px;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.18em;font-weight:500;
+  text-transform:uppercase;color:var(--text-dim);
   border:1px solid transparent;border-bottom:none;
-  border-radius:4px 4px 0 0;
-  cursor:pointer;transition:color .18s,background .18s,border-color .18s;
+  border-radius:var(--radius) var(--radius) 0 0;
+  cursor:pointer;
   background:transparent;position:relative;bottom:-1px;
   user-select:none;
+  transition:all .2s;
 }
 .tab-btn:hover{color:var(--accent-bright)}
 .tab-btn.active{
   color:var(--cyan);border-color:var(--border-hi);
-  background:var(--bg2);
-  box-shadow:0 0 12px rgba(0,212,255,0.08);
+  background:linear-gradient(180deg,var(--bg2),rgba(8,12,20,0.6));
+  box-shadow:0 -2px 0 var(--cyan) inset,0 0 24px -8px var(--cyan-glow);
 }
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
-/* Tab keyboard hint */
 .tab-key{
   font-size:.5rem;border:1px solid currentColor;
-  border-radius:2px;padding:0 3px;line-height:1.4;
-  opacity:.4;
+  border-radius:3px;padding:1px 4px;line-height:1.4;
+  opacity:.4;font-weight:600;
 }
 
 /* ── LAYOUT ── */
 .layout{
   position:relative;z-index:5;
   display:grid;grid-template-columns:repeat(12,1fr);
-  gap:12px;padding:12px 16px 32px;
+  gap:14px;padding:16px 20px 36px;
+  max-width:1800px;margin:0 auto;
 }
 .full{grid-column:1/-1}
 .col-6{grid-column:span 6}
 
 /* ── SECTION TITLE ── */
 .section-title{
-  display:flex;align-items:center;gap:10px;
-  font-family:var(--mono);font-size:.65rem;letter-spacing:.22em;
-  text-transform:uppercase;color:var(--muted);
-  padding:14px 16px 6px;
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.28em;font-weight:500;
+  text-transform:uppercase;color:var(--text-dim);
+  padding:14px 4px 10px;
 }
 .section-title::before{
   content:'';display:inline-block;
-  width:3px;height:13px;
-  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+  width:3px;height:14px;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan);
   border-radius:2px;flex-shrink:0;
 }
 .section-title::after{
   content:'';flex:1;height:1px;
-  background:linear-gradient(90deg,var(--border-hi),transparent);
+  background:linear-gradient(90deg,var(--border-hi) 0%,transparent 60%);
 }
 
 /* Data freshness badge */
 .data-badge{
-  font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;
-  padding:2px 7px;border-radius:2px;
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;font-weight:600;
+  padding:3px 8px;border-radius:3px;
   border:1px solid var(--green);color:var(--green);
-  animation:pulse 2.5s ease-in-out infinite;
+  animation:pulseBadge 2.5s ease-in-out infinite;
   flex-shrink:0;
+  background:rgba(74,222,128,0.06);
 }
-.data-badge.loading{border-color:var(--muted);color:var(--muted);animation:none}
-.data-badge.error{border-color:#ff4757;color:#ff4757;animation:none}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.data-badge.loading{
+  border-color:var(--muted);color:var(--text-dim);
+  background:transparent;animation:none;
+}
+.data-badge.error{
+  border-color:var(--red);color:var(--red);
+  background:rgba(248,113,113,0.06);animation:none;
+}
+@keyframes pulseBadge{0%,100%{opacity:1}50%{opacity:.5}}
 
 /* ── PANEL ── */
 .panel{
   border:1px solid var(--border);
-  background:var(--bg2);
-  border-radius:5px;overflow:hidden;
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-panel);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
 }
-.panel-body{padding:12px;display:flex;gap:10px;flex-wrap:wrap}
+.panel-body{padding:14px;display:flex;gap:10px;flex-wrap:wrap}
 
 /* ── RADAR BOX ── */
 .radar-box{
-  position:relative;width:100%;height:360px;
-  border:1px solid var(--border-hi);border-radius:5px;
+  position:relative;width:100%;height:380px;
+  border:1px solid var(--border-hi);border-radius:var(--radius-lg);
   overflow:hidden;background:#000;
-  box-shadow:0 0 0 1px rgba(0,212,255,0.06),inset 0 0 60px rgba(0,0,0,0.7);
+  box-shadow:
+    inset 0 0 80px rgba(0,0,0,0.8),
+    0 0 0 1px rgba(34,211,238,0.06),
+    0 20px 40px -20px rgba(0,0,0,0.6);
 }
 .radar-box::before{
-  content:'';position:absolute;inset:0;border-radius:5px;
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);
   background:
-    linear-gradient(135deg,var(--cyan) 0%,transparent 12px) top left    /12px 12px no-repeat,
-    linear-gradient(225deg,var(--cyan) 0%,transparent 12px) top right   /12px 12px no-repeat,
-    linear-gradient(315deg,var(--cyan) 0%,transparent 12px) bottom right/12px 12px no-repeat,
-    linear-gradient( 45deg,var(--cyan) 0%,transparent 12px) bottom left /12px 12px no-repeat;
-  opacity:.2;pointer-events:none;z-index:5;
+    linear-gradient(135deg,var(--cyan) 0%,transparent 14px) top left    /14px 14px no-repeat,
+    linear-gradient(225deg,var(--cyan) 0%,transparent 14px) top right   /14px 14px no-repeat,
+    linear-gradient(315deg,var(--cyan) 0%,transparent 14px) bottom right/14px 14px no-repeat,
+    linear-gradient( 45deg,var(--cyan) 0%,transparent 14px) bottom left /14px 14px no-repeat;
+  opacity:.25;pointer-events:none;z-index:5;
+  filter:drop-shadow(0 0 4px var(--cyan));
 }
 .radar-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
 
 /* ── METAR CARDS ── */
-.metar-strip{display:flex;flex-direction:column;gap:10px;padding:12px}
+.metar-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
 .metar-card{
-  border:1px solid var(--border);border-radius:5px;
-  background:rgba(0,0,0,0.4);overflow:hidden;position:relative;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  overflow:hidden;position:relative;
+  transition:border-color .2s;
 }
+.metar-card:hover{border-color:var(--border-hi)}
 .metar-card::before{
   content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--cyan);box-shadow:0 0 10px var(--cyan);
+  width:3px;
+  background:linear-gradient(180deg,var(--cyan),var(--accent));
+  box-shadow:0 0 14px var(--cyan);
 }
 .metar-icao{
-  font-family:var(--orb);font-size:.85rem;font-weight:700;
-  letter-spacing:.16em;color:var(--cyan);
-  padding:10px 12px 3px 14px;
-  text-shadow:0 0 16px rgba(0,212,255,0.4);
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  letter-spacing:.18em;color:var(--cyan);
+  padding:12px 14px 4px 18px;
+  text-shadow:0 0 20px rgba(34,211,238,0.45);
 }
 .metar-airport{
-  font-family:var(--mono);font-size:.52rem;letter-spacing:.12em;
-  color:var(--muted);padding:0 12px 8px 14px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;
+  color:var(--text-dim);padding:0 14px 10px 18px;font-weight:500;
 }
 .metar-raw{
   font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);
-  line-height:1.7;letter-spacing:.03em;word-break:break-all;
-  padding:8px 12px 8px 14px;
+  line-height:1.7;letter-spacing:.04em;word-break:break-all;
+  padding:10px 14px 10px 18px;
   border-top:1px solid var(--border);
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.4);
+  font-weight:500;
 }
 .metar-decoded{
   display:grid;grid-template-columns:repeat(3,1fr);
   border-top:1px solid var(--border);
 }
 .metar-field{
-  padding:7px 10px 7px 14px;
+  padding:9px 12px 9px 16px;
   border-right:1px solid var(--border);
   border-bottom:1px solid var(--border);
 }
 .metar-field:nth-child(3n){border-right:none}
 .metar-field:nth-last-child(-n+3){border-bottom:none}
 .metar-field-lbl{
-  font-family:var(--mono);font-size:.48rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted);margin-bottom:2px;
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:500;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;
 }
 .metar-field-val{
-  font-family:var(--orb);font-size:.88rem;font-weight:700;
+  font-family:var(--display);font-size:.95rem;font-weight:600;
   color:var(--accent-bright);line-height:1;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;
 }
-.metar-field-unit{font-family:var(--mono);font-size:.46rem;color:var(--muted)}
+.metar-field-unit{font-family:var(--mono);font-size:.46rem;color:var(--text-dim);margin-top:2px}
 .metar-age{
-  font-family:var(--mono);font-size:.5rem;color:var(--muted);
-  letter-spacing:.1em;padding:5px 12px 6px 14px;
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.1em;padding:7px 14px 8px 18px;
   border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
 }
 
 /* ── TAF CARDS ── */
-.taf-strip{display:flex;flex-direction:column;gap:10px;padding:12px}
+.taf-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
 .taf-card{
-  border:1px solid var(--border);border-radius:5px;
-  background:rgba(0,0,0,0.4);overflow:hidden;position:relative;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  overflow:hidden;position:relative;
 }
 .taf-card::before{
   content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--accent);box-shadow:0 0 10px var(--accent);
+  width:3px;
+  background:linear-gradient(180deg,var(--accent),var(--cyan));
+  box-shadow:0 0 14px var(--accent);
 }
 .taf-header{
-  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
-  padding:10px 12px 6px 14px;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 14px 8px 18px;
 }
 .taf-icao{
-  font-family:var(--orb);font-size:.85rem;font-weight:700;
-  letter-spacing:.16em;color:var(--accent-bright);
+  font-family:var(--display);font-size:.95rem;font-weight:700;
+  letter-spacing:.18em;color:var(--accent-bright);
 }
 .taf-airport{
-  font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;color:var(--muted);
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.12em;color:var(--text-dim);font-weight:500;
 }
 .taf-validity{
   margin-left:auto;
-  font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;color:var(--muted);
+  font-family:var(--mono);font-size:.54rem;letter-spacing:.12em;color:var(--text-dim);
 }
 .taf-raw{
   font-family:var(--mono);font-size:.6rem;color:var(--accent-bright);
-  line-height:1.7;letter-spacing:.03em;word-break:break-all;
-  padding:6px 12px 6px 14px;
+  line-height:1.7;letter-spacing:.04em;word-break:break-all;
+  padding:8px 14px 8px 18px;
   border-top:1px solid var(--border);
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.4);font-weight:500;
 }
 .taf-timeline{
   display:flex;flex-direction:column;
@@ -420,111 +514,258 @@ header::after{right:0}
   border-bottom:1px solid var(--border);
   align-items:stretch;
   min-width:560px;
+  transition:background .15s;
 }
+.taf-period:hover{background:rgba(34,211,238,0.03)}
 .taf-period:last-child{border-bottom:none}
 .taf-cell{
-  padding:7px 10px;
+  padding:8px 12px;
   border-right:1px solid var(--border);
   font-family:var(--mono);font-size:.6rem;color:var(--text);
-  display:flex;align-items:center;
+  display:flex;align-items:center;font-weight:500;
 }
 .taf-cell:last-child{border-right:none}
-.taf-cell.time{color:var(--cyan);font-size:.58rem;white-space:nowrap}
-.taf-cell.chg{font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-.taf-cell.wind{color:var(--accent-bright);white-space:nowrap}
-.taf-cell.wx{color:#ffb347;font-size:.58rem}
-.taf-period.chg-BECMG .taf-cell.chg{color:#3fa9f5}
-.taf-period.chg-TEMPO .taf-cell.chg{color:#ffb347}
+.taf-cell.time{color:var(--cyan);font-size:.58rem;white-space:nowrap;font-variant-numeric:tabular-nums}
+.taf-cell.chg{font-size:.52rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;font-weight:600}
+.taf-cell.wind{color:var(--accent-bright);white-space:nowrap;font-variant-numeric:tabular-nums}
+.taf-cell.wx{color:var(--amber);font-size:.58rem}
+.taf-period.chg-BECMG .taf-cell.chg{color:var(--accent)}
+.taf-period.chg-TEMPO .taf-cell.chg{color:var(--amber)}
 .taf-period.chg-PROB  .taf-cell.chg{color:#ff6b35}
 .taf-period.chg-FM    .taf-cell.chg{color:var(--green)}
 
-/* TAF column headers */
 .taf-header-row{
   display:grid;
   grid-template-columns:185px 70px 1fr 70px 1fr 90px;
   border-bottom:1px solid var(--border-hi);
   min-width:560px;
-  background:rgba(0,0,0,0.35);
+  background:rgba(0,0,0,0.45);
 }
 .taf-col-hdr{
-  padding:5px 10px;
-  font-family:var(--mono);font-size:.46rem;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted);
+  padding:6px 12px;
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
   border-right:1px solid var(--border);
 }
 .taf-col-hdr:last-child{border-right:none}
 
-/* ── ISLAND WEATHER CARDS ── */
-
 /* ── NOTAM PANEL ── */
 .notam-panel{
-  border:1px solid var(--border);border-radius:5px;
-  background:var(--bg2);overflow:hidden;
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  overflow:hidden;
+  box-shadow:var(--shadow-panel);
 }
-.notam-body{padding:8px 12px 12px}
+.notam-body{padding:10px 14px 14px}
 .notam-list{
-  display:flex;flex-direction:column;gap:7px;
-  max-height:280px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:8px;
+  max-height:480px;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:var(--border-hi) transparent;
+  padding-right:4px;
 }
+.notam-list::-webkit-scrollbar{width:6px}
+.notam-list::-webkit-scrollbar-track{background:transparent}
+.notam-list::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
+
 .notam-item{
-  padding:8px 10px;
-  border:1px solid var(--border);border-radius:4px;
-  background:rgba(0,0,0,0.35);
+  padding:10px 12px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(8,12,20,0.3));
   border-left:3px solid var(--cyan);
-  font-family:var(--mono);font-size:.62rem;line-height:1.6;
-  color:var(--text);word-break:break-word;
+  font-family:var(--mono);font-size:.62rem;line-height:1.7;
+  color:var(--text);word-break:break-word;font-weight:500;
+  transition:all .15s;
 }
+.notam-item:hover{border-color:var(--border-hi);background:rgba(8,12,20,0.6)}
 .notam-item .notam-id{
   display:block;color:var(--cyan);font-size:.65rem;
-  letter-spacing:.08em;margin-bottom:3px;
+  letter-spacing:.1em;margin-bottom:4px;font-weight:600;
 }
-.notam-item.warn{border-left-color:#ffb347}
-.notam-item.warn .notam-id{color:#ffb347}
+.notam-item.warn{border-left-color:var(--amber)}
+.notam-item.warn .notam-id{color:var(--amber)}
+
 .notam-tab-header{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 16px 6px;
-  font-family:var(--mono);font-size:.62rem;color:var(--muted);
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px 8px;
+  font-family:var(--mono);font-size:.62rem;color:var(--text-dim);
+  font-weight:500;
 }
 .notam-dot{
-  width:6px;height:6px;border-radius:50%;
-  background:var(--green);box-shadow:0 0 6px var(--green);
-  animation:pulse 2s ease-in-out infinite;flex-shrink:0;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:pulseLed 2s ease-in-out infinite;flex-shrink:0;
 }
-.notam-link{
-  font-family:var(--mono);font-size:.62rem;
-  color:var(--accent-bright);text-decoration:none;
-  border-bottom:1px solid var(--border-hi);transition:color .15s;
-  margin-left:auto;
-}
-.notam-link:hover{color:var(--cyan)}
 .notam-open-btn{
   display:inline-flex;align-items:center;gap:6px;
-  padding:6px 14px;font-family:var(--mono);font-size:.65rem;
-  letter-spacing:.12em;text-transform:uppercase;
+  padding:7px 14px;font-family:var(--mono);font-size:.62rem;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:500;
   color:var(--cyan);border:1px solid var(--border-hi);
-  border-radius:3px;background:rgba(0,212,255,0.07);
-  text-decoration:none;transition:background .18s,box-shadow .18s;
+  border-radius:var(--radius);background:rgba(34,211,238,0.06);
+  text-decoration:none;
+  transition:all .2s;
   margin-left:auto;
 }
-.notam-open-btn:hover{background:rgba(0,212,255,0.15);box-shadow:0 0 14px rgba(0,212,255,0.2)}
+.notam-open-btn:hover{
+  background:rgba(34,211,238,0.14);
+  border-color:var(--border-bright);
+  box-shadow:0 0 18px var(--cyan-glow);
+}
 
-/* NOTAM filter buttons */
-.notam-filter{display:flex;gap:6px;padding:0 12px 8px;flex-wrap:wrap}
+.notam-filter{display:flex;gap:6px;padding:0 18px 10px;flex-wrap:wrap}
 .notam-filter-btn{
-  padding:3px 10px;
-  font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;
+  padding:4px 12px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;font-weight:500;
   text-transform:uppercase;
-  border:1px solid var(--border-hi);border-radius:2px;
-  background:transparent;color:var(--muted);
-  cursor:pointer;transition:all .15s;
+  border:1px solid var(--border-hi);border-radius:3px;
+  background:transparent;color:var(--text-dim);
+  cursor:pointer;
   user-select:none;
+  transition:all .15s;
 }
 .notam-filter-btn:hover{color:var(--accent-bright);border-color:var(--accent-bright)}
-.notam-filter-btn.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,212,255,0.08)}
+.notam-filter-btn.active{
+  color:var(--cyan);border-color:var(--cyan);
+  background:rgba(34,211,238,0.08);
+  box-shadow:0 0 12px var(--cyan-glow);
+}
+
+/* ── ATC INLINE PLAYERS ── */
+.atc-players{
+  display:flex;flex-direction:column;gap:10px;padding:14px;
+}
+.atc-player{
+  display:grid;
+  grid-template-columns:auto 1fr auto auto;
+  gap:14px;align-items:center;
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-left:3px solid var(--cyan);
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(0,0,0,0.5),rgba(8,12,20,0.4));
+  transition:border-color .2s,box-shadow .2s;
+}
+.atc-player:hover{border-color:var(--border-hi)}
+.atc-player.playing{
+  border-color:var(--border-bright);
+  border-left-color:var(--cyan);
+  box-shadow:0 0 24px -8px var(--cyan-glow);
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),rgba(8,12,20,0.5));
+}
+
+.atc-play-btn{
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid var(--border-hi);
+  background:linear-gradient(180deg,rgba(34,211,238,0.1),rgba(0,0,0,0.4));
+  color:var(--cyan);
+  font-family:var(--display);font-size:.95rem;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s cubic-bezier(.4,0,.2,1);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06),0 0 0 0 var(--cyan-glow);
+  flex-shrink:0;
+}
+.atc-play-btn:hover{
+  border-color:var(--cyan);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 0 22px var(--cyan-glow);
+  transform:scale(1.04);
+}
+.atc-play-btn:active{transform:scale(0.97)}
+.atc-play-icon{
+  display:inline-block;
+  text-shadow:0 0 12px var(--cyan);
+  line-height:1;
+  transform:translateX(1px);
+}
+.atc-player.playing .atc-play-icon{transform:translateX(0)}
+.atc-player.loading .atc-play-icon{
+  animation:atcSpin 1s linear infinite;
+  display:inline-block;
+}
+@keyframes atcSpin{to{transform:rotate(360deg)}}
+
+.atc-info{min-width:0}
+.atc-label{
+  font-family:var(--display);font-size:.78rem;font-weight:700;
+  letter-spacing:.14em;color:var(--accent-bright);
+  text-shadow:0 0 14px rgba(155,212,255,0.3);
+}
+.atc-freq{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;
+  color:var(--text-dim);font-weight:500;margin-top:3px;
+}
+
+.atc-status{
+  display:flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);font-weight:600;
+  padding:5px 10px;
+  border:1px solid var(--border-hi);border-radius:3px;
+  background:rgba(0,0,0,0.3);
+  min-width:90px;
+}
+.atc-status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--muted);
+  transition:background .2s,box-shadow .2s;
+}
+.atc-player.loading .atc-status{color:var(--amber);border-color:var(--amber)}
+.atc-player.loading .atc-status-dot{
+  background:var(--amber);
+  box-shadow:0 0 8px var(--amber);
+  animation:pulseLed 1s ease-in-out infinite;
+}
+.atc-player.playing .atc-status{color:var(--green);border-color:var(--green)}
+.atc-player.playing .atc-status-dot{
+  background:var(--green);
+  box-shadow:0 0 10px var(--green);
+  animation:pulseLed 1.6s ease-in-out infinite;
+}
+.atc-player.error .atc-status{color:var(--red);border-color:var(--red)}
+.atc-player.error .atc-status-dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+
+.atc-volume{
+  display:flex;align-items:center;gap:8px;
+}
+.atc-vol-icon{font-size:.85rem;opacity:.65}
+.atc-vol-slider{
+  -webkit-appearance:none;appearance:none;
+  width:100px;height:4px;
+  background:var(--border-hi);border-radius:2px;
+  outline:none;cursor:pointer;
+}
+.atc-vol-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan-glow);
+  cursor:pointer;
+  border:1px solid rgba(0,0,0,0.4);
+}
+.atc-vol-slider::-moz-range-thumb{
+  width:14px;height:14px;border-radius:50%;
+  background:var(--cyan);
+  box-shadow:0 0 10px var(--cyan-glow);
+  cursor:pointer;border:1px solid rgba(0,0,0,0.4);
+}
+
+@media(max-width:700px){
+  .atc-player{
+    grid-template-columns:auto 1fr auto;
+    grid-template-areas:
+      "btn info status"
+      "vol vol vol";
+    gap:10px 12px;
+  }
+  .atc-play-btn{grid-area:btn}
+  .atc-info{grid-area:info}
+  .atc-status{grid-area:status;min-width:0}
+  .atc-volume{grid-area:vol;justify-content:flex-start}
+  .atc-vol-slider{flex:1;width:auto;max-width:200px}
+}
 
 /* ── ENTRY ANIMATIONS ── */
-.layout > *{animation:fadeUp .45s ease both}
+.layout > *{animation:fadeUp .5s cubic-bezier(.4,0,.2,1) both}
 .layout > *:nth-child(1){animation-delay:.04s}
 .layout > *:nth-child(2){animation-delay:.10s}
 .layout > *:nth-child(3){animation-delay:.16s}
@@ -532,30 +773,32 @@ header::after{right:0}
 .layout > *:nth-child(5){animation-delay:.28s}
 .layout > *:nth-child(6){animation-delay:.34s}
 @keyframes fadeUp{
-  from{opacity:0;transform:translateY(12px)}
+  from{opacity:0;transform:translateY(14px)}
   to  {opacity:1;transform:translateY(0)}
 }
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   .col-6{grid-column:1/-1}
-  .header-title{font-size:.62rem;letter-spacing:.1em}
+  .header-title{font-size:.62rem;letter-spacing:.18em}
+  .header-title::before,.header-title::after{display:none}
   .taf-period,.taf-header-row{grid-template-columns:160px 60px 1fr 60px 1fr 80px}
 }
 @media(max-width:600px){
-  .layout{padding:8px 8px 24px;gap:8px}
+  .layout{padding:10px 10px 28px;gap:10px}
   .header-title{display:none}
-  .clock-block{padding:4px 8px}
+  .clock-block{padding:5px 9px}
   .clock-time{font-size:.85rem}
   .clock-label{font-size:.44rem}
-  .radar-box{height:240px}
+  .radar-box{height:260px}
   .metar-decoded{grid-template-columns:repeat(2,1fr)}
-  .tab-btn{padding:8px 10px;font-size:.6rem}
+  .tab-btn{padding:9px 12px;font-size:.6rem}
   .tab-key{display:none}
-  .topbar{padding:6px 8px}
-  .btn{padding:5px 10px;font-size:.65rem}
+  .topbar{padding:8px 10px}
+  .btn{padding:6px 11px;font-size:.65rem}
 }
 </style>
+
 </head>
 
 <body data-locked="true">
@@ -564,19 +807,20 @@ header::after{right:0}
 <div class="refresh-bar"><div class="refresh-progress" id="refreshProgress"></div></div>
 
 <!-- HEADER -->
+
 <header>
   <div class="clock-display">
     <div class="clock-block">
       <span class="clock-time" id="clockLocal">--:--:--</span>
-      <span class="clock-label">Local (AST)</span>
+      <span class="clock-label">Local · AST</span>
     </div>
     <div class="clock-block">
       <span class="clock-time" id="clockUtc">--:--:--</span>
-      <span class="clock-label">UTC / Zulu</span>
+      <span class="clock-label">UTC · Zulu</span>
     </div>
   </div>
-  <span class="header-title">ATC &amp; WEATHER DASHBOARD</span>
-  <div style="display:flex;justify-content:flex-end;gap:6px;align-items:center">
+  <span class="header-title">ATC &amp; Weather Dashboard</span>
+  <div class="header-actions">
     <div class="night-btn" id="nightToggle">🌙 Night</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
@@ -587,6 +831,7 @@ header::after{right:0}
 </header>
 
 <!-- TOPBAR -->
+
 <div class="topbar">
   <div class="topbar-right">
     <a class="btn" href="https://gniusweather.github.io/RWC/" target="_blank">🌍 Regional</a>
@@ -597,6 +842,7 @@ header::after{right:0}
 </div>
 
 <!-- TAB BAR -->
+
 <div class="tab-bar">
   <div class="tab-btn active" data-tab="atc">📡 ATC <span class="tab-key">1</span></div>
   <div class="tab-btn" data-tab="weather">🌤 Weather <span class="tab-key">2</span></div>
@@ -604,6 +850,7 @@ header::after{right:0}
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
+
 <div class="tab-pane active" id="tab-atc">
 <div class="layout">
 
@@ -634,11 +881,47 @@ header::after{right:0}
   <div class="full">
     <div class="section-title">Live ATC — TNCC Frequencies</div>
     <div class="panel">
-      <div class="panel-body">
-        <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_twr&icao=tncc" target="_blank">🎧 TWR 118.300</a>
-        <a class="btn" href="https://www.liveatc.net/hlisten.php?mount=tncc3_rdr1&icao=tncc" target="_blank">🎧 APP / RDR</a>
+      <div class="atc-players">
+        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
+          <button class="atc-play-btn" aria-label="Play TWR">
+            <span class="atc-play-icon">▶</span>
+          </button>
+          <div class="atc-info">
+            <div class="atc-label">TWR · Tower</div>
+            <div class="atc-freq">118.300 MHz</div>
+          </div>
+          <div class="atc-status">
+            <span class="atc-status-dot"></span>
+            <span class="atc-status-text">Idle</span>
+          </div>
+          <div class="atc-volume">
+            <span class="atc-vol-icon">🔊</span>
+            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          </div>
+        </div>
+
+```
+    <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
+      <button class="atc-play-btn" aria-label="Play Approach">
+        <span class="atc-play-icon">▶</span>
+      </button>
+      <div class="atc-info">
+        <div class="atc-label">APP / RDR · Approach</div>
+        <div class="atc-freq">Radar</div>
+      </div>
+      <div class="atc-status">
+        <span class="atc-status-dot"></span>
+        <span class="atc-status-text">Idle</span>
+      </div>
+      <div class="atc-volume">
+        <span class="atc-vol-icon">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
       </div>
     </div>
+  </div>
+</div>
+```
+
   </div>
 
   <div class="full">
@@ -674,7 +957,7 @@ header::after{right:0}
     <div class="section-title">TAF — Terminal Aerodrome Forecast <span class="data-badge loading" id="tafBadge">LOADING</span></div>
     <div class="panel">
       <div class="taf-strip" id="taf-strip">
-        <div style="padding:16px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Fetching TAF…</div>
+        <div style="padding:16px 14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">Fetching TAF…</div>
       </div>
     </div>
   </div>
@@ -683,6 +966,7 @@ header::after{right:0}
 </div>
 
 <!-- ═══ TAB: WEATHER ═══ -->
+
 <div class="tab-pane" id="tab-weather">
 <div class="layout">
 
@@ -690,7 +974,7 @@ header::after{right:0}
     <div class="section-title">Current Conditions — ABC Islands <span class="data-badge loading" id="islandBadge">LOADING</span></div>
     <div class="panel" style="overflow:visible">
       <div id="island-cards">
-        <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center">Loading island weather…</div>
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading island weather…</div>
       </div>
     </div>
   </div>
@@ -728,6 +1012,7 @@ header::after{right:0}
 </div>
 
 <!-- ═══ TAB: NOTAMs ═══ -->
+
 <div class="tab-pane" id="tab-notams">
 <div class="layout">
   <div class="full">
@@ -778,8 +1063,8 @@ const store = { metar:{}, taf:{}, api:{} };
 ════════════════════════════════ */
 const pad   = n => String(n).padStart(2,'0');
 const wdCard= d => ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16];
-const catCol= c => ({VFR:'#39ff8a',MVFR:'#3fa9f5',IFR:'#ff4757',LIFR:'#ff00ff'})[c]||'var(--muted)';
-const uvCol = u => u<=2?'#39ff8a':u<=5?'#ffee58':u<=7?'#ffb347':u<=10?'#ff6b35':'#ff4757';
+const catCol= c => ({VFR:'#4ade80',MVFR:'#5ab8ff',IFR:'#f87171',LIFR:'#e879f9'})[c]||'var(--text-dim)';
+const uvCol = u => u<=2?'#4ade80':u<=5?'#fbbf24':u<=7?'#fb923c':u<=10?'#f87171':'#e879f9';
 const uvLbl = u => u<=2?'Low':u<=5?'Moderate':u<=7?'High':u<=10?'Very High':'Extreme';
 
 function fmtUTC(str){
@@ -825,6 +1110,61 @@ function setLock(locked){
 }
 setLock(true);
 lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
+
+/* ════════════════════════════════
+   ATC INLINE STREAM PLAYERS
+════════════════════════════════ */
+document.querySelectorAll('.atc-player').forEach(card=>{
+  const url      = card.dataset.stream;
+  const btn      = card.querySelector('.atc-play-btn');
+  const icon     = card.querySelector('.atc-play-icon');
+  const statusEl = card.querySelector('.atc-status-text');
+  const volSlider= card.querySelector('.atc-vol-slider');
+
+  // One persistent <audio> element per stream — survives tab switches.
+  const audio = new Audio();
+  audio.preload = 'none';
+  audio.crossOrigin = 'anonymous';
+  audio.volume = volSlider.value/100;
+
+  function setState(state){
+    card.classList.remove('loading','playing','error');
+    if(state) card.classList.add(state);
+    icon.textContent =
+      state==='loading' ? '◐' :
+      state==='playing' ? '■' : '▶';
+    statusEl.textContent =
+      state==='loading' ? 'Connecting' :
+      state==='playing' ? 'Live' :
+      state==='error'   ? 'Error' : 'Idle';
+  }
+
+  audio.addEventListener('playing',()=>setState('playing'));
+  audio.addEventListener('waiting',()=>setState('loading'));
+  audio.addEventListener('pause',  ()=>{ if(!audio.ended) setState(null); });
+  audio.addEventListener('error',  ()=>setState('error'));
+  audio.addEventListener('stalled',()=>setState('loading'));
+
+  btn.addEventListener('click',()=>{
+    if(audio.paused){
+      // Cache-bust so the browser doesn't replay a stale buffer.
+      audio.src = url + '?t=' + Date.now();
+      setState('loading');
+      audio.play().catch(err=>{
+        console.warn('ATC stream failed:',err.message);
+        setState('error');
+      });
+    } else {
+      audio.pause();
+      audio.src = '';      // fully release the connection
+      setState(null);
+    }
+  });
+
+  volSlider.addEventListener('input',()=>{
+    audio.volume = volSlider.value/100;
+  });
+});
 
 /* ════════════════════════════════
    TABS + KEYBOARD SHORTCUTS
@@ -902,11 +1242,11 @@ function renderNotams(){
 
   document.getElementById('notamList').innerHTML=filtered.map(n=>{
     const badge=n.status==='FRESH'
-      ?`<span style="color:#39ff8a;font-size:.5rem;border:1px solid #39ff8a;padding:1px 4px;border-radius:2px;margin-left:4px">FRESH</span>`
+      ?`<span style="color:#4ade80;font-size:.5rem;border:1px solid #4ade80;padding:1px 5px;border-radius:3px;margin-left:6px;font-weight:600">FRESH</span>`
       :n.status==='RECENT'
-      ?`<span style="color:#ffb347;font-size:.5rem;border:1px solid #ffb347;padding:1px 4px;border-radius:2px;margin-left:4px">RECENT</span>`:'';
+      ?`<span style="color:#fbbf24;font-size:.5rem;border:1px solid #fbbf24;padding:1px 5px;border-radius:3px;margin-left:6px;font-weight:600">RECENT</span>`:'';
     return `<div class="notam-item${n.warn?' warn':''}">
-      <span class="notam-id">${n.tag}${badge} <span style="opacity:.45;font-size:.55rem">${n.time}</span></span>
+      <span class="notam-id">${n.tag}${badge} <span style="opacity:.5;font-size:.55rem;font-weight:500">${n.time}</span></span>
       ${n.text}
     </div>`;
   }).join('');
@@ -935,7 +1275,7 @@ function renderMETAR(icao,d){
   const ageWarn=ageMin!==null&&ageMin>90;
   document.getElementById(`metar-age-${pfx}`).innerHTML=
     `CheckWX · Obs ${obsStr}`+
-    (ageMin!==null?` · <span style="color:${ageWarn?'#ff4757':'#39ff8a'}">${ageMin} min ago</span>`:'')+
+    (ageMin!==null?` · <span style="color:${ageWarn?'#f87171':'#4ade80'};font-weight:600">${ageMin} min ago</span>`:'')+
     ` · refreshes every 5 min`;
 
   const wind =d.wind||{};
@@ -962,21 +1302,21 @@ function renderMETAR(icao,d){
   const cond =(d.conditions||[]).map(c=>c.text||c.code).join(', ')||'—';
 
   document.getElementById(`metar-dec-${pfx}`).innerHTML=`
-    <div class="metar-field" style="grid-column:1/-1;background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;padding:8px 14px">
-      <span style="font-family:var(--orb);font-size:1rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 12px ${catCol(cat)}">${cat}</span>
-      <span style="font-family:var(--mono);font-size:.6rem;color:var(--muted)">Flight Category</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--muted)">${cond}</span>
+    <div class="metar-field" style="grid-column:1/-1;background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;padding:10px 16px">
+      <span style="font-family:var(--display);font-size:1.05rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 14px ${catCol(cat)};letter-spacing:.05em">${cat}</span>
+      <span style="font-family:var(--mono);font-size:.55rem;color:var(--text-dim);letter-spacing:.16em;text-transform:uppercase;font-weight:500">Flight Category</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);font-weight:500">${cond}</span>
     </div>
     <div class="metar-field"><div class="metar-field-lbl">Temperature</div><div class="metar-field-val">${temp}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">Dew Point</div><div class="metar-field-val">${dew}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">Humidity</div><div class="metar-field-val">${rh}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">Wind Dir</div><div class="metar-field-val">${wdeg} <span style="font-size:.6rem;opacity:.7">${wcard}</span></div></div>
     <div class="metar-field"><div class="metar-field-lbl">Wind Spd</div><div class="metar-field-val">${wspd}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Gust</div><div class="metar-field-val" style="color:${gustHi?'#ff4757':'var(--accent-bright)'}">${wgst}</div></div>
+    <div class="metar-field"><div class="metar-field-lbl">Gust</div><div class="metar-field-val" style="color:${gustHi?'#f87171':'var(--accent-bright)'}">${wgst}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">QNH</div><div class="metar-field-val">${qnh}</div><div class="metar-field-unit">${qnhHg}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">Visibility</div><div class="metar-field-val">${vis}</div></div>
     <div class="metar-field"><div class="metar-field-lbl">Ceiling</div><div class="metar-field-val">${ceil}</div></div>
-    <div class="metar-field" style="grid-column:span 3"><div class="metar-field-lbl">Clouds</div><div class="metar-field-val" style="font-size:.75rem">${clouds}</div></div>
+    <div class="metar-field" style="grid-column:span 3"><div class="metar-field-lbl">Clouds</div><div class="metar-field-val" style="font-size:.78rem">${clouds}</div></div>
   `;
 }
 
@@ -986,7 +1326,7 @@ function renderMETAR(icao,d){
 function renderTAFStrip(tafList){
   if(!tafList||!tafList.length){
     document.getElementById('taf-strip').innerHTML=
-      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">TAF data unavailable.</div>`;
+      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">TAF data unavailable.</div>`;
     setBadge('tafBadge','UNAVAIL','error');
     return;
   }
@@ -1038,7 +1378,7 @@ function renderTAFStrip(tafList){
             <div class="taf-col-hdr">Sky</div>
             <div class="taf-col-hdr">Wx</div>
           </div>
-          ${periods||'<div style="padding:8px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">No forecast periods.</div>'}
+          ${periods||'<div style="padding:8px 14px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">No forecast periods.</div>'}
         </div>
       </div>`;
   });
@@ -1050,10 +1390,10 @@ function renderTAFStrip(tafList){
    ISLAND CARDS
 ════════════════════════════════ */
 function isCell(lbl,val,sub,color){
-  return `<div style="padding:8px 10px 8px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
-    <div style="font-family:var(--mono);font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:2px">${lbl}</div>
-    <div style="font-family:var(--orb);font-size:.88rem;font-weight:700;color:${color||'var(--accent-bright)'};line-height:1">${val}</div>
-    ${sub?`<div style="font-family:var(--mono);font-size:.44rem;color:${color&&sub!==val?color:'var(--muted)'};margin-top:2px">${sub}</div>`:''}
+  return `<div style="padding:10px 12px 10px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div style="font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;font-weight:500">${lbl}</div>
+    <div style="font-family:var(--display);font-size:.95rem;font-weight:600;color:${color||'var(--accent-bright)'};line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-.01em">${val}</div>
+    ${sub?`<div style="font-family:var(--mono);font-size:.46rem;color:${color&&sub!==val?color:'var(--text-dim)'};margin-top:3px;font-weight:500">${sub}</div>`:''}
   </div>`;
 }
 
@@ -1101,41 +1441,41 @@ function renderIslandCards(){
 
     html+=`
       <div style="${border}">
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px 8px;background:rgba(0,212,255,0.03);border-bottom:1px solid var(--border)">
-          <span style="font-size:1.5rem;line-height:1">${ap.flag}</span>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 18px 10px;background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);border-bottom:1px solid var(--border)">
+          <span style="font-size:1.6rem;line-height:1">${ap.flag}</span>
           <div style="flex:1">
-            <div style="font-family:var(--orb);font-size:.82rem;font-weight:700;letter-spacing:.14em;color:var(--accent-bright)">${ap.name}</div>
-            <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);letter-spacing:.1em">${icao} · ${ap.label.split('·')[0].trim()}</div>
+            <div style="font-family:var(--display);font-size:.92rem;font-weight:700;letter-spacing:.16em;color:var(--accent-bright);text-shadow:0 0 18px rgba(155,212,255,0.3)">${ap.name}</div>
+            <div style="font-family:var(--mono);font-size:.52rem;color:var(--text-dim);letter-spacing:.14em;margin-top:2px;font-weight:500">${icao} · ${ap.label.split('·')[0].trim()}</div>
           </div>
-          ${icon?`<img src="${icon}" style="width:44px;height:44px;filter:drop-shadow(0 0 8px rgba(0,212,255,0.35))" alt="">` :''}
-          <div style="text-align:center;padding:0 8px">
-            <div style="font-family:var(--orb);font-size:.72rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 12px ${catCol(cat)};letter-spacing:.1em">${cat}</div>
-            <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:2px">${condText}</div>
+          ${icon?`<img src="${icon}" style="width:48px;height:48px;filter:drop-shadow(0 0 10px rgba(34,211,238,0.4))" alt="">` :''}
+          <div style="text-align:center;padding:0 10px">
+            <div style="font-family:var(--display);font-size:.78rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 14px ${catCol(cat)};letter-spacing:.1em">${cat}</div>
+            <div style="font-family:var(--mono);font-size:.48rem;color:var(--text-dim);margin-top:3px;font-weight:500">${condText}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-family:var(--orb);font-size:1.6rem;font-weight:700;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.5);line-height:1">${tempDisp}</div>
-            <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:3px">${localTime} local · ${obsStr}</div>
+            <div style="font-family:var(--display);font-size:1.75rem;font-weight:700;color:var(--cyan);text-shadow:0 0 24px rgba(34,211,238,0.55);line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">${tempDisp}</div>
+            <div style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);margin-top:4px;font-weight:500">${localTime} local · ${obsStr}</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(6,1fr)">
           ${isCell('Dew Point',  dewC!==undefined?dewC+'°C':'—','')}
-          ${isCell('Humidity',   rhVal!==null&&rhVal!==undefined?Math.round(rhVal)+'%':'—','',rhVal>85?'#ffb347':null)}
+          ${isCell('Humidity',   rhVal!==null&&rhVal!==undefined?Math.round(rhVal)+'%':'—','',rhVal>85?'#fbbf24':null)}
           ${isCell('Feels Like', feelsC!==undefined?feelsC+'°C':'—','')}
           ${isCell('Wind',       windKt!==undefined?windKt+' KT':'—', windDeg!==undefined?pad(windDeg)+'° '+wdCard(windDeg):'')}
-          ${isCell('Gust',       gustKt!==undefined?gustKt+' KT':'—','',gustKt>25?'#ff4757':null)}
+          ${isCell('Gust',       gustKt!==undefined?gustKt+' KT':'—','',gustKt>25?'#f87171':null)}
           ${isCell('QNH',        qnhHpa!==undefined?qnhHpa+' hPa':'—', qnhIn!==undefined?qnhIn+' inHg':'')}
           ${isCell('Visibility', visMtr!==undefined?(visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km'):'—','')}
           ${isCell('Ceiling',    ceilFt!==undefined?ceilFt+'ft':'—','')}
           ${isCell('Cloud Cover',cloudPct!==undefined?cloudPct+'%':'—',clouds)}
-          ${isCell('Precip',     precipMm!==undefined?precipMm+' mm':'—','',precipMm>0?'#3fa9f5':null)}
+          ${isCell('Precip',     precipMm!==undefined?precipMm+' mm':'—','',precipMm>0?'#5ab8ff':null)}
           ${isCell('UV Index',   uvIdx!==undefined?uvIdx:'—', uvIdx!==undefined?uvLbl(uvIdx):'', uvIdx!==undefined?uvCol(uvIdx):null)}
-          ${isCell('Obs Age',    ageMin!==null?ageMin+' min':'—', ageMin>90?'STALE':'Live', ageMin>90?'#ff4757':'#39ff8a')}
+          ${isCell('Obs Age',    ageMin!==null?ageMin+' min':'—', ageMin>90?'STALE':'Live', ageMin>90?'#f87171':'#4ade80')}
         </div>
-        ${rawStr?`<div style="padding:6px 16px 8px;font-family:var(--mono);font-size:.6rem;color:var(--cyan);background:rgba(0,0,0,0.4);border-top:1px solid var(--border);word-break:break-all;line-height:1.7"><span style="font-size:.5rem;color:var(--muted);letter-spacing:.15em">RAW · </span>${rawStr}</div>`:''}
+        ${rawStr?`<div style="padding:8px 18px 10px;font-family:var(--mono);font-size:.6rem;color:var(--cyan);background:rgba(0,0,0,0.45);border-top:1px solid var(--border);word-break:break-all;line-height:1.7;font-weight:500"><span style="font-size:.5rem;color:var(--text-dim);letter-spacing:.18em;font-weight:600">RAW · </span>${rawStr}</div>`:''}
       </div>`;
   });
 
-  container.innerHTML=html||`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center">No data available.</div>`;
+  container.innerHTML=html||`<div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">No data available.</div>`;
 }
 
 /* ════════════════════════════════
@@ -1190,7 +1530,6 @@ async function fetchWeatherAPI(icao){
 async function refresh(){
   resetBar();
 
-  // METAR — feeds both METAR panel and island cards
   try{
     await fetchMETAR();
     ICAOS.forEach(icao=>{ if(store.metar[icao]) renderMETAR(icao,store.metar[icao]); });
@@ -1204,7 +1543,6 @@ async function refresh(){
     setBadge('metarBadge','ERROR','error');
   }
 
-  // TAF
   try{
     const tafData=await fetchTAF();
     tafData.forEach(d=>{ store.taf[d.icao]=d; });
@@ -1214,10 +1552,8 @@ async function refresh(){
     renderTAFStrip(null);
   }
 
-  // weatherapi.com — parallel
   await Promise.all(ICAOS.map(fetchWeatherAPI));
 
-  // Island cards use both METAR and weatherapi data
   renderIslandCards();
   setBadge('islandBadge','LIVE');
 }
@@ -1225,7 +1561,6 @@ async function refresh(){
 refresh();
 setInterval(refresh,REFRESH_MS);
 
-/* Auto reload every 30 min */
 setTimeout(()=>location.reload(),30*60*1000);
 </script>
 
