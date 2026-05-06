@@ -713,44 +713,13 @@ header::after{right:0}
 <div class="tab-pane" id="tab-weather">
 <div class="layout">
 
-<!-- Consensus current conditions -->
+<!-- Island combined weather cards -->
 
 <div class="full">
-  <div class="section-title">Consensus Current Conditions — Curaçao · ECMWF + GFS + ICON</div>
-  <div class="panel">
-    <div id="wx-consensus-status" style="padding:8px 14px;font-family:var(--mono);font-size:.58rem;color:var(--muted);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px">
-      <span class="synop-dot"></span><span id="wx-ts">Fetching consensus models…</span>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px" id="wx-current-grid">
-      <div class="wx-cell" style="grid-column:1/-1;padding:10px 14px;background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;gap:12px">
-        <span id="wx-icon" style="font-size:2rem">⏳</span>
-        <span id="wx-condition" style="font-family:var(--cond);font-size:1.1rem;font-weight:700;letter-spacing:.1em;color:var(--accent-bright)">Loading…</span>
-        <span id="wx-temp-big" style="margin-left:auto;font-family:var(--orb);font-size:1.8rem;font-weight:700;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.5)">--°C</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 3-day forecast -->
-
-<div class="full">
-  <div class="section-title">3-Day Forecast — Consensus</div>
-  <div class="panel">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px" id="wx-forecast-grid">
-      <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center">Loading forecast…</div>
-    </div>
-  </div>
-</div>
-
-<!-- Island comparison row -->
-
-<div class="full">
-  <div class="section-title">Live Conditions — Aruba · Curaçao · Bonaire · weatherapi.com</div>
-  <div class="panel">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0" id="wx-islands-row">
-      <div id="abc-aruba"  style="border-right:1px solid var(--border);padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Aruba…</div>
-      <div id="abc-curacao" style="border-right:1px solid var(--border);padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Curaçao…</div>
-      <div id="abc-bonaire" style="padding:10px 14px;font-family:var(--mono);font-size:.6rem;color:var(--muted)">Loading Bonaire…</div>
+  <div class="section-title">Current Weather — ABC Islands · CheckWX + weatherapi.com</div>
+  <div class="panel" style="overflow:visible">
+    <div id="island-cards" style="display:flex;flex-direction:column;gap:0">
+      <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--muted);text-align:center">Loading island weather…</div>
     </div>
   </div>
 </div>
@@ -984,136 +953,166 @@ async function fetchMetars(){
 fetchMetars();
 setInterval(fetchMetars, 5*60*1000);
 
-/* ═══════════════════════════════════
-   ABC WEATHER — weatherapi.com (live)
-═══════════════════════════════════ */
-const ABC_ISLANDS=[
-  {id:'abc-aruba',   name:'Aruba',   flag:'🇦🇼', icao:'TNCA', q:'Oranjestad,Aruba'},
-  {id:'abc-curacao', name:'Curaçao', flag:'🇨🇼', icao:'TNCC', q:'Willemstad,Curacao'},
-  {id:'abc-bonaire', name:'Bonaire', flag:'🇧🇶', icao:'TNCB', q:'Kralendijk,Bonaire'},
+/* ═══════════════════════════════════════════════════
+   ISLAND WEATHER CARDS
+   CheckWX  → official METAR: temp, dew, wind, QNH, ceiling, vis, flight cat
+   weatherapi → extras: UV, feels like, humidity, cloud %, precip, condition icon
+═══════════════════════════════════════════════════ */
+const ISLANDS_WX = [
+  { icao:'TNCA', name:'Aruba',   flag:'🇦🇼', airport:'Queen Beatrix Int\'l', q:'Oranjestad,Aruba'   },
+  { icao:'TNCC', name:'Curaçao', flag:'🇨🇼', airport:'Hato International',   q:'Willemstad,Curacao'  },
+  { icao:'TNCB', name:'Bonaire', flag:'🇧🇶', airport:'Flamingo Airport',      q:'Kralendijk,Bonaire'  },
 ];
 
-function uvLabel(uv){ return uv<=2?'Low':uv<=5?'Moderate':uv<=7?'High':uv<=10?'Very High':'Extreme'; }
-function uvCol(uv){ return uv<=2?'#39ff8a':uv<=5?'#ffee58':uv<=7?'#ffb347':uv<=10?'#ff6b35':'#ff4757'; }
-function wdCard(d){ return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16]; }
+// Store data from each source
+const wxStore = {};
+ISLANDS_WX.forEach(i => { wxStore[i.icao] = { metar: null, api: null }; });
 
-function renderAbcCard(island, data){
-  const c   = data.current;
-  const loc = data.location;
-  const windKt  = Math.round(c.wind_kph  * 0.53996);
-  const gustKt  = Math.round(c.gust_kph  * 0.53996);
-  const pad = n => String(n).padStart(2,'0');
-  const now = new Date();
-  const utc = `${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}Z`;
+function catCol(cat){
+  return {VFR:'#39ff8a',MVFR:'#3fa9f5',IFR:'#ff4757',LIFR:'#ff00ff'}[cat]||'var(--muted)';
+}
+function uvCol2(uv){ return uv<=2?'#39ff8a':uv<=5?'#ffee58':uv<=7?'#ffb347':uv<=10?'#ff6b35':'#ff4757'; }
+function uvLbl2(uv){ return uv<=2?'Low':uv<=5?'Moderate':uv<=7?'High':uv<=10?'Very High':'Extreme'; }
+function wdCard2(d){ return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round((d%360)/22.5)%16]; }
 
-  // Local time from API
-  const localTime = loc.localtime ? loc.localtime.split(' ')[1] : '—';
+function renderIslandCards(){
+  const container = document.getElementById('island-cards');
+  let html = '';
 
-  document.getElementById(island.id).innerHTML = `
-    <!-- Header -->
-    <div class="abc-header">
-      <span class="abc-flag">${island.flag}</span>
-      <div style="flex:1">
-        <div class="abc-name">${island.name}</div>
-        <div class="abc-icao">${island.icao} · ${loc.name}, ${loc.country}</div>
-      </div>
-      <div style="text-align:right">
-        <div style="font-family:var(--orb);font-size:.72rem;color:var(--cyan);text-shadow:0 0 10px rgba(0,212,255,0.5)">${localTime} local</div>
-        <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:2px">${utc} UTC</div>
-      </div>
-    </div>
+  ISLANDS_WX.forEach((isl, idx) => {
+    const m = wxStore[isl.icao].metar;
+    const a = wxStore[isl.icao].api;
+    const border = idx < ISLANDS_WX.length-1 ? 'border-bottom:1px solid var(--border)' : '';
 
-    <!-- Condition bar -->
-    <div class="abc-wx">
-      <img src="https:${c.condition.icon}" style="width:52px;height:52px;filter:drop-shadow(0 0 8px rgba(0,212,255,0.4))">
-      <div style="flex:1">
-        <div class="abc-wx-desc">${c.condition.text}</div>
-        <div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:3px">
-          ${windKt>0?'Wind: '+windKt+' KT '+wdCard(c.wind_degree):'Calm'} · Vis: ${c.vis_km} km
+    // ── From CheckWX METAR ──
+    const cat    = m?.flight_category || '—';
+    const tempC  = m?.temperature?.celsius;
+    const dewC   = m?.dewpoint?.celsius;
+    const rh     = m?.humidity?.percent;
+    const windDeg= m?.wind?.degrees;
+    const windKt = m?.wind?.speed_kts;
+    const gustKt = m?.wind?.gust_kts;
+    const qnhHpa = m?.barometer?.hpa;
+    const qnhIn  = m?.barometer?.hg;
+    const visMtr = m?.visibility?.meters;
+    const ceilFt = m?.ceiling?.feet;
+    const clouds = (m?.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · ') || 'CAVOK';
+    const rawStr = m?.raw_text || '';
+    const obsTime= m?.observed ? new Date(m.observed) : null;
+    const ageMin = obsTime ? Math.round((Date.now()-obsTime.getTime())/60000) : null;
+    const pad2   = n => String(n).padStart(2,'0');
+    const obsStr = obsTime ? `${pad2(obsTime.getUTCDate())}/${pad2(obsTime.getUTCHours())}:${pad2(obsTime.getUTCMinutes())}Z` : '—';
+
+    // ── From weatherapi.com ──
+    const icon      = a?.current?.condition?.icon ? `https:${a.current.condition.icon}` : null;
+    const condText  = a?.current?.condition?.text || '—';
+    const feelsC    = a?.current?.feelslike_c;
+    const rhApi     = a?.current?.humidity;
+    const cloudPct  = a?.current?.cloud;
+    const precipMm  = a?.current?.precip_mm;
+    const uvIdx     = a?.current?.uv;
+    const localTime = a?.location?.localtime?.split(' ')[1] || '—';
+
+    // Use RH from METAR if available, else API
+    const rhVal = rh ?? rhApi;
+
+    // Condition display — icon from API, category from METAR
+    const tempDisp = tempC !== undefined ? tempC+'°C' : (a?.current?.temp_c !== undefined ? a.current.temp_c+'°C' : '—');
+    const windDisp = windKt !== undefined
+      ? `${pad2(windDeg||0)}° ${wdCard2(windDeg||0)} ${windKt} KT${gustKt?` G${gustKt} KT`:''}`
+      : (a?.current ? `${a.current.wind_degree}° ${a.current.wind_dir} ${Math.round(a.current.wind_kph*0.53996)} KT` : '—');
+
+    html += `
+      <div style="${border}">
+        <!-- Header row -->
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px 8px;background:rgba(0,212,255,0.03);border-bottom:1px solid var(--border)">
+          <span style="font-size:1.5rem;line-height:1">${isl.flag}</span>
+          <div style="flex:1">
+            <div style="font-family:var(--orb);font-size:.82rem;font-weight:700;letter-spacing:.14em;color:var(--accent-bright)">${isl.name}</div>
+            <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted);letter-spacing:.1em">${isl.icao} · ${isl.airport}</div>
+          </div>
+          ${icon ? `<img src="${icon}" style="width:44px;height:44px;filter:drop-shadow(0 0 8px rgba(0,212,255,0.35))">` : ''}
+          <div style="text-align:center;padding:0 8px">
+            <div style="font-family:var(--orb);font-size:.72rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 12px ${catCol(cat)};letter-spacing:.1em">${cat}</div>
+            <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:2px">${condText}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:var(--orb);font-size:1.6rem;font-weight:700;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.5);line-height:1">${tempDisp}</div>
+            <div style="font-family:var(--mono);font-size:.48rem;color:var(--muted);margin-top:3px">${localTime} local · ${obsStr}</div>
+          </div>
         </div>
-      </div>
-      <div style="text-align:right">
-        <div class="abc-wx-temp">${c.temp_c}°C</div>
-        <div style="font-family:var(--mono);font-size:.55rem;color:var(--muted);margin-top:2px">${c.temp_f}°F</div>
-      </div>
-    </div>
 
-    <!-- Stats grid -->
-    <div class="abc-stats">
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Feels Like</div>
-        <div class="abc-stat-val">${c.feelslike_c}°<span class="abc-stat-unit">C</span></div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Dew Point</div>
-        <div class="abc-stat-val">${c.dewpoint_c}°<span class="abc-stat-unit">C</span></div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Humidity</div>
-        <div class="abc-stat-val" style="color:${c.humidity>85?'#ffb347':'var(--accent-bright)'}">${c.humidity}<span class="abc-stat-unit">%</span></div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Wind</div>
-        <div class="abc-stat-val">${windKt}<span class="abc-stat-unit"> KT</span></div>
-        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${pad(c.wind_degree)}° ${c.wind_dir}</div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Gust</div>
-        <div class="abc-stat-val" style="color:${gustKt>25?'#ff4757':'var(--accent-bright)'}">${gustKt}<span class="abc-stat-unit"> KT</span></div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Pressure</div>
-        <div class="abc-stat-val">${c.pressure_mb}<span class="abc-stat-unit"> hPa</span></div>
-        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${c.pressure_in} inHg</div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Visibility</div>
-        <div class="abc-stat-val">${c.vis_km}<span class="abc-stat-unit"> km</span></div>
-        <div style="font-family:var(--mono);font-size:.5rem;color:var(--muted)">${c.vis_miles} mi</div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Cloud Cover</div>
-        <div class="abc-stat-val">${c.cloud}<span class="abc-stat-unit">%</span></div>
-      </div>
-      <div class="abc-stat">
-        <div class="abc-stat-lbl">Precip</div>
-        <div class="abc-stat-val" style="color:${c.precip_mm>0?'#3fa9f5':'var(--accent-bright)'}">${c.precip_mm}<span class="abc-stat-unit"> mm</span></div>
-      </div>
-    </div>
+        <!-- Stats grid — 6 columns -->
+        <div style="display:grid;grid-template-columns:repeat(6,1fr)">
+          ${isCell('Dew Point',   dewC!==undefined?dewC+'°C':'—',                 '')}
+          ${isCell('Humidity',    rhVal!==null&&rhVal!==undefined?Math.round(rhVal)+'%':'—', '', rhVal>85?'#ffb347':null)}
+          ${isCell('Feels Like',  feelsC!==undefined?feelsC+'°C':'—',              '')}
+          ${isCell('Wind',        windKt!==undefined?windKt+' KT':'—',             windDeg!==undefined?pad2(windDeg)+'° '+wdCard2(windDeg):'')}
+          ${isCell('Gust',        gustKt!==undefined?gustKt+' KT':'—',             '', gustKt>25?'#ff4757':null)}
+          ${isCell('QNH',         qnhHpa!==undefined?qnhHpa+' hPa':'—',           qnhIn!==undefined?qnhIn+' inHg':'')}
+          ${isCell('Visibility',  visMtr!==undefined?(visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km'):'—', '')}
+          ${isCell('Ceiling',     ceilFt!==undefined?ceilFt+'ft':'—',             '')}
+          ${isCell('Cloud Cover', cloudPct!==undefined?cloudPct+'%':'—',           clouds)}
+          ${isCell('Precip',      precipMm!==undefined?precipMm+' mm':'—',         '', precipMm>0?'#3fa9f5':null)}
+          ${isCell('UV Index',    uvIdx!==undefined?uvIdx:'—',                     uvIdx!==undefined?uvLbl2(uvIdx):'', uvIdx!==undefined?uvCol2(uvIdx):null)}
+          ${isCell('Obs Age',     ageMin!==null?ageMin+' min':'—',                 ageMin>90?'STALE':'Live', ageMin>90?'#ff4757':'#39ff8a')}
+        </div>
 
-    <!-- UV + extras bar -->
-    <div class="abc-uv">
-      <span>
-        UV: <span style="font-family:var(--orb);font-size:.72rem;font-weight:700;color:${uvCol(c.uv)}">${c.uv}</span>
-        <span style="color:${uvCol(c.uv)};font-size:.55rem"> ${uvLabel(c.uv)}</span>
-      </span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:.52rem;color:var(--muted)">
-        Last obs: ${c.last_updated}
-      </span>
-    </div>
-    <div class="abc-updated">⚡ weatherapi.com · live · refreshes every 10 min</div>
-  `;
+        <!-- Raw METAR -->
+        ${rawStr ? `<div style="padding:6px 16px 8px;font-family:var(--mono);font-size:.6rem;color:var(--cyan);background:rgba(0,0,0,0.4);border-top:1px solid var(--border);word-break:break-all;line-height:1.7"><span style="font-size:.5rem;color:var(--muted);letter-spacing:.15em">RAW METAR · </span>${rawStr}</div>` : ''}
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
 
-async function fetchAbcWeather(island){
+function isCell(lbl, val, sub, color){
+  return `<div style="padding:8px 10px 8px 14px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
+    <div style="font-family:var(--mono);font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:2px">${lbl}</div>
+    <div style="font-family:var(--orb);font-size:.88rem;font-weight:700;color:${color||'var(--accent-bright)'};line-height:1">${val}</div>
+    ${sub?`<div style="font-family:var(--mono);font-size:.44rem;color:${color&&sub!==val?color:'var(--muted)'};margin-top:2px">${sub}</div>`:''}
+  </div>`;
+}
+
+// Fetch CheckWX for island cards
+async function fetchIslandMetars(){
+  try{
+    const res = await fetch(
+      'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded',
+      { headers:{'X-API-Key': CHECKWX_KEY}, cache:'no-store' }
+    );
+    if(!res.ok) throw new Error('CheckWX '+res.status);
+    const json = await res.json();
+    (json.data||[]).forEach(d=>{
+      if(wxStore[d.icao]) wxStore[d.icao].metar = d;
+    });
+    renderIslandCards();
+  }catch(e){ console.warn('Island METAR fetch error:', e.message); renderIslandCards(); }
+}
+
+// Fetch weatherapi for island cards
+async function fetchIslandApi(island){
   try{
     const res = await fetch(
       `https://api.weatherapi.com/v1/current.json?key=${WX_API}&q=${encodeURIComponent(island.q)}&aqi=no`,
-      {cache:'no-store'}
+      { cache:'no-store' }
     );
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
-    renderAbcCard(island, data);
-  }catch(err){
-    const el = document.getElementById(island.id);
-    const hdr = el.querySelector('.abc-header');
-    if(hdr) hdr.insertAdjacentHTML('afterend',`<div style="padding:12px 16px;font-family:var(--mono);font-size:.6rem;color:#ff4757">❌ ${err.message}</div>`);
-  }
+    if(!res.ok) throw new Error('weatherapi '+res.status);
+    wxStore[island.icao].api = await res.json();
+  }catch(e){ console.warn('Island API fetch error:', e.message); }
 }
 
-function fetchAllAbc(){ ABC_ISLANDS.forEach(fetchAbcWeather); }
-fetchAllAbc();
-setInterval(fetchAllAbc, 10*60*1000);
+async function fetchAllIslandWx(){
+  await Promise.all([
+    fetchIslandMetars(),
+    ...ISLANDS_WX.map(fetchIslandApi)
+  ]);
+  renderIslandCards();
+}
+
+fetchAllIslandWx();
+setInterval(fetchAllIslandWx, 5*60*1000);
 
 /* ── Auto reload entire page every 30 minutes ── */
 setTimeout(()=>location.reload(), 30*60*1000);
