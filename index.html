@@ -406,7 +406,7 @@ header::before{
 .radar-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
 
-/* ── METAR CARDS ── */
+/* ── METAR CARDS (compact, TAF-style) ── */
 .metar-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
 .metar-card{
   border:1px solid var(--border);border-radius:var(--radius);
@@ -421,51 +421,101 @@ header::before{
   background:linear-gradient(180deg,var(--cyan),var(--accent));
   box-shadow:0 0 14px var(--cyan);
 }
+
+.metar-header{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 14px 8px 18px;
+}
 .metar-icao{
   font-family:var(--display);font-size:.95rem;font-weight:700;
   letter-spacing:.18em;color:var(--cyan);
-  padding:12px 14px 4px 18px;
   text-shadow:0 0 20px rgba(34,211,238,0.45);
 }
 .metar-airport{
   font-family:var(--mono);font-size:.55rem;letter-spacing:.16em;
-  color:var(--text-dim);padding:0 14px 10px 18px;font-weight:500;
+  color:var(--text-dim);font-weight:500;
 }
+.metar-cat-pill{
+  margin-left:auto;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:4px 10px;border-radius:3px;
+  border:1px solid currentColor;
+  font-family:var(--display);font-size:.68rem;font-weight:700;
+  letter-spacing:.14em;
+}
+.metar-cat-pill .metar-cond{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;
+  color:var(--text-dim);text-transform:uppercase;font-weight:500;
+  border-left:1px solid var(--border-hi);padding-left:8px;
+}
+
 .metar-raw{
-  font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);
+  font-family:var(--mono);font-size:.6rem;color:var(--accent-bright);
   line-height:1.7;letter-spacing:.04em;word-break:break-all;
-  padding:10px 14px 10px 18px;
+  padding:8px 14px 8px 18px;
   border-top:1px solid var(--border);
-  background:rgba(0,0,0,0.4);
-  font-weight:500;
+  background:rgba(0,0,0,0.4);font-weight:500;
 }
-.metar-decoded{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  border-top:1px solid var(--border);
-}
-.metar-field{
-  padding:9px 12px 9px 16px;
-  border-right:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.metar-field:nth-child(3n){border-right:none}
-.metar-field:nth-last-child(-n+3){border-bottom:none}
-.metar-field-lbl{
-  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:500;
-  text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;
-}
-.metar-field-val{
-  font-family:var(--display);font-size:.95rem;font-weight:600;
-  color:var(--accent-bright);line-height:1;
-  font-variant-numeric:tabular-nums;
-  letter-spacing:-.01em;
-}
-.metar-field-unit{font-family:var(--mono);font-size:.46rem;color:var(--text-dim);margin-top:2px}
-.metar-age{
-  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
-  letter-spacing:.1em;padding:7px 14px 8px 18px;
+
+.metar-grid{
+  display:grid;
+  grid-template-columns:repeat(10,1fr);
   border-top:1px solid var(--border);
   background:rgba(0,0,0,0.2);
+}
+.metar-cell{
+  padding:8px 10px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;
+  min-width:0;
+}
+.metar-cell:last-child{border-right:none}
+.metar-cell-lbl{
+  font-family:var(--mono);font-size:.44rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:3px;
+  white-space:nowrap;
+}
+.metar-cell-val{
+  font-family:var(--display);font-size:.78rem;font-weight:600;
+  color:var(--accent-bright);line-height:1.1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.metar-cell-sub{
+  font-family:var(--mono);font-size:.46rem;color:var(--text-dim);
+  margin-top:2px;font-weight:500;white-space:nowrap;
+}
+
+.metar-clouds-row{
+  display:flex;align-items:center;gap:14px;
+  padding:7px 14px 7px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.25);
+  font-family:var(--mono);font-size:.58rem;color:var(--text);
+  font-weight:500;
+}
+.metar-clouds-row .lbl{
+  font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);
+}
+
+.metar-age{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.1em;padding:6px 14px 7px 18px;
+  border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.3);
+  font-weight:500;
+}
+
+@media(max-width:1100px){
+  .metar-grid{grid-template-columns:repeat(5,1fr)}
+  .metar-cell:nth-child(5n){border-right:none}
+  .metar-cell:nth-child(-n+5){border-bottom:1px solid var(--border)}
+}
+@media(max-width:600px){
+  .metar-grid{grid-template-columns:repeat(3,1fr)}
+  .metar-cell{border-right:1px solid var(--border)!important;border-bottom:1px solid var(--border)}
+  .metar-cell:nth-child(3n){border-right:none!important}
 }
 
 /* ── TAF CARDS ── */
@@ -689,7 +739,9 @@ header::before{
   font-family:var(--display);font-size:.78rem;font-weight:700;
   letter-spacing:.14em;color:var(--accent-bright);
   text-shadow:0 0 14px rgba(155,212,255,0.3);
+  display:flex;align-items:center;gap:8px;
 }
+.atc-flag{font-size:.95rem;line-height:1;letter-spacing:0}
 .atc-freq{
   font-family:var(--mono);font-size:.58rem;letter-spacing:.16em;
   color:var(--text-dim);font-weight:500;margin-top:3px;
@@ -855,6 +907,82 @@ header::before{
 <div class="layout">
 
   <div class="full">
+    <div class="section-title">Live ATC — Curaçao · Aruba · Bonaire</div>
+    <div class="panel">
+      <div class="atc-players">
+
+```
+    <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
+      <button class="atc-play-btn" aria-label="Play TNCC TWR"><span class="atc-play-icon">▶</span></button>
+      <div class="atc-info">
+        <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Tower</div>
+        <div class="atc-freq">118.300 MHz · Curaçao</div>
+      </div>
+      <div class="atc-status">
+        <span class="atc-status-dot"></span>
+        <span class="atc-status-text">Idle</span>
+      </div>
+      <div class="atc-volume">
+        <span class="atc-vol-icon">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+      </div>
+    </div>
+
+    <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
+      <button class="atc-play-btn" aria-label="Play TNCC APP"><span class="atc-play-icon">▶</span></button>
+      <div class="atc-info">
+        <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Approach / Radar</div>
+        <div class="atc-freq">APP / RDR · Curaçao</div>
+      </div>
+      <div class="atc-status">
+        <span class="atc-status-dot"></span>
+        <span class="atc-status-text">Idle</span>
+      </div>
+      <div class="atc-volume">
+        <span class="atc-vol-icon">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+      </div>
+    </div>
+
+    <div class="atc-player" data-stream="https://d.liveatc.net/tnca_twr">
+      <button class="atc-play-btn" aria-label="Play TNCA TWR"><span class="atc-play-icon">▶</span></button>
+      <div class="atc-info">
+        <div class="atc-label"><span class="atc-flag">🇦🇼</span> TNCA · Aruba Tower</div>
+        <div class="atc-freq">118.100 MHz · Queen Beatrix</div>
+      </div>
+      <div class="atc-status">
+        <span class="atc-status-dot"></span>
+        <span class="atc-status-text">Idle</span>
+      </div>
+      <div class="atc-volume">
+        <span class="atc-vol-icon">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+      </div>
+    </div>
+
+    <div class="atc-player" data-stream="https://d.liveatc.net/tncb_twr">
+      <button class="atc-play-btn" aria-label="Play TNCB TWR"><span class="atc-play-icon">▶</span></button>
+      <div class="atc-info">
+        <div class="atc-label"><span class="atc-flag">🇧🇶</span> TNCB · Bonaire Tower</div>
+        <div class="atc-freq">118.100 MHz · Flamingo</div>
+      </div>
+      <div class="atc-status">
+        <span class="atc-status-dot"></span>
+        <span class="atc-status-text">Idle</span>
+      </div>
+      <div class="atc-volume">
+        <span class="atc-vol-icon">🔊</span>
+        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+      </div>
+    </div>
+
+  </div>
+</div>
+```
+
+  </div>
+
+  <div class="full">
     <div class="section-title">ADSBexchange — Live Traffic</div>
     <div class="radar-box">
       <iframe src="https://globe.adsbexchange.com/?lat=12.2&lon=-69&zoom=9"></iframe>
@@ -879,74 +1007,37 @@ header::before{
   </div>
 
   <div class="full">
-    <div class="section-title">Live ATC — TNCC Frequencies</div>
-    <div class="panel">
-      <div class="atc-players">
-        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
-          <button class="atc-play-btn" aria-label="Play TWR">
-            <span class="atc-play-icon">▶</span>
-          </button>
-          <div class="atc-info">
-            <div class="atc-label">TWR · Tower</div>
-            <div class="atc-freq">118.300 MHz</div>
-          </div>
-          <div class="atc-status">
-            <span class="atc-status-dot"></span>
-            <span class="atc-status-text">Idle</span>
-          </div>
-          <div class="atc-volume">
-            <span class="atc-vol-icon">🔊</span>
-            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
-          </div>
-        </div>
-
-```
-    <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
-      <button class="atc-play-btn" aria-label="Play Approach">
-        <span class="atc-play-icon">▶</span>
-      </button>
-      <div class="atc-info">
-        <div class="atc-label">APP / RDR · Approach</div>
-        <div class="atc-freq">Radar</div>
-      </div>
-      <div class="atc-status">
-        <span class="atc-status-dot"></span>
-        <span class="atc-status-text">Idle</span>
-      </div>
-      <div class="atc-volume">
-        <span class="atc-vol-icon">🔊</span>
-        <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
-      </div>
-    </div>
-  </div>
-</div>
-```
-
-  </div>
-
-  <div class="full">
     <div class="section-title">METAR — TNCA · TNCC · TNCB <span class="data-badge loading" id="metarBadge">LOADING</span></div>
     <div class="panel">
       <div class="metar-strip">
         <div class="metar-card">
-          <div class="metar-icao">TNCA</div>
-          <div class="metar-airport">Queen Beatrix Int'l · Aruba 🇦🇼</div>
+          <div class="metar-header">
+            <span class="metar-icao">TNCA</span>
+            <span class="metar-airport">Queen Beatrix Int'l · Aruba 🇦🇼</span>
+            <span id="metar-cat-tnca"></span>
+          </div>
           <div class="metar-raw" id="metar-raw-tnca">Fetching…</div>
-          <div class="metar-decoded" id="metar-dec-tnca"></div>
+          <div id="metar-dec-tnca"></div>
           <div class="metar-age" id="metar-age-tnca"></div>
         </div>
         <div class="metar-card">
-          <div class="metar-icao">TNCC</div>
-          <div class="metar-airport">Hato International · Curaçao 🇨🇼</div>
+          <div class="metar-header">
+            <span class="metar-icao">TNCC</span>
+            <span class="metar-airport">Hato International · Curaçao 🇨🇼</span>
+            <span id="metar-cat-tncc"></span>
+          </div>
           <div class="metar-raw" id="metar-raw-tncc">Fetching…</div>
-          <div class="metar-decoded" id="metar-dec-tncc"></div>
+          <div id="metar-dec-tncc"></div>
           <div class="metar-age" id="metar-age-tncc"></div>
         </div>
         <div class="metar-card">
-          <div class="metar-icao">TNCB</div>
-          <div class="metar-airport">Flamingo Airport · Bonaire 🇧🇶</div>
+          <div class="metar-header">
+            <span class="metar-icao">TNCB</span>
+            <span class="metar-airport">Flamingo Airport · Bonaire 🇧🇶</span>
+            <span id="metar-cat-tncb"></span>
+          </div>
           <div class="metar-raw" id="metar-raw-tncb">Fetching…</div>
-          <div class="metar-decoded" id="metar-dec-tncb"></div>
+          <div id="metar-dec-tncb"></div>
           <div class="metar-age" id="metar-age-tncb"></div>
         </div>
       </div>
@@ -1001,9 +1092,16 @@ header::before{
     </div>
   </div>
   <div class="col-6">
+    <div class="section-title">Wind</div>
+    <div class="radar-box">
+      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+  <div class="col-6">
     <div class="section-title">Saharan Dust</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=dust"></iframe>
+      <iframe src="https://embed.windy.com/embed2.html?lat=11.974&lon=-69.130&zoom=8&overlay=dustsm"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -1281,15 +1379,17 @@ function renderMETAR(icao,d){
   const wind =d.wind||{};
   const wdeg =wind.degrees!==undefined?pad(wind.degrees)+'°':(wind.direction==='VRB'?'VRB':'—');
   const wcard=wind.degrees!==undefined?wdCard(wind.degrees):'';
-  const wspd =wind.speed_kts!==undefined?wind.speed_kts+' KT':'—';
-  const wgst =wind.gust_kts !==undefined?'G'+wind.gust_kts+' KT':'—';
+  const wspd =wind.speed_kts!==undefined?wind.speed_kts:'—';
+  const wgst =wind.gust_kts !==undefined?wind.gust_kts:'—';
   const gustHi=wind.gust_kts>25;
 
-  const temp =d.temperature?.celsius!==undefined?d.temperature.celsius+'°C':'—';
-  const dew  =d.dewpoint?.celsius   !==undefined?d.dewpoint.celsius+'°C'   :'—';
-  const rh   =d.humidity?.percent   !==undefined?d.humidity.percent+'%'    :'—';
-  const qnh  =d.barometer?.hpa      !==undefined?d.barometer.hpa+' hPa'   :'—';
-  const qnhHg=d.barometer?.hg       !==undefined?d.barometer.hg+' inHg'   :'';
+  const tempC=d.temperature?.celsius;
+  const dewC =d.dewpoint?.celsius;
+  const temp =tempC!==undefined?tempC+'°':'—';
+  const dew  =dewC !==undefined?dewC +'°':'—';
+  const rh   =d.humidity?.percent!==undefined?d.humidity.percent+'%':'—';
+  const qnh  =d.barometer?.hpa   !==undefined?d.barometer.hpa:'—';
+  const qnhHg=d.barometer?.hg    !==undefined?d.barometer.hg+' inHg':'';
 
   const visMtr=d.visibility?.meters;
   const vis=visMtr!==undefined
@@ -1297,26 +1397,70 @@ function renderMETAR(icao,d){
     :(d.visibility?.miles!==undefined?d.visibility.miles+' SM':'—');
 
   const clouds=(d.clouds||[]).map(c=>`${c.code} ${c.base_feet_agl}ft`).join(' · ')||'CAVOK';
-  const ceil =d.ceiling?.feet!==undefined?d.ceiling.feet+'ft':'No ceiling';
+  const ceil =d.ceiling?.feet!==undefined?d.ceiling.feet+'ft':'—';
   const cat  =d.flight_category||'—';
-  const cond =(d.conditions||[]).map(c=>c.text||c.code).join(', ')||'—';
+  const cond =(d.conditions||[]).map(c=>c.text||c.code).join(', ');
+
+  // Category pill in header
+  const catEl=document.getElementById(`metar-cat-${pfx}`);
+  catEl.className='metar-cat-pill';
+  catEl.style.color=catCol(cat);
+  catEl.style.boxShadow=`0 0 14px ${catCol(cat)}33`;
+  catEl.innerHTML = `${cat}${cond?`<span class="metar-cond">${cond}</span>`:''}`;
+
+  // Compact horizontal grid
+  const gustColor = gustHi ? '#f87171' : 'var(--accent-bright)';
+  const rhColor   = d.humidity?.percent>85 ? '#fbbf24' : 'var(--accent-bright)';
 
   document.getElementById(`metar-dec-${pfx}`).innerHTML=`
-    <div class="metar-field" style="grid-column:1/-1;background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:14px;padding:10px 16px">
-      <span style="font-family:var(--display);font-size:1.05rem;font-weight:700;color:${catCol(cat)};text-shadow:0 0 14px ${catCol(cat)};letter-spacing:.05em">${cat}</span>
-      <span style="font-family:var(--mono);font-size:.55rem;color:var(--text-dim);letter-spacing:.16em;text-transform:uppercase;font-weight:500">Flight Category</span>
-      <span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);font-weight:500">${cond}</span>
+    <div class="metar-grid">
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Temp</div>
+        <div class="metar-cell-val">${temp}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Dew</div>
+        <div class="metar-cell-val">${dew}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">RH</div>
+        <div class="metar-cell-val" style="color:${rhColor}">${rh}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Wind</div>
+        <div class="metar-cell-val">${wdeg}</div>
+        ${wcard?`<div class="metar-cell-sub">${wcard}</div>`:''}
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Speed</div>
+        <div class="metar-cell-val">${wspd}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${wspd!=='—'?' KT':''}</span></div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Gust</div>
+        <div class="metar-cell-val" style="color:${gustColor}">${wgst}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${wgst!=='—'?' KT':''}</span></div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">QNH</div>
+        <div class="metar-cell-val">${qnh}<span style="font-size:.55rem;color:var(--text-dim);font-weight:500">${qnh!=='—'?' hPa':''}</span></div>
+        ${qnhHg?`<div class="metar-cell-sub">${qnhHg}</div>`:''}
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Vis</div>
+        <div class="metar-cell-val">${vis}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Ceil</div>
+        <div class="metar-cell-val">${ceil}</div>
+      </div>
+      <div class="metar-cell">
+        <div class="metar-cell-lbl">Cat</div>
+        <div class="metar-cell-val" style="color:${catCol(cat)};text-shadow:0 0 10px ${catCol(cat)}">${cat}</div>
+      </div>
     </div>
-    <div class="metar-field"><div class="metar-field-lbl">Temperature</div><div class="metar-field-val">${temp}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Dew Point</div><div class="metar-field-val">${dew}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Humidity</div><div class="metar-field-val">${rh}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Wind Dir</div><div class="metar-field-val">${wdeg} <span style="font-size:.6rem;opacity:.7">${wcard}</span></div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Wind Spd</div><div class="metar-field-val">${wspd}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Gust</div><div class="metar-field-val" style="color:${gustHi?'#f87171':'var(--accent-bright)'}">${wgst}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">QNH</div><div class="metar-field-val">${qnh}</div><div class="metar-field-unit">${qnhHg}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Visibility</div><div class="metar-field-val">${vis}</div></div>
-    <div class="metar-field"><div class="metar-field-lbl">Ceiling</div><div class="metar-field-val">${ceil}</div></div>
-    <div class="metar-field" style="grid-column:span 3"><div class="metar-field-lbl">Clouds</div><div class="metar-field-val" style="font-size:.78rem">${clouds}</div></div>
+    <div class="metar-clouds-row">
+      <span class="lbl">Clouds</span>
+      <span>${clouds}</span>
+    </div>
   `;
 }
 
