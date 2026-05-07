@@ -956,6 +956,159 @@ header::before{
   .rwc-frame-wrap{height:calc(100vh - 180px);min-height:540px;}
 }
 
+/* ── SMOOTH CONTENT UPDATES ── */
+#metar-strip,#taf-strip,#island-cards,#forecast-content,#marine-content,#sigmet-content{
+  transition:opacity .25s ease;
+}
+#metar-strip *,#taf-strip *,#island-cards *,#forecast-content *,#marine-content *,#sigmet-content *{
+  transition:color .2s ease, background-color .2s ease;
+}
+
+/* ── 3-DAY FORECAST ── */
+.fcast-island{
+  border-bottom:1px solid var(--border);
+}
+.fcast-island:last-child{border-bottom:none}
+.fcast-island-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px 10px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+  border-bottom:1px solid var(--border);
+}
+.fcast-flag{font-size:1.6rem;line-height:1}
+.fcast-name{
+  font-family:var(--display);font-size:.92rem;font-weight:700;
+  letter-spacing:.16em;color:var(--accent-bright);
+  text-shadow:0 0 18px rgba(155,212,255,0.3);
+}
+.fcast-sub{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.14em;margin-top:2px;font-weight:500;
+}
+.fcast-days{
+  display:grid;grid-template-columns:repeat(3,1fr);
+}
+.fcast-day{
+  padding:14px 16px;
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;gap:8px;
+  transition:background .2s;
+}
+.fcast-day:last-child{border-right:none}
+.fcast-day:hover{background:rgba(34,211,238,0.03)}
+.fcast-day-hdr{
+  display:flex;align-items:baseline;justify-content:space-between;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);font-weight:600;
+}
+.fcast-day-name{color:var(--cyan);font-size:.62rem}
+.fcast-day-row{
+  display:flex;align-items:center;gap:14px;
+}
+.fcast-temp-hi{
+  font-family:var(--display);font-size:1.4rem;font-weight:700;
+  color:#ffaa55;line-height:1;letter-spacing:-.02em;
+  text-shadow:0 0 16px rgba(255,170,85,0.35);
+}
+.fcast-temp-lo{
+  font-family:var(--display);font-size:.95rem;font-weight:600;
+  color:var(--accent);line-height:1;
+}
+.fcast-icon{font-size:1.8rem;line-height:1;margin-left:auto}
+.fcast-cond{
+  font-family:var(--mono);font-size:.6rem;color:var(--accent-bright);
+  letter-spacing:.06em;font-weight:500;
+}
+.fcast-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;
+  font-family:var(--mono);font-size:.55rem;
+  padding-top:6px;border-top:1px dashed var(--border);
+}
+.fcast-grid-item{display:flex;justify-content:space-between;align-items:center}
+.fcast-grid-lbl{color:var(--text-dim);letter-spacing:.12em;text-transform:uppercase;font-weight:500;font-size:.5rem}
+.fcast-grid-val{color:var(--accent-bright);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ── MARINE ── */
+.marine-island{
+  border-bottom:1px solid var(--border);
+}
+.marine-island:last-child{border-bottom:none}
+.marine-island-hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+  border-bottom:1px solid var(--border);
+}
+.marine-advice{
+  margin-left:auto;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:4px;
+  border:1px solid currentColor;
+  font-family:var(--display);font-size:.7rem;font-weight:700;
+  letter-spacing:.12em;
+}
+.marine-advice .marine-icon{font-size:1.05rem;line-height:1}
+.marine-advice.adv-good   {color:#4ade80;background:rgba(74,222,128,0.06);box-shadow:0 0 14px rgba(74,222,128,0.18)}
+.marine-advice.adv-fair   {color:#fbbf24;background:rgba(251,191,36,0.06);box-shadow:0 0 14px rgba(251,191,36,0.18)}
+.marine-advice.adv-rough  {color:#fb923c;background:rgba(251,146,60,0.07);box-shadow:0 0 14px rgba(251,146,60,0.2)}
+.marine-advice.adv-danger {color:#f87171;background:rgba(248,113,113,0.07);box-shadow:0 0 14px rgba(248,113,113,0.22)}
+.marine-grid{
+  display:grid;grid-template-columns:repeat(6,1fr);
+}
+.marine-cell{
+  padding:10px 12px 10px 16px;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+.marine-cell:nth-child(6n){border-right:none}
+.marine-cell-lbl{
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;
+}
+.marine-cell-val{
+  font-family:var(--display);font-size:.95rem;font-weight:600;
+  color:var(--accent-bright);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+}
+.marine-cell-sub{
+  font-family:var(--mono);font-size:.46rem;color:var(--text-dim);
+  margin-top:3px;font-weight:500;
+}
+.marine-summary{
+  padding:12px 18px;
+  font-family:var(--body);font-size:.7rem;line-height:1.6;
+  color:var(--text);border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.25);
+  font-weight:500;
+}
+.marine-summary .lbl{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;
+  color:var(--text-dim);text-transform:uppercase;font-weight:600;
+  margin-right:8px;
+}
+
+/* ── SIGMETs ── */
+.sigmet-list{display:flex;flex-direction:column;gap:8px}
+.sigmet-item{
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-left:3px solid #fb923c;
+  border-radius:var(--radius);
+  background:linear-gradient(180deg,rgba(251,146,60,0.04),rgba(0,0,0,0.3));
+  font-family:var(--mono);font-size:.62rem;line-height:1.7;
+  color:var(--text);font-weight:500;
+}
+.sigmet-item .sig-id{
+  display:block;color:#fb923c;font-size:.66rem;
+  letter-spacing:.1em;margin-bottom:3px;font-weight:700;
+}
+.sigmet-empty{
+  padding:18px;text-align:center;
+  font-family:var(--mono);font-size:.65rem;color:var(--green);
+  border:1px dashed var(--green);border-radius:var(--radius);
+  background:rgba(74,222,128,0.04);
+}
+
 /* ── ENTRY ANIMATIONS ── */
 .layout > *{animation:fadeUp .5s cubic-bezier(.4,0,.2,1) both}
 .layout > *:nth-child(1){animation-delay:.04s}
@@ -1031,11 +1184,14 @@ header::before{
 <div class="tab-bar">
   <div class="tab-btn active" data-tab="atc">📡 ATC <span class="tab-key">1</span></div>
   <div class="tab-btn" data-tab="weather">🌤 Weather <span class="tab-key">2</span></div>
-  <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">3</span></div>
-  <div class="tab-btn tab-featured" data-tab="regional">🌍 Regional <span class="tab-key">4</span></div>
-  <div class="tab-btn" data-tab="satellite">🛰 Satellite <span class="tab-key">5</span></div>
-  <div class="tab-btn" data-tab="departures">🛫 Departures <span class="tab-key">6</span></div>
-  <div class="tab-btn" data-tab="arrivals">🛬 Arrivals <span class="tab-key">7</span></div>
+  <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
+  <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
+  <div class="tab-btn" data-tab="ops">⚙ Ops <span class="tab-key">5</span></div>
+  <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">6</span></div>
+  <div class="tab-btn tab-featured" data-tab="regional">🌍 Regional <span class="tab-key">7</span></div>
+  <div class="tab-btn" data-tab="satellite">🛰 Sat <span class="tab-key">8</span></div>
+  <div class="tab-btn" data-tab="departures">🛫 Dep <span class="tab-key">9</span></div>
+  <div class="tab-btn" data-tab="arrivals">🛬 Arr <span class="tab-key">0</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -1122,7 +1278,7 @@ header::before{
   <div class="full">
     <div class="section-title">ADSBexchange — Live Traffic</div>
     <div class="radar-box">
-      <iframe src="https://globe.adsbexchange.com/?lat=12.2&lon=-69&zoom=9"></iframe>
+      <iframe class="windy-iframe" src="https://globe.adsbexchange.com/?lat=12.2&lon=-69&zoom=9"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -1130,7 +1286,7 @@ header::before{
   <div class="col-6">
     <div class="section-title">Windy — Cloud Cover</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -1138,7 +1294,7 @@ header::before{
   <div class="col-6">
     <div class="section-title">Windy — Precipitation Radar</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -1210,35 +1366,35 @@ header::before{
   <div class="col-6">
     <div class="section-title">Radar</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Cloud Cover</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Satellite IR</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=satellite"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=satellite"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Wind</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Saharan Dust</div>
     <div class="radar-box">
-      <iframe src="https://embed.windy.com/embed2.html?lat=11.974&lon=-69.130&zoom=8&overlay=dustsm"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=11.974&lon=-69.130&zoom=8&overlay=dustsm"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -1268,6 +1424,97 @@ header::before{
       <div class="notam-body">
         <div class="notam-list" id="notamList"></div>
       </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: 3-DAY FORECAST ═══ -->
+
+<div class="tab-pane" id="tab-forecast">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">3-Day Forecast — ABC Islands · Open-Meteo Ensemble Consensus <span class="data-badge loading" id="fcastBadge">LOADING</span></div>
+    <div class="panel" style="overflow:visible">
+      <div id="forecast-content">
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading 3-day forecast…</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: MARINE ═══ -->
+
+<div class="tab-pane" id="tab-marine">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Marine Conditions — ABC Islands <span class="data-badge loading" id="marineBadge">LOADING</span></div>
+    <div class="panel" style="overflow:visible">
+      <div id="marine-content">
+        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading marine forecast…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Wave Height</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Swell Period</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=swell1" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TAB: OPS ═══ -->
+
+<div class="tab-pane" id="tab-ops">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Active SIGMETs · Aviation Weather Center <span class="data-badge loading" id="sigmetBadge">LOADING</span></div>
+    <div class="panel">
+      <div id="sigmet-content" style="padding:14px">
+        <div style="font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;padding:20px">Loading SIGMETs…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Surface Analysis — NWS OPC Atlantic</div>
+    <div class="radar-box" style="height:520px">
+      <img id="opcChart" alt="Surface Analysis" style="width:100%;height:100%;object-fit:contain;background:#0a0d14"/>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Caribbean Tropical Weather Outlook — NHC</div>
+    <div class="radar-box" style="height:520px">
+      <img id="nhcChart" alt="NHC Atlantic 7-Day" style="width:100%;height:100%;object-fit:contain;background:#0a0d14"/>
+    </div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">Windy — Radiosonde · AROME-Antilles</div>
+    <div class="radar-box" style="height:560px">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?type=radiosonde&model=aromeAntilles&lat=11.440&lon=-68.959&zoom=9&overlay=radar&product=radar" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="full">
+    <div class="section-title">Windy — Satellite IR (Animated Loop)</div>
+    <div class="radar-box" style="height:520px">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=7&overlay=satellite&product=satellite" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
     </div>
   </div>
 </div>
@@ -1329,8 +1576,9 @@ header::before{
 /* ════════════════════════════════
    CONFIG
 ════════════════════════════════ */
-const CHECKWX_KEY  = 'fb135a94c0574db4b26082b70705b4af';
-const WX_API_KEY   = 'fef2a58ed5fa4b2ea08221244260405';
+// API keys are now hidden behind a Cloudflare Worker proxy.
+// Set this to your deployed Worker URL — see worker.js for setup.
+const PROXY_BASE   = 'https://atc-proxy.YOUR-SUBDOMAIN.workers.dev';
 const REFRESH_MS   = 5 * 60 * 1000;
 
 const AIRPORTS = {
@@ -1399,7 +1647,10 @@ setLock(true);
 lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
 
 /* ════════════════════════════════
-   ATC INLINE STREAM PLAYERS
+   LIVE ATC STREAM PLAYERS
+   Persistent audio elements that survive tab switches and data
+   refreshes. Auto-reconnect on transient failures. Never reloaded
+   by the iframe-keep-alive system.
 ════════════════════════════════ */
 document.querySelectorAll('.atc-player').forEach(card=>{
   const url      = card.dataset.stream;
@@ -1408,11 +1659,15 @@ document.querySelectorAll('.atc-player').forEach(card=>{
   const statusEl = card.querySelector('.atc-status-text');
   const volSlider= card.querySelector('.atc-vol-slider');
 
-  // One persistent <audio> element per stream — survives tab switches.
   const audio = new Audio();
   audio.preload = 'none';
   audio.crossOrigin = 'anonymous';
   audio.volume = volSlider.value/100;
+
+  let userWantsPlay = false;
+  let reconnectAttempts = 0;
+  let reconnectTimer = null;
+  const MAX_RECONNECTS = 5;
 
   function setState(state){
     card.classList.remove('loading','playing','error');
@@ -1423,28 +1678,83 @@ document.querySelectorAll('.atc-player').forEach(card=>{
     statusEl.textContent =
       state==='loading' ? 'Connecting' :
       state==='playing' ? 'Live' :
-      state==='error'   ? 'Error' : 'Idle';
+      state==='error'   ? (reconnectAttempts>0?`Retry ${reconnectAttempts}/${MAX_RECONNECTS}`:'Error') :
+                          'Idle';
   }
 
-  audio.addEventListener('playing',()=>setState('playing'));
-  audio.addEventListener('waiting',()=>setState('loading'));
-  audio.addEventListener('pause',  ()=>{ if(!audio.ended) setState(null); });
-  audio.addEventListener('error',  ()=>setState('error'));
-  audio.addEventListener('stalled',()=>setState('loading'));
+  function startStream(){
+    clearTimeout(reconnectTimer);
+    try{
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }catch(_){}
+    setState('loading');
+    // Cache-bust in case the browser cached an old buffer
+    audio.src = url + (url.includes('?')?'&':'?') + 't=' + Date.now();
+    const playPromise = audio.play();
+    if(playPromise && playPromise.catch){
+      playPromise.catch(err=>{
+        console.warn('ATC play() rejected:',err.message);
+        scheduleReconnect();
+      });
+    }
+  }
+
+  function stopStream(){
+    userWantsPlay = false;
+    clearTimeout(reconnectTimer);
+    reconnectAttempts = 0;
+    try{
+      audio.pause();
+      audio.removeAttribute('src');
+      audio.load();
+    }catch(_){}
+    setState(null);
+  }
+
+  function scheduleReconnect(){
+    if(!userWantsPlay) return;
+    if(reconnectAttempts >= MAX_RECONNECTS){
+      setState('error');
+      reconnectAttempts = 0;
+      return;
+    }
+    reconnectAttempts++;
+    setState('error');
+    const delay = Math.min(2000 * reconnectAttempts, 10000);
+    reconnectTimer = setTimeout(()=>{
+      if(userWantsPlay) startStream();
+    }, delay);
+  }
+
+  audio.addEventListener('playing',()=>{
+    reconnectAttempts = 0;
+    setState('playing');
+  });
+  audio.addEventListener('waiting',()=>{
+    if(userWantsPlay) setState('loading');
+  });
+  audio.addEventListener('pause',  ()=>{
+    if(!userWantsPlay) setState(null);
+  });
+  audio.addEventListener('error',  ()=>{
+    if(userWantsPlay) scheduleReconnect();
+  });
+  audio.addEventListener('stalled',()=>{
+    if(userWantsPlay) setState('loading');
+  });
+  audio.addEventListener('ended',  ()=>{
+    if(userWantsPlay) scheduleReconnect();
+  });
 
   btn.addEventListener('click',()=>{
-    if(audio.paused){
-      // Cache-bust so the browser doesn't replay a stale buffer.
-      audio.src = url + '?t=' + Date.now();
-      setState('loading');
-      audio.play().catch(err=>{
-        console.warn('ATC stream failed:',err.message);
-        setState('error');
-      });
+    if(userWantsPlay){
+      stopStream();
     } else {
-      audio.pause();
-      audio.src = '';      // fully release the connection
-      setState(null);
+      userWantsPlay = true;
+      reconnectAttempts = 0;
+      startStream();
     }
   });
 
@@ -1458,9 +1768,15 @@ document.querySelectorAll('.atc-player').forEach(card=>{
 ════════════════════════════════ */
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
-  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+name));
+  document.querySelectorAll('.tab-pane').forEach(p=>{
+    const isActive=p.id==='tab-'+name;
+    p.classList.toggle('active',isActive);
+  });
 
-  // Lazy-load iframes the first time their tab opens.
+  // Track when each tab was last viewed (for stale-iframe detection).
+  tabLastSeen[name]=Date.now();
+
+  // Lazy-load static iframes the first time their tab opens.
   const lazy = {
     regional:  ['rwcFrame', 'https://gniusweather.github.io/RWC/'],
     satellite: ['satFrame', 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off'],
@@ -1472,19 +1788,35 @@ function switchTab(name){
     const f=document.getElementById(id);
     if(f && !f.src) f.src=url;
   }
+
+  // Lazy-init Windy iframes inside the tab being opened (data-src → src).
+  const pane=document.getElementById('tab-'+name);
+  if(pane){
+    pane.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
+      if(!f.src){
+        f.src=f.getAttribute('data-src');
+        f.removeAttribute('data-src');
+      }
+    });
+  }
+
+  // Lazy-init data tabs
+  if(name==='forecast' && !forecastLoaded) loadForecast();
+  if(name==='marine'   && !marineLoaded)   loadMarine();
+  if(name==='ops'      && !opsLoaded)      loadOps();
 }
+
+// Track when each tab was last seen so we can refresh stale ones.
+const tabLastSeen={atc:Date.now()};
+let forecastLoaded=false, marineLoaded=false, opsLoaded=false;
+
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click',()=>switchTab(btn.dataset.tab));
 });
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  if(e.key==='1') switchTab('atc');
-  if(e.key==='2') switchTab('weather');
-  if(e.key==='3') switchTab('notams');
-  if(e.key==='4') switchTab('regional');
-  if(e.key==='5') switchTab('satellite');
-  if(e.key==='6') switchTab('departures');
-  if(e.key==='7') switchTab('arrivals');
+  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'ops','6':'notams','7':'regional','8':'satellite','9':'departures','0':'arrivals'};
+  if(map[e.key]) switchTab(map[e.key]);
 });
 
 /* ════════════════════════════════
@@ -1839,12 +2171,12 @@ function setBadge(id,text,cls){
 }
 
 /* ════════════════════════════════
-   FETCH — CheckWX METAR + TAF (single call each)
+   FETCH — via Worker proxy (keys hidden server-side)
 ════════════════════════════════ */
 async function fetchMETAR(){
   const res=await fetch(
-    'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded',
-    {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'}
+    `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`,
+    {cache:'no-store'}
   );
   if(!res.ok) throw new Error('METAR HTTP '+res.status);
   const json=await res.json();
@@ -1853,8 +2185,8 @@ async function fetchMETAR(){
 
 async function fetchTAF(){
   const res=await fetch(
-    'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded',
-    {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'}
+    `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`,
+    {cache:'no-store'}
   );
   if(!res.ok) throw new Error('TAF HTTP '+res.status);
   const json=await res.json();
@@ -1866,7 +2198,7 @@ async function fetchWeatherAPI(icao){
   if(!q) return;
   try{
     const res=await fetch(
-      `https://api.weatherapi.com/v1/current.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&aqi=no`,
+      `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}`,
       {cache:'no-store'}
     );
     if(!res.ok) throw new Error(res.status);
@@ -1911,7 +2243,377 @@ async function refresh(){
 refresh();
 setInterval(refresh,REFRESH_MS);
 
-setTimeout(()=>location.reload(),30*60*1000);
+/* ════════════════════════════════
+   IFRAME KEEP-ALIVE
+   Some embedded sites (Windy, satellite views) crash to a black
+   screen if left idle for hours. We refresh stale iframes silently,
+   but ONLY iframes the user isn't currently looking at, and NEVER
+   anything in the ATC tab (which holds the audio streams).
+
+   "Smooth" refresh: load the new src into a hidden replacement
+   iframe, swap it in only when it's done loading — so the user
+   never sees a blank/black flash.
+════════════════════════════════ */
+const IFRAME_STALE_MS = 25 * 60 * 1000;  // refresh after 25 min idle
+const iframeLastLoad  = new WeakMap();
+
+function smoothReloadIframe(oldFrame){
+  const url = oldFrame.src;
+  if(!url) return;
+
+  const fresh = oldFrame.cloneNode(false);
+  fresh.style.position='absolute';
+  fresh.style.opacity='0';
+  fresh.style.pointerEvents='none';
+  fresh.src = url;
+
+  oldFrame.parentNode.appendChild(fresh);
+
+  fresh.addEventListener('load',()=>{
+    fresh.style.position='';
+    fresh.style.opacity='';
+    fresh.style.pointerEvents='';
+    oldFrame.remove();
+    iframeLastLoad.set(fresh, Date.now());
+  },{once:true});
+
+  // Failsafe: if it doesn't load in 30s, abandon the swap.
+  setTimeout(()=>{
+    if(fresh.parentNode && fresh.style.opacity==='0'){
+      fresh.remove();
+    }
+  }, 30000);
+}
+
+function checkStaleIframes(){
+  const activePane=document.querySelector('.tab-pane.active');
+  const activeId=activePane?activePane.id:'';
+
+  document.querySelectorAll('iframe.windy-iframe').forEach(f=>{
+    if(!f.src) return;                                // never loaded
+    const pane=f.closest('.tab-pane');
+    if(!pane) return;
+    if(pane.id===activeId) return;                    // user is looking at it
+    if(pane.id==='tab-atc') return;                   // never touch ATC tab
+
+    const last = iframeLastLoad.get(f) || Date.now();
+    if(!iframeLastLoad.has(f)) iframeLastLoad.set(f, last);
+
+    if(Date.now() - last > IFRAME_STALE_MS){
+      smoothReloadIframe(f);
+    }
+  });
+}
+setInterval(checkStaleIframes, 5 * 60 * 1000);
+
+// Initialize timestamp for iframes that load on startup
+window.addEventListener('load',()=>{
+  document.querySelectorAll('iframe.windy-iframe').forEach(f=>{
+    if(f.src) iframeLastLoad.set(f, Date.now());
+    f.addEventListener('load',()=>iframeLastLoad.set(f, Date.now()));
+  });
+});
+
+/* Swap an <img> src without flashing the old image to blank.
+   Preload the new URL into a hidden Image, only swap when ready. */
+function swapImageSmooth(elId, newUrl){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const probe = new Image();
+  probe.onload  = ()=>{ el.src = newUrl; };
+  probe.onerror = ()=>{ /* keep old image */ };
+  probe.src = newUrl;
+}
+
+/* ════════════════════════════════
+   FORECAST — Open-Meteo (free, no key, ECMWF + ICON ensemble)
+   This is the most accurate free source for the Caribbean.
+   HARMONIE-Carib & AROME-Antilles aren't publicly accessible APIs.
+════════════════════════════════ */
+const FCAST_LOCATIONS = [
+  { icao:'TNCA', name:'Aruba',   flag:'🇦🇼', lat:12.510, lon:-70.009 },
+  { icao:'TNCC', name:'Curaçao', flag:'🇨🇼', lat:12.189, lon:-68.960 },
+  { icao:'TNCB', name:'Bonaire', flag:'🇧🇶', lat:12.144, lon:-68.265 },
+];
+
+const WMO_ICON = {
+  0:'☀️',1:'🌤',2:'⛅',3:'☁️',
+  45:'🌫',48:'🌫',
+  51:'🌦',53:'🌦',55:'🌧',
+  56:'🌧',57:'🌧',
+  61:'🌧',63:'🌧',65:'⛈',
+  66:'🌧',67:'🌧',
+  71:'🌨',73:'🌨',75:'❄️',77:'❄️',
+  80:'🌦',81:'🌧',82:'⛈',
+  85:'🌨',86:'🌨',
+  95:'⛈',96:'⛈',99:'⛈'
+};
+const WMO_TEXT = {
+  0:'Clear',1:'Mostly Clear',2:'Partly Cloudy',3:'Overcast',
+  45:'Fog',48:'Rime Fog',
+  51:'Light Drizzle',53:'Drizzle',55:'Heavy Drizzle',
+  56:'Freezing Drizzle',57:'Freezing Drizzle',
+  61:'Light Rain',63:'Rain',65:'Heavy Rain',
+  66:'Freezing Rain',67:'Freezing Rain',
+  71:'Light Snow',73:'Snow',75:'Heavy Snow',77:'Snow Grains',
+  80:'Light Showers',81:'Showers',82:'Heavy Showers',
+  85:'Snow Showers',86:'Heavy Snow Showers',
+  95:'Thunderstorm',96:'TS w/ Hail',99:'Severe TS'
+};
+
+async function loadForecast(){
+  forecastLoaded=true;
+  const container=document.getElementById('forecast-content');
+  setBadge('fcastBadge','LOADING','loading');
+
+  try{
+    const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunrise,sunset`+
+        `&timezone=America%2FCuracao&forecast_days=3&models=best_match`;
+      const r=await fetch(url,{cache:'no-store'});
+      if(!r.ok) throw new Error('forecast '+r.status);
+      return { loc, data: await r.json() };
+    }));
+
+    let html='';
+    results.forEach(({loc,data})=>{
+      const d=data.daily;
+      let days='';
+      for(let i=0;i<3;i++){
+        const date=new Date(d.time[i]+'T12:00:00');
+        const code=d.weather_code[i];
+        const dayName = i===0?'Today': i===1?'Tomorrow': date.toLocaleDateString('en-US',{weekday:'long'});
+        const dateStr = date.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+        const sunrise=new Date(d.sunrise[i]).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+        const sunset =new Date(d.sunset[i]).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false});
+        const wd=d.wind_direction_10m_dominant[i];
+        const wdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((wd%360)/45)%8];
+
+        days+=`<div class="fcast-day">
+          <div class="fcast-day-hdr">
+            <span class="fcast-day-name">${dayName}</span>
+            <span>${dateStr}</span>
+          </div>
+          <div class="fcast-day-row">
+            <div>
+              <div class="fcast-temp-hi">${Math.round(d.temperature_2m_max[i])}°</div>
+              <div class="fcast-temp-lo">${Math.round(d.temperature_2m_min[i])}°</div>
+            </div>
+            <div class="fcast-icon">${WMO_ICON[code]||'❔'}</div>
+          </div>
+          <div class="fcast-cond">${WMO_TEXT[code]||'—'}</div>
+          <div class="fcast-grid">
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">Rain</span><span class="fcast-grid-val">${d.precipitation_sum[i].toFixed(1)} mm</span></div>
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">Prob</span><span class="fcast-grid-val">${d.precipitation_probability_max[i]||0}%</span></div>
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">Wind</span><span class="fcast-grid-val">${Math.round(d.wind_speed_10m_max[i]*0.539957)} kt ${wdir}</span></div>
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">Gust</span><span class="fcast-grid-val">${Math.round(d.wind_gusts_10m_max[i]*0.539957)} kt</span></div>
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">UV</span><span class="fcast-grid-val">${d.uv_index_max[i].toFixed(1)}</span></div>
+            <div class="fcast-grid-item"><span class="fcast-grid-lbl">Sun</span><span class="fcast-grid-val">${sunrise}–${sunset}</span></div>
+          </div>
+        </div>`;
+      }
+      html+=`<div class="fcast-island">
+        <div class="fcast-island-hdr">
+          <span class="fcast-flag">${loc.flag}</span>
+          <div>
+            <div class="fcast-name">${loc.name}</div>
+            <div class="fcast-sub">${loc.icao} · ${loc.lat.toFixed(2)}°, ${loc.lon.toFixed(2)}°</div>
+          </div>
+        </div>
+        <div class="fcast-days">${days}</div>
+      </div>`;
+    });
+    container.innerHTML=html;
+    setBadge('fcastBadge','LIVE');
+  }catch(e){
+    container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Forecast load failed: ${e.message}</div>`;
+    setBadge('fcastBadge','ERROR','error');
+    forecastLoaded=false;  // allow retry
+  }
+}
+
+/* ════════════════════════════════
+   MARINE — Open-Meteo Marine API (free, no key)
+════════════════════════════════ */
+function getBeachAdvice(waveM, windKt, gustKt, weatherCode){
+  // Conservative advice for ABC island swimmers / small craft.
+  if(weatherCode>=95 || waveM>=2.5 || gustKt>=35) return {cls:'adv-danger', icon:'⛔', text:'NOT SAFE — stay ashore'};
+  if(waveM>=1.5 || windKt>=22 || gustKt>=28)      return {cls:'adv-rough',  icon:'⚠️',  text:'Rough — small craft caution'};
+  if(waveM>=0.8 || windKt>=18)                    return {cls:'adv-fair',   icon:'🟡', text:'Fair — choppy, exp. swimmers ok'};
+  return                                                  {cls:'adv-good',   icon:'✅', text:'Good — beach & sea OK'};
+}
+function getCloudHeight(metar){
+  // Pull lowest cloud base from latest METAR if available.
+  const clouds=metar?.clouds||[];
+  if(!clouds.length) return null;
+  const lowest=clouds.reduce((m,c)=>c.base_feet_agl<m?c.base_feet_agl:m, Infinity);
+  if(lowest===Infinity) return null;
+  return { ft:lowest, m:Math.round(lowest*0.3048) };
+}
+
+async function loadMarine(){
+  marineLoaded=true;
+  const container=document.getElementById('marine-content');
+  setBadge('marineBadge','LOADING','loading');
+
+  try{
+    const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+      const marineUrl=`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
+        `&hourly=wave_height,swell_wave_height,wave_period`+
+        `&timezone=America%2FCuracao&forecast_days=1`;
+      const wxUrl=`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&current=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,visibility`+
+        `&timezone=America%2FCuracao`;
+      const [marineR,wxR]=await Promise.all([fetch(marineUrl,{cache:'no-store'}),fetch(wxUrl,{cache:'no-store'})]);
+      const marine = marineR.ok ? await marineR.json() : null;
+      const wx     = wxR.ok     ? await wxR.json()     : null;
+      return { loc, marine, wx, metar: store.metar[loc.icao] };
+    }));
+
+    let html='';
+    results.forEach(({loc,marine,wx,metar})=>{
+      const m=marine?.current||{};
+      const w=wx?.current||{};
+      const waveM   = m.wave_height ?? 0;
+      const waveFt  = (waveM*3.281).toFixed(1);
+      const swellM  = m.swell_wave_height ?? 0;
+      const swellFt = (swellM*3.281).toFixed(1);
+      const swellP  = m.swell_wave_period ?? 0;
+      const wavePeriod = m.wave_period ?? 0;
+      const wd=m.wave_direction ?? 0;
+      const wdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((wd%360)/45)%8];
+      const sd=m.swell_wave_direction ?? 0;
+      const sdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((sd%360)/45)%8];
+
+      const windKt = w.wind_speed_10m ? Math.round(w.wind_speed_10m*0.539957) : 0;
+      const gustKt = w.wind_gusts_10m ? Math.round(w.wind_gusts_10m*0.539957) : 0;
+      const wxWindDir=w.wind_direction_10m;
+      const wxWindCard=wxWindDir!==undefined?['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8]:'';
+
+      const cloud=getCloudHeight(metar);
+      const cloudStr = cloud ? `${cloud.ft} ft / ${cloud.m} m` : 'CAVOK';
+      const visMtr = metar?.visibility?.meters;
+      const visStr = visMtr!==undefined ? (visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km') : '—';
+
+      const advice=getBeachAdvice(waveM, windKt, gustKt, w.weather_code);
+
+      html+=`<div class="marine-island">
+        <div class="marine-island-hdr">
+          <span class="fcast-flag">${loc.flag}</span>
+          <div>
+            <div class="fcast-name">${loc.name}</div>
+            <div class="fcast-sub">${loc.icao} · Marine + Aviation</div>
+          </div>
+          <span class="marine-advice ${advice.cls}">
+            <span class="marine-icon">${advice.icon}</span>${advice.text}
+          </span>
+        </div>
+        <div class="marine-grid">
+          <div class="marine-cell"><div class="marine-cell-lbl">Waves</div><div class="marine-cell-val">${waveM.toFixed(1)} m</div><div class="marine-cell-sub">${waveFt} ft · ${wavePeriod.toFixed(0)} s</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Wave Dir</div><div class="marine-cell-val">${pad(Math.round(wd))}°</div><div class="marine-cell-sub">${wdir}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Swell</div><div class="marine-cell-val">${swellM.toFixed(1)} m</div><div class="marine-cell-sub">${swellFt} ft · ${swellP.toFixed(0)} s</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Swell Dir</div><div class="marine-cell-val">${pad(Math.round(sd))}°</div><div class="marine-cell-sub">${sdir}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Wind</div><div class="marine-cell-val">${windKt} kt</div><div class="marine-cell-sub">${wxWindCard} · G ${gustKt} kt</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Visibility</div><div class="marine-cell-val">${visStr}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Cloud Base</div><div class="marine-cell-val" style="font-size:.78rem">${cloudStr}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Sea State</div><div class="marine-cell-val" style="font-size:.78rem">${waveM<0.5?'Calm':waveM<1.25?'Slight':waveM<2.5?'Moderate':waveM<4?'Rough':'Very Rough'}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${w.temperature_2m?.toFixed(0)||'—'}°C</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.7rem">${WMO_TEXT[w.weather_code]||'—'}</div></div>
+          <div class="marine-cell" style="grid-column:span 2"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.65rem">Open-Meteo Marine + ECMWF</div></div>
+        </div>
+        <div class="marine-summary">
+          <span class="lbl">Beach</span>${
+            waveM<0.5 ? 'Calm seas — excellent for swimming, kayaking, paddleboarding all day.' :
+            waveM<1.0 ? 'Light chop — good for swimming. Beginners ok in calmer bays.' :
+            waveM<1.5 ? 'Moderate chop — strong swimmers only. Watch for currents at exposed beaches.' :
+            waveM<2.5 ? 'Rough — sheltered bays only. No open-water swimming.' :
+                        'Dangerous surf — stay out of the water.'
+          }
+          <br><span class="lbl">Boat</span>${
+            (windKt<15 && waveM<1.0) ? 'Excellent for small craft. Light winds, gentle seas.' :
+            (windKt<22 && waveM<1.5) ? 'Acceptable for small craft, expect moderate chop. Reef sails.' :
+            (windKt<28 && waveM<2.5) ? 'Small craft advisory. Experienced sailors only.' :
+                                       'Small craft warning — remain in port.'
+          }
+        </div>
+      </div>`;
+    });
+    container.innerHTML=html;
+    setBadge('marineBadge','LIVE');
+  }catch(e){
+    container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}</div>`;
+    setBadge('marineBadge','ERROR','error');
+    marineLoaded=false;
+  }
+}
+
+/* ════════════════════════════════
+   OPS — SIGMETs (AWC, free) + chart images
+════════════════════════════════ */
+async function loadOps(){
+  opsLoaded=true;
+  setBadge('sigmetBadge','LOADING','loading');
+
+  // Surface analysis from NWS OPC + NHC tropical outlook (with cache-buster)
+  const ts=Date.now();
+  swapImageSmooth('opcChart', `https://ocean.weather.gov/A_sfc_full_ocean_color.png?t=${ts}`);
+  swapImageSmooth('nhcChart', `https://www.nhc.noaa.gov/xgtwo/two_atl_7d0.png?t=${ts}`);
+
+  // Active SIGMETs from Aviation Weather Center
+  try{
+    const r=await fetch('https://aviationweather.gov/api/data/isigmet?format=json',{cache:'no-store'});
+    if(!r.ok) throw new Error('SIGMET '+r.status);
+    const data=await r.json();
+    // Filter to the Caribbean basin roughly: 5–25 N, 50–85 W
+    const caribbean=data.filter(s=>{
+      const c=s.coords||[];
+      if(!c.length) return false;
+      return c.some(([lon,lat])=>lat>=5 && lat<=25 && lon>=-85 && lon<=-50);
+    });
+
+    const cont=document.getElementById('sigmet-content');
+    if(!caribbean.length){
+      cont.innerHTML=`<div class="sigmet-empty">✓ No active SIGMETs in the Caribbean region</div>`;
+    } else {
+      cont.innerHTML=`<div class="sigmet-list">${
+        caribbean.map(s=>`<div class="sigmet-item">
+          <span class="sig-id">${s.firId||'—'} · ${s.hazard||'HAZARD'} · ${s.severity||''}</span>
+          ${s.rawSigmet?s.rawSigmet.replace(/\n/g,'<br>'):'—'}
+        </div>`).join('')
+      }</div>`;
+    }
+    setBadge('sigmetBadge','LIVE');
+  }catch(e){
+    document.getElementById('sigmet-content').innerHTML=
+      `<div style="padding:18px;text-align:center;font-family:var(--mono);font-size:.62rem;color:#f87171">SIGMET feed failed: ${e.message}<br><span style="color:var(--text-dim);font-size:.55rem">AWC API may be temporarily unavailable</span></div>`;
+    setBadge('sigmetBadge','ERROR','error');
+    opsLoaded=false;
+  }
+}
+
+// Refresh ops data every 15 min when its tab is open
+setInterval(()=>{
+  const active=document.querySelector('.tab-pane.active');
+  if(active && active.id==='tab-ops') loadOps();
+}, 15 * 60 * 1000);
+
+// Refresh forecast every 30 min when its tab is open
+setInterval(()=>{
+  const active=document.querySelector('.tab-pane.active');
+  if(active && active.id==='tab-forecast') loadForecast();
+}, 30 * 60 * 1000);
+
+// Refresh marine every 30 min when its tab is open
+setInterval(()=>{
+  const active=document.querySelector('.tab-pane.active');
+  if(active && active.id==='tab-marine') loadMarine();
+}, 30 * 60 * 1000);
+
+/* No more page reload — ATC audio must stay alive.
+   Iframes are watched separately and only reloaded if they go stale
+   AND the user is not currently on that tab AND it's not the ATC tab. */
 </script>
 
 </body>
