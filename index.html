@@ -912,7 +912,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   .atc-vol-slider{flex:1;width:auto;max-width:200px}
 }
 
-/* ── EMBEDDED RWC IFRAME ── */
+/* ── FULL-HEIGHT IFRAME FRAMES (Satellite, Flights) ── */
 .frame-fallback-link{
   margin-left:auto;
   font-family:var(--mono);font-size:.5rem;letter-spacing:.16em;font-weight:500;
@@ -2260,26 +2260,154 @@ body.night .tab-btn.active{
   margin-right:8px;
 }
 
+/* ── SYNC INDICATOR ── */
+.sync-indicator{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:.52rem;letter-spacing:.12em;font-weight:600;
+  color:var(--text-dim);
+  padding:5px 10px;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:rgba(0,0,0,0.3);
+  transition:all .3s;
+}
+.sync-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 6px var(--green);
+  flex-shrink:0;
+}
+.sync-indicator.sync-flash{
+  border-color:rgba(34,211,238,0.4);
+  box-shadow:0 0 10px rgba(34,211,238,0.2);
+}
+.sync-indicator.sync-flash .sync-dot{
+  background:var(--cyan);box-shadow:0 0 8px var(--cyan);
+  animation:syncPop .6s ease-out;
+}
+@keyframes syncPop{
+  0%{transform:scale(1.8);opacity:.6}
+  100%{transform:scale(1);opacity:1}
+}
+
 /* ── SIGMETs ── */
-.sigmet-list{display:flex;flex-direction:column;gap:8px}
+.sigmet-list{display:flex;flex-direction:column;gap:8px;padding:12px 16px}
 .sigmet-item{
   padding:10px 14px;
-  border:1px solid var(--border);
+  border:1px solid rgba(251,146,60,0.3);
   border-left:3px solid #fb923c;
   border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(251,146,60,0.04),rgba(0,0,0,0.3));
-  font-family:var(--mono);font-size:.62rem;line-height:1.7;
-  color:var(--text);font-weight:500;
+  background:linear-gradient(180deg,rgba(251,146,60,0.05),rgba(0,0,0,0.3));
+  display:flex;flex-direction:column;gap:5px;
 }
-.sigmet-item .sig-id{
-  display:block;color:#fb923c;font-size:.66rem;
-  letter-spacing:.1em;margin-bottom:3px;font-weight:700;
+.sigmet-item.sigmet-warn{
+  border-color:rgba(248,113,113,0.45);
+  border-left-color:#f87171;
+  background:linear-gradient(180deg,rgba(248,113,113,0.08),rgba(0,0,0,0.3));
+}
+.sig-hdr{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.sig-hazard{
+  font-family:var(--display);font-size:.7rem;font-weight:800;letter-spacing:.14em;
+  padding:2px 8px;border:1px solid;border-radius:3px;
+  flex-shrink:0;
+}
+.sig-fir{
+  font-family:var(--mono);font-size:.58rem;color:var(--accent-bright);
+  font-weight:600;letter-spacing:.1em;
+}
+.sig-time{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  margin-left:auto;letter-spacing:.08em;font-weight:500;
+}
+.sig-raw{
+  font-family:var(--mono);font-size:.6rem;color:var(--text);
+  line-height:1.65;font-weight:500;
+  word-break:break-word;
 }
 .sigmet-empty{
-  padding:18px;text-align:center;
+  padding:20px;text-align:center;
   font-family:var(--mono);font-size:.65rem;color:var(--green);
-  border:1px dashed var(--green);border-radius:var(--radius);
-  background:rgba(74,222,128,0.04);
+  border:1px dashed rgba(74,222,128,0.35);border-radius:var(--radius);
+  background:rgba(74,222,128,0.04);margin:12px;
+}
+/* SIGMET active pulse on NOTAMs tab button */
+.tab-btn.sigmet-active{
+  animation:sigmetTabPulse 2s ease-in-out infinite;
+}
+@keyframes sigmetTabPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(251,146,60,0)}
+  50%{box-shadow:0 0 14px 2px rgba(251,146,60,0.4)}
+}
+
+/* ── TIDE PANEL ── */
+.tide-wrap{
+  padding:14px 18px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.tide-station{
+  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  letter-spacing:.1em;font-weight:500;
+}
+.tide-chart{
+  width:100%;height:64px;display:block;
+  border:1px solid var(--border);border-radius:var(--radius);
+  background:rgba(0,0,0,0.3);overflow:visible;
+}
+.tide-events{
+  display:flex;flex-direction:column;gap:6px;
+}
+.tide-event{
+  display:grid;
+  grid-template-columns:80px 70px 1fr auto;
+  gap:10px;align-items:center;
+  padding:8px 12px;
+  background:rgba(0,0,0,0.25);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  transition:background .2s;
+}
+.tide-event:hover{background:rgba(34,211,238,0.04)}
+.tide-past{opacity:.5}
+.tide-type-badge{
+  font-family:var(--display);font-size:.72rem;font-weight:800;
+  letter-spacing:.1em;padding:3px 8px;border-radius:4px;
+  text-align:center;
+}
+.tide-high{background:rgba(34,211,238,0.15);color:#22d3ee;border:1px solid rgba(34,211,238,0.3)}
+.tide-low {background:rgba(90,184,255,0.1); color:#5ab8ff;border:1px solid rgba(90,184,255,0.25)}
+.tide-val{
+  font-family:var(--display);font-size:.9rem;font-weight:700;
+  color:var(--accent-bright);font-variant-numeric:tabular-nums;
+}
+.tide-time{
+  font-family:var(--mono);font-size:.62rem;color:var(--text);
+  letter-spacing:.06em;font-weight:500;
+}
+.tide-cd{
+  font-family:var(--mono);font-size:.58rem;color:var(--cyan);
+  letter-spacing:.08em;font-weight:600;text-align:right;
+  text-shadow:0 0 8px rgba(34,211,238,0.35);
+}
+.tide-note{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  letter-spacing:.08em;font-weight:500;
+}
+@media(max-width:600px){
+  .tide-event{grid-template-columns:70px 60px 1fr;gap:6px}
+  .tide-cd{display:none}
+  .tide-chart{height:50px}
+}
+
+/* ── HOURLY STRIP — midnight cell ── */
+.hourly-midnight{
+  border-left:1px solid rgba(34,211,238,0.25) !important;
+  margin-left:4px;
+}
+.hourly-mid-lbl{
+  color:var(--cyan) !important;font-size:.52rem !important;
+  letter-spacing:.06em;font-weight:700 !important;
+  text-transform:uppercase;
 }
 
 /* ── ENTRY ANIMATIONS ── */
@@ -2341,6 +2469,10 @@ body.night .tab-btn.active{
   </div>
   <span class="header-title">ATC &amp; Weather Dashboard</span>
   <div class="header-actions">
+    <div class="sync-indicator" id="syncIndicator" title="Last data refresh">
+      <span class="sync-dot"></span>
+      <span id="syncTime">—</span>
+    </div>
     <div class="night-btn" id="nightToggle">🌙 Night</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
@@ -2357,9 +2489,8 @@ body.night .tab-btn.active{
   <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
   <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
   <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">5</span></div>
-  <div class="tab-btn" data-tab="regional">🌍 Regional <span class="tab-key">6</span></div>
-  <div class="tab-btn" data-tab="satellite">🛰 Sat <span class="tab-key">7</span></div>
-  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">8</span></div>
+  <div class="tab-btn" data-tab="satellite">🛰 Sat <span class="tab-key">6</span></div>
+  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">7</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -2576,6 +2707,16 @@ body.night .tab-btn.active{
 <!-- ═══ TAB: NOTAMs ═══ -->
 <div class="tab-pane" id="tab-notams">
 <div class="layout">
+
+  <!-- SIGMETs + AIRMETs -->
+  <div class="full">
+    <div class="section-title">SIGMETs · AIRMETs — Caribbean FIR <span class="data-badge loading" id="sigmetBadge">LOADING</span></div>
+    <div class="panel" id="sigmetPanel">
+      <div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Fetching active SIGMETs…</div>
+    </div>
+  </div>
+
+  <!-- NOTAMs -->
   <div class="full">
     <div class="section-title">NOTAMs — TNCA · TNCC · TNCB — Live · AWC <span class="data-badge loading" id="notamBadge">LOADING</span></div>
     <div class="notam-panel">
@@ -2596,6 +2737,7 @@ body.night .tab-btn.active{
       </div>
     </div>
   </div>
+
 </div>
 </div>
 
@@ -2639,31 +2781,27 @@ body.night .tab-btn.active{
     </div>
   </div>
 
-  <div class="col-6">
-    <div class="section-title">Windy — Wave Height</div>
-    <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves" loading="lazy"></iframe>
-      <div class="overlay-blocker"></div>
-    </div>
-  </div>
-
-  <div class="col-6">
-    <div class="section-title">Windy — Swell Period</div>
-    <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=swell1" loading="lazy"></iframe>
-      <div class="overlay-blocker"></div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ═══ TAB: REGIONAL (RWC) ═══ -->
-<div class="tab-pane" id="tab-regional">
-<div class="layout">
+  <!-- Tide predictions -->
   <div class="full">
-    <div class="section-title">Regional Weather Centre — RWC <span class="data-badge" id="rwcBadge">EMBEDDED</span></div>
-    <div class="rwc-frame-wrap">
-      <iframe id="rwcFrame" class="rwc-frame" title="Regional Weather Centre" loading="lazy"></iframe>
+    <div class="section-title">Tide Predictions — Curaçao / Willemstad <span class="data-badge loading" id="tideBadge">LOADING</span></div>
+    <div class="panel" id="tidePanel">
+      <div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading tide data…</div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Wave Height &amp; Swell</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=true&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="section-title">Windy — Wind Speed &amp; Direction</div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=true&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
+      <div class="overlay-blocker"></div>
     </div>
   </div>
 </div>
@@ -2908,7 +3046,6 @@ function switchTab(name){
 
   // Lazy-load static iframes the first time their tab opens.
   const lazy = {
-    regional:  ['rwcFrame', 'https://gniusweather.github.io/RWC/'],
     satellite: ['satFrame', 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off'],
   };
   if(lazy[name]){
@@ -2940,7 +3077,7 @@ function switchTab(name){
 
   // Lazy-init data tabs
   if(name==='forecast' && !forecastLoaded) loadForecast();
-  if(name==='marine'   && !marineLoaded)   loadMarine();
+  if(name==='marine'   && !marineLoaded)   { loadMarine(); fetchTides(); }
 
   // Auto-refresh forecast/marine if data is >6 min stale when switching back to them
   const STALE_RERENDER_MS = 6 * 60 * 1000;
@@ -2966,7 +3103,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'regional','7':'satellite','8':'flights'};
+  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'satellite','7':'flights'};
   if(map[e.key]) switchTab(map[e.key]);
 });
 
@@ -3127,6 +3264,53 @@ async function fetchNotams(){
   }
 }
 
+async function fetchNotams(){
+  setBadge('notamBadge','LOADING','loading');
+  try{
+    // AWC v2 NOTAM API — primary endpoint
+    let raw, items;
+    const primaryUrl = `https://aviationweather.gov/api/data/notam?icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
+    const fallbackUrl = `https://aviationweather.gov/cgi-bin/data/notam.php?ids=TNCA,TNCC,TNCB&format=json`;
+    try{
+      const r = await fetch(primaryUrl, {cache:'no-store'});
+      if(!r.ok) throw new Error('primary '+r.status);
+      raw = await r.json();
+    }catch{
+      // Fallback to legacy AWC endpoint
+      const r2 = await fetch(fallbackUrl, {cache:'no-store'});
+      if(!r2.ok) throw new Error('AWC NOTAM '+r2.status);
+      raw = await r2.json();
+    }
+    items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
+
+    const seen = new Set();
+    notamData = items.filter(n=>{
+      const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
+      if(seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    }).map(classifyNotam);
+
+    renderNotams();
+    setBadge('notamBadge','LIVE');
+
+    const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
+    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
+    if(notamTabBtn && critCount > 0){
+      notamTabBtn.dataset.notamCount = critCount;
+      notamTabBtn.title = `${critCount} active warning NOTAM${critCount>1?'s':''}`;
+    }
+  }catch(err){
+    console.warn('[NOTAMs]', err.message);
+    setBadge('notamBadge','ERROR','error');
+    document.getElementById('notamList').innerHTML =
+      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
+        NOTAM fetch failed: ${err.message}<br>
+        <a href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank" style="color:var(--cyan)">AWC NOTAM ↗</a>
+      </div>`;
+  }
+}
+
 // Initial fetch + refresh every 30 min
 fetchNotams();
 setInterval(fetchNotams, 30 * 60 * 1000);
@@ -3139,6 +3323,204 @@ document.getElementById('notamFilter').addEventListener('click', e=>{
   notamFilter = btn.dataset.filter;
   renderNotams();
 });
+
+/* ════════════════════════════════
+   SIGMETs + AIRMETs — Caribbean FIR
+   AWC /api/data/sigmet — free, CORS-OK.
+   Filters to the Caribbean region bounding box.
+════════════════════════════════ */
+async function fetchSigmets(){
+  setBadge('sigmetBadge','LOADING','loading');
+  const el = document.getElementById('sigmetPanel');
+  try{
+    // Fetch international SIGMETs for the Caribbean FIR (TJZS / MUFG / TTZP)
+    // Also fetch US AIRMETs — Caribbean is partly covered.
+    // Region: lat 8–22, lon -85 to -58 covers all ABC + wider Caribbean.
+    const url = `https://aviationweather.gov/api/data/sigmet?format=json&hazard=ALL&date=0`;
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('AWC SIGMET '+r.status);
+    const all = await r.json();
+
+    // Filter to Caribbean region
+    const items = (Array.isArray(all)?all:(all.data||[])).filter(s=>{
+      // Check if any vertex is in the Caribbean bounding box
+      const verts = s.coords || s.geometry?.coordinates?.[0] || [];
+      if(!verts.length){
+        // Try centroid from area
+        const lat = parseFloat(s.lat || s.latitude || 99);
+        const lon = parseFloat(s.lon || s.longitude || 0);
+        return lat>=5 && lat<=25 && lon>=-90 && lon<=-55;
+      }
+      return verts.some(v=>{
+        const lat = Array.isArray(v)?v[1]:v.lat;
+        const lon = Array.isArray(v)?v[0]:v.lon;
+        return lat>=5 && lat<=25 && lon>=-90 && lon<=-55;
+      });
+    });
+
+    if(!items.length){
+      el.innerHTML = `<div class="sigmet-empty">✅ No active SIGMETs or AIRMETs for the Caribbean region.</div>`;
+      setBadge('sigmetBadge','CLEAR');
+      return;
+    }
+
+    setBadge('sigmetBadge',`${items.length} ACTIVE`,'error');
+
+    // Pulse the NOTAMs tab button if SIGMETs are active
+    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
+    if(notamTabBtn) notamTabBtn.classList.add('sigmet-active');
+
+    el.innerHTML = `<div class="sigmet-list">
+      ${items.map(s=>{
+        const hazard  = (s.hazard||s.phenomenon||'SIGMET').toUpperCase();
+        const fir     = s.firId || s.area || s.seriesId || '—';
+        const validStr= s.validTimeFrom && s.validTimeTo
+          ? `${fmtUTC(s.validTimeFrom)} → ${fmtUTC(s.validTimeTo)}`
+          : s.validTime || '';
+        const raw     = s.rawSigmet || s.rawAirmet || s.text || JSON.stringify(s).slice(0,120);
+        const isWarn  = /TS|CB|TURB|ICE|VA|TC|LLWS/.test(hazard);
+        const hCol    = isWarn?'#f87171':'#fbbf24';
+        return `<div class="sigmet-item${isWarn?' sigmet-warn':''}">
+          <div class="sig-hdr">
+            <span class="sig-hazard" style="color:${hCol};border-color:${hCol}40;background:${hCol}11">${hazard}</span>
+            <span class="sig-fir">${fir}</span>
+            <span class="sig-time">${validStr}</span>
+          </div>
+          <div class="sig-raw">${raw}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }catch(err){
+    console.warn('[SIGMET]', err.message);
+    setBadge('sigmetBadge','ERROR','error');
+    el.innerHTML = `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
+      SIGMET fetch failed: ${err.message}<br>
+      <a href="https://aviationweather.gov/sigmet" target="_blank" style="color:var(--cyan)">AWC SIGMETs ↗</a>
+    </div>`;
+  }
+}
+fetchSigmets();
+setInterval(fetchSigmets, 15 * 60 * 1000); // SIGMETs change fast — refresh every 15 min
+
+/* ════════════════════════════════
+   TIDE PREDICTIONS — NOAA CO-OPS
+   Station 9761115 = Willemstad, Curaçao
+   Free API, CORS-OK, no key needed.
+   We fetch today + tomorrow predictions and show
+   next 4 highs/lows with countdowns.
+════════════════════════════════ */
+async function fetchTides(){
+  const el = document.getElementById('tidePanel');
+  if(!el) return;
+  setBadge('tideBadge','LOADING','loading');
+  try{
+    const today    = new Date();
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+    const fmt = d => `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+
+    // Fetch 2 days of Hi/Lo predictions
+    const url = `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter`+
+      `?station=9761115&product=predictions&datum=MLLW`+
+      `&begin_date=${fmt(today)}&end_date=${fmt(tomorrow)}`+
+      `&interval=hilo&units=metric&time_zone=lst_ldt&application=atc_dashboard&format=json`;
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('NOAA Tides '+r.status);
+    const data = await r.json();
+    const preds = data.predictions || [];
+    if(!preds.length) throw new Error('No predictions returned');
+
+    const now = Date.now();
+    // Parse into {time, type, v}
+    const events = preds.map(p=>({
+      time: new Date(p.t).getTime(),
+      type: p.type, // H or L
+      v:    parseFloat(p.v),
+    }));
+
+    // Next 4 events from now
+    const upcoming = events.filter(e=>e.time>=now).slice(0,4);
+    const last     = events.filter(e=>e.time< now).slice(-1)[0]; // most recent past event
+
+    const fmtTime = ms => new Date(ms).toLocaleTimeString('en-US',{
+      hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Curacao'
+    });
+    const fmtDay  = ms => {
+      const d = new Date(ms); const n = new Date();
+      if(d.toDateString()===n.toDateString()) return 'Today';
+      return d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',timeZone:'America/Curacao'});
+    };
+    const countdown = ms => {
+      const diff = ms - now;
+      if(diff<=0) return 'now';
+      const h = Math.floor(diff/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      return h>0 ? `in ${h}h ${m}m` : `in ${m}m`;
+    };
+
+    // Build tide chart — simple SVG sparkline of all events
+    const allV = events.map(e=>e.v);
+    const vMin = Math.min(...allV); const vMax = Math.max(...allV);
+    const vSpan= vMax - vMin || 1;
+    const svgW=400, svgH=60, pad=20;
+    const tMin=events[0]?.time||now; const tMax=events[events.length-1]?.time||now+86400000;
+    const tSpan=tMax-tMin||1;
+    const pts = events.map(e=>{
+      const x = pad + ((e.time-tMin)/tSpan)*(svgW-2*pad);
+      const y = svgH - pad - ((e.v-vMin)/vSpan)*(svgH-2*pad);
+      return `${x},${y}`;
+    }).join(' ');
+    const nowX = pad + ((now-tMin)/tSpan)*(svgW-2*pad);
+
+    el.innerHTML = `
+      <div class="tide-wrap">
+        <div class="tide-station">📍 Willemstad, Curaçao · NOAA Station 9761115 · MLLW datum</div>
+
+        <svg class="tide-chart" viewBox="0 0 ${svgW} ${svgH}" preserveAspectRatio="none">
+          <polyline points="${pts}" fill="none" stroke="rgba(34,211,238,0.6)" stroke-width="1.8" stroke-linejoin="round"/>
+          ${events.map(e=>{
+            const x=pad+((e.time-tMin)/tSpan)*(svgW-2*pad);
+            const y=svgH-pad-((e.v-vMin)/vSpan)*(svgH-2*pad);
+            const col=e.type==='H'?'#22d3ee':'#5ab8ff';
+            return `<circle cx="${x}" cy="${y}" r="3" fill="${col}" opacity="0.9"/>
+                    <text x="${x}" y="${y-6}" text-anchor="middle" font-size="7" fill="${col}" font-family="monospace">${e.v.toFixed(1)}</text>`;
+          }).join('')}
+          <!-- Now line -->
+          <line x1="${nowX}" y1="${pad}" x2="${nowX}" y2="${svgH-pad}" stroke="#f87171" stroke-width="1.5" stroke-dasharray="3 2"/>
+          <text x="${nowX+3}" y="${pad+8}" font-size="7" fill="#f87171" font-family="monospace">NOW</text>
+          <!-- Y axis labels -->
+          <text x="2" y="${svgH-pad}" font-size="7" fill="rgba(155,212,255,0.5)" font-family="monospace">${vMin.toFixed(1)}m</text>
+          <text x="2" y="${pad+4}" font-size="7" fill="rgba(155,212,255,0.5)" font-family="monospace">${vMax.toFixed(1)}m</text>
+        </svg>
+
+        <div class="tide-events">
+          ${last?`<div class="tide-event tide-past">
+            <span class="tide-type-badge ${last.type==='H'?'tide-high':'tide-low'}">${last.type==='H'?'▲ HI':'▼ LO'}</span>
+            <span class="tide-val">${last.v.toFixed(2)} m</span>
+            <span class="tide-time">${fmtDay(last.time)} ${fmtTime(last.time)}</span>
+            <span class="tide-cd" style="color:var(--text-dim)">passed</span>
+          </div>`:''}
+          ${upcoming.map(e=>`<div class="tide-event">
+            <span class="tide-type-badge ${e.type==='H'?'tide-high':'tide-low'}">${e.type==='H'?'▲ HI':'▼ LO'}</span>
+            <span class="tide-val">${e.v.toFixed(2)} m</span>
+            <span class="tide-time">${fmtDay(e.time)} ${fmtTime(e.time)}</span>
+            <span class="tide-cd">${countdown(e.time)}</span>
+          </div>`).join('')}
+        </div>
+
+        <div class="tide-note">Tidal range at Curaçao is very small (~0.3 m). Times are local (AST, UTC-4).</div>
+      </div>`;
+    setBadge('tideBadge','LIVE');
+  }catch(err){
+    console.warn('[Tides]', err.message);
+    setBadge('tideBadge','ERROR','error');
+    el.innerHTML=`<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
+      Tide fetch failed: ${err.message}<br>
+      <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9761115" target="_blank" style="color:var(--cyan)">NOAA Tide Predictions ↗</a>
+    </div>`;
+  }
+}
+
+
 
 /* ════════════════════════════════
    METAR RENDER
@@ -3652,6 +4034,15 @@ async function refresh(){
   renderIslandCards();
   setBadge('islandBadge','LIVE');
 
+  // Stamp last-sync time in header
+  const syncEl = document.getElementById('syncTime');
+  if(syncEl){
+    const t = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+    syncEl.textContent = t+' AST';
+    const dot = document.getElementById('syncIndicator');
+    if(dot){ dot.classList.add('sync-flash'); setTimeout(()=>dot.classList.remove('sync-flash'),1200); }
+  }
+
   // If forecast tab is currently open, re-render it with fresh data
   const activePaneId = document.querySelector('.tab-pane.active')?.id;
   if(activePaneId === 'tab-forecast' && forecastLoaded){
@@ -4092,38 +4483,49 @@ function buildForecastSummary(days, loc){
   return part1 + ' ' + outlook;
 }
 
-/* Scrollable 24-hour strip from WeatherAPI hourly data on forecastday[0] */
-function buildHourlyStrip(day0, icao){
+/* Scrollable 24-hour strip — shows hours from now forward.
+   If fewer than 6 hours remain today, also pulls from day1 to fill 18 cells. */
+function buildHourlyStrip(day0, icao, day1){
   if(!day0?.hour?.length) return '';
   const now = Date.now();
-  const hours = day0.hour.filter(h => new Date(h.time).getTime() >= now - 1800000); // from ~now onward
-  if(!hours.length) return '';
 
-  const maxPrecip = Math.max(1, ...hours.map(h=>h.precip_mm||0));
-  const maxWind   = Math.max(1, ...hours.map(h=>h.wind_kph*0.539957||0));
+  // Combine today + tomorrow hours, filter from ~now onward
+  const allHours = [
+    ...(day0.hour||[]),
+    ...(day1?.hour||[]),
+  ].filter(h => new Date(h.time).getTime() >= now - 1800000);
 
-  const cells = hours.slice(0,18).map(h=>{  // max 18 hours shown
-    const t     = new Date(h.time);
-    const hr    = t.getHours();
-    const lbl   = hr===0?'00h':hr===12?'12h':`${String(hr).padStart(2,'0')}`;
-    const isNow = Math.abs(t.getTime()-now) < 3600000;
-    const tempC = Math.round(h.temp_c);
-    const wmoC  = mapWeatherApiToWMO(h.condition?.code, h.condition?.text||'');
-    const rain  = h.chance_of_rain||0;
-    const precip= h.precip_mm||0;
-    const windKt= Math.round(h.wind_kph*0.539957);
-    const rainH = Math.round((precip/maxPrecip)*30);
-    const windH = Math.round((windKt/maxWind)*20);
-    const rainCol = rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.3)';
-    const windCol = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'rgba(34,211,238,0.5)';
+  if(!allHours.length) return '';
 
-    return `<div class="hourly-cell${isNow?' hourly-now':''}">
-      <div class="hourly-time">${lbl}</div>
+  const show = allHours.slice(0, 20); // show up to 20 hours
+  const maxPrecip = Math.max(1, ...show.map(h=>h.precip_mm||0));
+  const maxWind   = Math.max(1, ...show.map(h=>(h.wind_kph||0)*0.539957));
+
+  const cells = show.map(h=>{
+    const t      = new Date(h.time);
+    const hr     = t.getHours();
+    const isNow  = Math.abs(t.getTime()-now) < 3600000;
+    const isMid  = hr === 0; // midnight — show day label
+    const lbl    = isMid
+      ? t.toLocaleDateString('en-US',{weekday:'short',timeZone:'America/Curacao'})
+      : `${String(hr).padStart(2,'0')}`;
+    const tempC  = Math.round(h.temp_c);
+    const wmoC   = mapWeatherApiToWMO(h.condition?.code, h.condition?.text||'');
+    const rain   = h.chance_of_rain||0;
+    const precip = h.precip_mm||0;
+    const windKt = Math.round((h.wind_kph||0)*0.539957);
+    const rainH  = Math.round((precip/maxPrecip)*28);
+    const windH  = Math.round((windKt/maxWind)*20);
+    const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.25)';
+    const windCol= windKt>=25?'#f87171':windKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
+
+    return `<div class="hourly-cell${isNow?' hourly-now':''}${isMid?' hourly-midnight':''}">
+      <div class="hourly-time${isMid?' hourly-mid-lbl':''}">${lbl}</div>
       <div class="hourly-icon" style="width:22px;height:22px;margin:0 auto">${animatedWeatherSVG(wmoC)}</div>
       <div class="hourly-temp">${tempC}°</div>
       <div class="hourly-bars">
-        <div class="hourly-bar-rain" style="height:${rainH}px;background:${rainCol}" title="${rain}% · ${precip.toFixed(1)}mm"></div>
-        <div class="hourly-bar-wind" style="height:${windH}px;background:${windCol}" title="${windKt} kt"></div>
+        <div class="hourly-bar-rain" style="height:${Math.max(2,rainH)}px;background:${rainCol}" title="${rain}% · ${precip.toFixed(1)}mm"></div>
+        <div class="hourly-bar-wind" style="height:${Math.max(2,windH)}px;background:${windCol}" title="${windKt} kt"></div>
       </div>
       <div class="hourly-rain">${rain?rain+'%':''}</div>
       <div class="hourly-wind" style="color:${windCol}">${windKt}</div>
@@ -4131,7 +4533,7 @@ function buildHourlyStrip(day0, icao){
   }).join('');
 
   return `<div class="hourly-strip-wrap">
-    <div class="hourly-strip-lbl">Next 18 hours</div>
+    <div class="hourly-strip-lbl">Hourly — next ${show.length} hours</div>
     <div class="hourly-strip" id="hourly-${icao}">${cells}</div>
   </div>`;
 }
@@ -4306,7 +4708,7 @@ async function loadForecast(){
           <div class="fcast-summary">${buildForecastSummary(days, loc)}</div>
         </div>
         ${alertHtml}
-        ${buildHourlyStrip(days[0], loc.icao)}
+        ${buildHourlyStrip(days[0], loc.icao, days[1])}
         <div class="fcast-days">${dayCards}</div>
       </div>`;
     });
