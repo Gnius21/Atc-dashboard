@@ -1458,11 +1458,18 @@ body.night .tab-btn.active{
   letter-spacing:.08em;font-weight:500;margin-top:3px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.ic-wind-rotor{
-  transform:rotate(var(--wind-deg, 0deg));
-  transform-origin:40px 40px;
-  transition:transform 1.5s cubic-bezier(.4,0,.2,1);
+/* ── WIND ROSE ── */
+.wind-rose-svg{
+  display:block;
+  filter:drop-shadow(0 0 6px rgba(34,211,238,0.2));
+  flex-shrink:0;
 }
+.ic-wind-rotor,
+.fcast-wind-rotor{
+  /* transition handled inline per instance */
+}
+
+/* ── UV GAUGE ── */
 .ic-uv-gauge path:last-of-type{
   animation:icUvDraw 1.4s ease-out;
 }
@@ -1470,7 +1477,16 @@ body.night .tab-btn.active{
   from{stroke-dasharray:0 100}
 }
 
-/* ── AVIATION STATS STRIP ── */
+/* ── HOURLY DEW + GUST BAR ── */
+.hourly-dew{
+  font-family:var(--mono);font-size:.42rem;color:rgba(155,212,255,0.5);
+  font-weight:600;min-height:9px;letter-spacing:.02em;
+}
+.hourly-bar-gust{
+  width:3px;border-radius:2px 2px 0 0;min-height:2px;
+  opacity:0.55;margin-left:-2px;
+}
+
 .ic-stats{
   display:grid;
   grid-template-columns:repeat(6,1fr);
@@ -1901,7 +1917,7 @@ body.night .tab-btn.active{
   letter-spacing:.14em;margin-top:2px;font-weight:500;
 }
 .fcast-days{
-  display:grid;grid-template-columns:repeat(3,1fr);
+  display:grid;grid-template-columns:repeat(7,1fr);
 }
 .fcast-day{
   padding:12px 12px 10px;
@@ -2151,9 +2167,7 @@ body.night .tab-btn.active{
   letter-spacing:.1em;font-weight:500;
 }
 .fcast-wind-rotor{
-  transform:rotate(var(--arrow-deg, 0deg));
-  transform-origin:35px 35px;
-  transition:transform 1.5s cubic-bezier(.4,0,.2,1);
+  /* rotation handled inline by windRoseSVG */
 }
 .fcast-wind-compass,.fcast-uv-gauge{
   filter:drop-shadow(0 0 4px rgba(34,211,238,0.2));
@@ -2190,10 +2204,13 @@ body.night .tab-btn.active{
   margin-top:-2px;
 }
 
+@media(max-width:1200px){
+  .fcast-days{grid-template-columns:repeat(4,1fr)}
+}
 @media(max-width:900px){
-  .fcast-days{grid-template-columns:1fr}
-  .fcast-day{border-right:none;border-bottom:1px solid var(--border)}
-  .fcast-day:last-child{border-bottom:none}
+  .fcast-days{grid-template-columns:repeat(2,1fr)}
+  .fcast-day{border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .fcast-day:nth-child(2n){border-right:none}
 }
 @media(max-width:600px){
   .fcast-icon-big{width:54px;height:54px}
@@ -2489,8 +2506,7 @@ body.night .tab-btn.active{
   <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
   <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
   <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">5</span></div>
-  <div class="tab-btn" data-tab="satellite">🛰 Sat <span class="tab-key">6</span></div>
-  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">7</span></div>
+  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">6</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -2759,7 +2775,7 @@ body.night .tab-btn.active{
   </div>
 
   <div class="full">
-    <div class="section-title">3-Day Forecast — ABC Islands · WeatherAPI <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
+    <div class="section-title">7-Day Forecast — ABC Islands · WeatherAPI <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
     <div class="panel" style="overflow:visible">
       <div id="forecast-content">
         <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading 3-day forecast…</div>
@@ -2802,18 +2818,6 @@ body.night .tab-btn.active{
     <div class="radar-box">
       <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=true&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
       <div class="overlay-blocker"></div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- ═══ TAB: SATELLITE ═══ -->
-<div class="tab-pane" id="tab-satellite">
-<div class="layout">
-  <div class="full">
-    <div class="section-title">Satellite — GOES-E IR · Caribbean</div>
-    <div class="rwc-frame-wrap">
-      <iframe id="satFrame" class="rwc-frame" title="Satellite" loading="lazy"></iframe>
     </div>
   </div>
 </div>
@@ -3045,9 +3049,7 @@ function switchTab(name){
   tabLastSeen[name]=Date.now();
 
   // Lazy-load static iframes the first time their tab opens.
-  const lazy = {
-    satellite: ['satFrame', 'https://www.weathernerds.org/satellite/?initsatsrc=On&initsatname=GOES-E&initsattype=ir&initcscheme=ir1&initimdimx=1050&initimdimy=601&initrange=13.250:-71.500:10.750:-66.250&initloop=False&initnframes=20&initlightningge=On&initlightninggw=Off&initltngfed=Off&initltngtoe=Off&initinterstates=On&initwarnings=On&initlatlon=Off&initascatb=Off&initascatc=Off&initascatambb=Off&initascatambc=Off&initsst=Off&initecens=Off&initgefs=Off'],
-  };
+  const lazy = {};
   if(lazy[name]){
     const [id,url]=lazy[name];
     const f=document.getElementById(id);
@@ -3103,7 +3105,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'satellite','7':'flights'};
+  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'flights'};
   if(map[e.key]) switchTab(map[e.key]);
 });
 
@@ -3224,65 +3226,19 @@ function renderNotams(){
 async function fetchNotams(){
   setBadge('notamBadge','LOADING','loading');
   try{
-    // AWC v2 NOTAM API — free, CORS-OK
-    // Fetch for all three ABC airports in one call
-    const url = `https://aviationweather.gov/api/data/notam?`+
-      `icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('AWC NOTAM '+r.status);
-    const raw = await r.json();
-    const items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
-
-    // Deduplicate by notamId
-    const seen = new Set();
-    notamData = items.filter(n=>{
-      const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
-      if(seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    }).map(classifyNotam);
-
-    renderNotams();
-    setBadge('notamBadge','LIVE');
-
-    // Warn badge on NOTAM tab if there are fresh warnings
-    const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
-    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
-    if(notamTabBtn && critCount > 0){
-      notamTabBtn.dataset.notamCount = critCount;
-      notamTabBtn.title = `${critCount} active warning NOTAM${critCount>1?'s':''}`;
-    }
-  }catch(err){
-    console.warn('[NOTAMs]', err.message);
-    setBadge('notamBadge','ERROR','error');
-    // Fallback message
-    document.getElementById('notamList').innerHTML =
-      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
-        NOTAM fetch failed: ${err.message}
-        <br><a href="https://pilotweb.nas.faa.gov/PilotWeb/notamRetrievalByICAOAction.do?method=displayByICAO&reportType=RAW&formatType=DOMESTIC&retrieveLocId=TNCC&actionType=notamRetrievalByICAO" target="_blank" style="color:var(--cyan)">Open FAA NOTAM lookup ↗</a>
-      </div>`;
-  }
-}
-
-async function fetchNotams(){
-  setBadge('notamBadge','LOADING','loading');
-  try{
-    // AWC v2 NOTAM API — primary endpoint
-    let raw, items;
-    const primaryUrl = `https://aviationweather.gov/api/data/notam?icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
+    let raw;
+    const primaryUrl  = `https://aviationweather.gov/api/data/notam?icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
     const fallbackUrl = `https://aviationweather.gov/cgi-bin/data/notam.php?ids=TNCA,TNCC,TNCB&format=json`;
     try{
       const r = await fetch(primaryUrl, {cache:'no-store'});
       if(!r.ok) throw new Error('primary '+r.status);
       raw = await r.json();
     }catch{
-      // Fallback to legacy AWC endpoint
       const r2 = await fetch(fallbackUrl, {cache:'no-store'});
       if(!r2.ok) throw new Error('AWC NOTAM '+r2.status);
       raw = await r2.json();
     }
-    items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
-
+    const items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
     const seen = new Set();
     notamData = items.filter(n=>{
       const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
@@ -3290,20 +3246,15 @@ async function fetchNotams(){
       seen.add(id);
       return true;
     }).map(classifyNotam);
-
     renderNotams();
     setBadge('notamBadge','LIVE');
-
     const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
-    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
-    if(notamTabBtn && critCount > 0){
-      notamTabBtn.dataset.notamCount = critCount;
-      notamTabBtn.title = `${critCount} active warning NOTAM${critCount>1?'s':''}`;
-    }
+    const btn = document.querySelector('.tab-btn[data-tab="notams"]');
+    if(btn && critCount>0) btn.title=`${critCount} active warning NOTAM${critCount>1?'s':''}`;
   }catch(err){
     console.warn('[NOTAMs]', err.message);
     setBadge('notamBadge','ERROR','error');
-    document.getElementById('notamList').innerHTML =
+    document.getElementById('notamList').innerHTML=
       `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
         NOTAM fetch failed: ${err.message}<br>
         <a href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank" style="color:var(--cyan)">AWC NOTAM ↗</a>
@@ -3703,6 +3654,160 @@ function isCell(lbl,val,sub,color){
   </div>`;
 }
 
+/* ════════════════════════════════
+   WIND ROSE SVG — professional meteorological compass
+   Parameters:
+     deg      = wind FROM direction (meteorological convention)
+     speedKt  = mean wind speed in knots
+     gustKt   = gust speed (0 = no gust data)
+     size     = viewBox size (square)
+     cssClass = class for the rotating group (for CSS transition)
+     windCol  = stroke/fill colour
+
+   The arrow points DOWNWIND (where wind is going = deg + 180°).
+   Concentric rings: calm / 10 kt / 20 kt / 30 kt thresholds.
+   A gust ring shows the difference between gust and mean.
+════════════════════════════════ */
+/* ════════════════════════════════
+   WIND ROSE SVG — WMO-standard barbed arrow
+   - Unique SVG IDs via uid to prevent DOM collisions
+   - Barbs on LEFT of shaft (WMO convention, shaft pointing upwind)
+   - Arrow points DOWNWIND (from deg + 180°)
+   - Gust shown as dashed outer arc segment
+   - Calm = double circle; Variable = VRB text
+   - Size configurable; all dimensions relative
+════════════════════════════════ */
+let _wrUID = 0;
+function windRoseSVG({deg=0, speedKt=0, gustKt=0, size=80, windCol='#22d3ee'}){
+  const uid  = ++_wrUID;
+  const cx   = size/2, cy = size/2, R = size*0.42;
+  const toRad = d => d * Math.PI / 180;
+
+  const isCalm = speedKt < 3;
+  const isVar  = deg === 999;
+
+  // Arrow points DOWNWIND: rotate shaft so it points from center toward wind destination
+  const pointDeg = isCalm||isVar ? 0 : (deg + 180) % 360;
+
+  // Shaft length scales with speed; 0 kt = 0, 35+ kt = 88% of R
+  const shaftLen = isCalm ? 0 : Math.min(R*0.88, R*0.18 + speedKt*R*0.026);
+
+  // ── Compass decoration ──────────────────────────────────
+  // 16-point tick marks
+  const ticks = Array.from({length:16},(_,i)=>{
+    const a = toRad(i*22.5 - 90);
+    const isCard = i%4===0, isOrd = i%2===0;
+    const r1 = isCard ? R*0.80 : isOrd ? R*0.85 : R*0.89;
+    const r2 = R*0.96;
+    const sw = isCard ? 1.3 : 0.7;
+    const op = isCard ? 0.55 : isOrd ? 0.3 : 0.18;
+    return `<line x1="${(cx+Math.cos(a)*r1).toFixed(2)}" y1="${(cy+Math.sin(a)*r1).toFixed(2)}" x2="${(cx+Math.cos(a)*r2).toFixed(2)}" y2="${(cy+Math.sin(a)*r2).toFixed(2)}" stroke="rgba(155,212,255,${op})" stroke-width="${sw}"/>`;
+  }).join('');
+
+  // Cardinal labels N/E/S/W
+  const cardLabels = [['N',0],['E',90],['S',180],['W',270]].map(([lbl,d])=>{
+    const a = toRad(d-90);
+    const r = R*0.68;
+    const fs = size*0.092;
+    return `<text x="${(cx+Math.cos(a)*r).toFixed(2)}" y="${(cy+Math.sin(a)*r).toFixed(2)}" text-anchor="middle" dominant-baseline="middle" font-size="${fs}" fill="rgba(155,212,255,0.7)" font-family="monospace" font-weight="700">${lbl}</text>`;
+  }).join('');
+
+  // Speed threshold rings (10 / 20 / 30 kt)
+  const rings = [[R*0.32,0.14],[R*0.55,0.10],[R*0.76,0.07]]
+    .map(([r,op])=>`<circle cx="${cx}" cy="${cy}" r="${r.toFixed(2)}" fill="none" stroke="rgba(34,211,238,${op})" stroke-width="0.6" stroke-dasharray="2 3"/>`)
+    .join('');
+
+  // ── Wind barb ─────────────────────────────────────────
+  // Shaft drawn pointing UP (−Y direction) from centre.
+  // The whole <g> is then rotated by pointDeg.
+  // WMO: barb feathers on LEFT side when arrow points up (i.e. +X direction).
+  const shaftX1 = cx, shaftY1 = cy;                 // base (tail, upwind)
+  const shaftX2 = cx, shaftY2 = cy - shaftLen;       // tip (downwind)
+
+  // Arrowhead at tip
+  const hw = size * 0.056, hl = size * 0.092;
+  const arrowHead = isCalm ? '' :
+    `<polygon points="${shaftX2},${(shaftY2-hl).toFixed(2)} ${(shaftX2-hw).toFixed(2)},${shaftY2} ${(shaftX2+hw).toFixed(2)},${shaftY2}" fill="${windCol}" filter="url(#wrGlow${uid})"/>`;
+
+  // WMO barb feathers — drawn from the tail end, going LEFT (+X = left when shaft is up)
+  let feathers = '';
+  if(!isCalm && speedKt >= 3){
+    let remaining = Math.round(speedKt / 5) * 5; // round to nearest 5
+    let fy = cy - size*0.04;  // start near the tail
+    const step = size * 0.068;
+    const bLen = size * 0.145;
+    const bOff = size * 0.062; // slant
+
+    // Pennants (50 kt)
+    while(remaining >= 50 && fy > shaftY2 + step){
+      feathers += `<polygon points="${shaftX1},${fy.toFixed(2)} ${(shaftX1+bLen).toFixed(2)},${(fy-bOff*2).toFixed(2)} ${shaftX1},${(fy-step*0.8).toFixed(2)}" fill="${windCol}" opacity="0.9"/>`;
+      remaining -= 50; fy -= step * 0.9;
+    }
+    // Full barbs (10 kt)
+    while(remaining >= 10 && fy > shaftY2 + size*0.03){
+      feathers += `<line x1="${shaftX1}" y1="${fy.toFixed(2)}" x2="${(shaftX1+bLen).toFixed(2)}" y2="${(fy-bOff).toFixed(2)}" stroke="${windCol}" stroke-width="${size*0.028}" stroke-linecap="round" opacity="0.92"/>`;
+      remaining -= 10; fy -= step;
+    }
+    // Half barb (5 kt)
+    if(remaining >= 5 && fy > shaftY2 + size*0.02){
+      feathers += `<line x1="${shaftX1}" y1="${fy.toFixed(2)}" x2="${(shaftX1+bLen*0.5).toFixed(2)}" y2="${(fy-bOff*0.5).toFixed(2)}" stroke="${windCol}" stroke-width="${size*0.028}" stroke-linecap="round" opacity="0.92"/>`;
+    }
+  }
+
+  // Gust arc — dashed arc at the gust-equivalent radius, centred on shaft tip
+  let gustArc = '';
+  if(gustKt > speedKt + 3){
+    const gr = Math.min(R*0.92, R*0.18 + gustKt*R*0.026);
+    // Draw a short dashed arc around the compass at the gust radius
+    gustArc = `<circle cx="${cx}" cy="${cy}" r="${gr.toFixed(2)}" fill="none" stroke="${windCol}" stroke-width="0.8" stroke-dasharray="3 4" opacity="0.35"/>`;
+  }
+
+  // Centre mark
+  const centreMark = isCalm
+    ? `<circle cx="${cx}" cy="${cy}" r="${(size*0.085).toFixed(2)}" fill="none" stroke="${windCol}" stroke-width="1.6" opacity="0.75"/>
+       <circle cx="${cx}" cy="${cy}" r="${(size*0.028).toFixed(2)}" fill="${windCol}" opacity="0.85"/>
+       <text x="${cx}" y="${(cy+size*0.22).toFixed(2)}" text-anchor="middle" font-size="${(size*0.09).toFixed(2)}" fill="${windCol}" font-family="monospace" font-weight="700" opacity="0.9">CALM</text>`
+    : isVar
+    ? `<text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="${(size*0.1).toFixed(2)}" fill="${windCol}" font-family="monospace" font-weight="700">VRB</text>`
+    : `<circle cx="${cx}" cy="${cy}" r="${(size*0.042).toFixed(2)}" fill="${windCol}" opacity="0.95" filter="url(#wrGlow${uid})"/>`;
+
+  // Speed label below
+  const speedLabel = (!isCalm && !isVar)
+    ? `<text x="${cx}" y="${(cy+R*1.14).toFixed(2)}" text-anchor="middle" font-size="${(size*0.088).toFixed(2)}" fill="${windCol}" font-family="monospace" font-weight="700" opacity="0.88">${speedKt}${gustKt>speedKt+3?' G'+gustKt:''}kt</text>`
+    : '';
+
+  return `<svg class="wind-rose-svg" viewBox="0 0 ${size} ${size}" style="width:${size}px;height:${size}px;overflow:visible;display:block">
+    <defs>
+      <radialGradient id="wrBg${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="${windCol}" stop-opacity="0.07"/>
+        <stop offset="100%" stop-color="${windCol}" stop-opacity="0"/>
+      </radialGradient>
+      <filter id="wrGlow${uid}" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="0.9" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+
+    <circle cx="${cx}" cy="${cy}" r="${R.toFixed(2)}" fill="url(#wrBg${uid})"/>
+    <circle cx="${cx}" cy="${cy}" r="${R.toFixed(2)}" fill="none" stroke="rgba(34,211,238,0.28)" stroke-width="0.8"/>
+    ${rings}
+    <line x1="${cx}" y1="${(cy-R*0.95).toFixed(2)}" x2="${cx}" y2="${(cy+R*0.95).toFixed(2)}" stroke="rgba(34,211,238,0.07)" stroke-width="0.5"/>
+    <line x1="${(cx-R*0.95).toFixed(2)}" y1="${cy}" x2="${(cx+R*0.95).toFixed(2)}" y2="${cy}" stroke="rgba(34,211,238,0.07)" stroke-width="0.5"/>
+    ${ticks}
+    ${cardLabels}
+    ${gustArc}
+
+    <g style="transform:rotate(${pointDeg}deg);transform-origin:${cx}px ${cy}px;transition:transform 1.4s cubic-bezier(.4,0,.2,1)">
+      ${isCalm?'': `<line x1="${shaftX1}" y1="${shaftY1.toFixed(2)}" x2="${shaftX2}" y2="${shaftY2.toFixed(2)}" stroke="${windCol}" stroke-width="${(size*0.038).toFixed(2)}" stroke-linecap="round" filter="url(#wrGlow${uid})"/>`}
+      ${feathers}
+      ${arrowHead}
+    </g>
+
+    ${centreMark}
+    ${speedLabel}
+  </svg>`;
+}
+
 function renderIslandCards(){
   const container=document.getElementById('island-cards');
   let html='';
@@ -3829,23 +3934,11 @@ function renderIslandCards(){
         <div class="ic-section ic-meter-row">
 
           <div class="ic-meter">
-            <svg class="ic-wind-compass" viewBox="0 0 80 80" style="--wind-deg:${windToDeg}deg;--wind-color:${windCol}">
-              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(34,211,238,0.18)" stroke-width="1"/>
-              <circle cx="40" cy="40" r="26" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" stroke-dasharray="2 4"/>
-              <text x="40" y="11" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">N</text>
-              <text x="71" y="42" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">E</text>
-              <text x="40" y="74" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">S</text>
-              <text x="9"  y="42" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">W</text>
-              <g class="ic-wind-rotor">
-                <line x1="40" y1="40" x2="40" y2="${40 - Math.min(28, 12 + peakKt*0.7)}" stroke="${windCol}" stroke-width="2.8" stroke-linecap="round"/>
-                <polygon points="40,${40 - Math.min(28, 12 + peakKt*0.7) - 6} 36,${40 - Math.min(28, 12 + peakKt*0.7) + 1} 44,${40 - Math.min(28, 12 + peakKt*0.7) + 1}" fill="${windCol}"/>
-              </g>
-              <circle cx="40" cy="40" r="3" fill="${windCol}" style="filter:drop-shadow(0 0 4px ${windCol})"/>
-            </svg>
+            ${windRoseSVG({deg: windFromDeg, speedKt: windKtFinal, gustKt: gustKtFinal, size: 84, windCol})}
             <div class="ic-meter-info">
               <div class="ic-meter-lbl">Wind to</div>
-              <div class="ic-meter-val" style="color:${windCol}">${windKtFinal} <span class="ic-meter-unit">kt</span></div>
-              <div class="ic-meter-sub">FROM ${pad(Math.round(windFromDeg))}° ${windFromCard}${gustKtFinal?` · G${gustKtFinal}`:''}</div>
+              <div class="ic-meter-val" style="color:${windCol}">${windKtFinal===0?'CALM':`${windKtFinal} <span class="ic-meter-unit">kt</span>`}</div>
+              <div class="ic-meter-sub">${windKtFinal<3?'Calm':('FROM '+pad(Math.round(windFromDeg))+'° '+windFromCard)}${gustKtFinal>windKtFinal+2?` · G${gustKtFinal}`:''}</div>
             </div>
           </div>
 
@@ -3899,47 +3992,70 @@ function renderIslandCards(){
   container.innerHTML=html||`<div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">No data available.</div>`;
 }
 
-/* Map WeatherAPI condition codes to WMO-ish codes that animatedWeatherSVG understands.
-   Reference: weatherapi.com docs lists ~50 codes; we cluster into the buckets we have. */
+/* Map WeatherAPI condition codes → WMO bucket for animatedWeatherSVG.
+   WeatherAPI uses ~50 codes. We map every one explicitly. */
 function mapWeatherApiToWMO(code, text){
-  if(!code) {
-    // Fallback by text
-    text=(text||'').toLowerCase();
-    if(text.includes('thunder')) return 95;
-    if(text.includes('drizzle')) return 51;
-    if(text.includes('shower')) return 80;
-    if(text.includes('rain')) return 61;
-    if(text.includes('fog') || text.includes('mist')) return 45;
-    if(text.includes('overcast')) return 3;
-    if(text.includes('cloud')) return 2;
-    return 0;
-  }
-  const m={
-    1000:0,    // clear
-    1003:2,    // partly cloudy
-    1006:3,    // cloudy
-    1009:3,    // overcast
-    1030:45,   // mist
-    1063:80,   // patchy rain
-    1066:71,   // patchy snow
-    1069:66,   // sleet
-    1072:51,   // freezing drizzle
-    1087:95,   // thunder possible
-    1114:71,   // blowing snow
-    1117:75,   // blizzard
-    1135:45,   // fog
-    1147:48,   // freezing fog
-    1150:51,1153:51,1168:56,1171:57,
-    1180:80,1183:61,1186:80,1189:63,1192:82,1195:65,
-    1198:66,1201:67,
-    1204:71,1207:73,
-    1210:71,1213:71,1216:73,1219:73,1222:75,1225:75,
-    1237:71,
-    1240:80,1243:81,1246:82,
-    1249:71,1252:73,1255:71,1258:73,1261:71,1264:73,
-    1273:95,1276:96,1279:95,1282:99
+  const MAP = {
+    1000:0,   // Sunny/Clear
+    1003:2,   // Partly cloudy
+    1006:3,   // Cloudy
+    1009:3,   // Overcast
+    1030:45,  // Mist
+    1063:80,  // Patchy rain possible
+    1066:71,  // Patchy snow possible
+    1069:66,  // Patchy sleet possible
+    1072:56,  // Patchy freezing drizzle
+    1087:95,  // Thundery outbreaks possible
+    1114:71,  // Blowing snow
+    1117:75,  // Blizzard
+    1135:45,  // Fog
+    1147:48,  // Freezing fog
+    1150:51,  // Patchy light drizzle
+    1153:51,  // Light drizzle
+    1168:56,  // Freezing drizzle
+    1171:57,  // Heavy freezing drizzle
+    1180:80,  // Patchy light rain
+    1183:61,  // Light rain
+    1186:80,  // Moderate rain at times
+    1189:63,  // Moderate rain
+    1192:82,  // Heavy rain at times
+    1195:65,  // Heavy rain
+    1198:66,  // Light freezing rain
+    1201:67,  // Moderate/heavy freezing rain
+    1204:71,  // Light sleet
+    1207:73,  // Moderate/heavy sleet
+    1210:71,  // Patchy light snow
+    1213:71,  // Light snow
+    1216:73,  // Patchy moderate snow
+    1219:73,  // Moderate snow
+    1222:75,  // Patchy heavy snow
+    1225:75,  // Heavy snow
+    1237:77,  // Ice pellets
+    1240:80,  // Light rain shower
+    1243:81,  // Moderate/heavy rain shower
+    1246:82,  // Torrential rain shower
+    1249:71,  // Light sleet showers
+    1252:73,  // Mod/heavy sleet showers
+    1255:71,  // Light snow showers
+    1258:73,  // Mod/heavy snow showers
+    1261:77,  // Light ice pellet showers
+    1264:77,  // Mod/heavy ice pellet showers
+    1273:95,  // Patchy light rain w/ thunder
+    1276:96,  // Mod/heavy rain w/ thunder
+    1279:95,  // Patchy light snow w/ thunder
+    1282:99,  // Mod/heavy snow w/ thunder
   };
-  return m[code] ?? 2;
+  if(code && MAP[code] !== undefined) return MAP[code];
+  // Text fallback
+  const t = (text||'').toLowerCase();
+  if(/thunder|storm/.test(t)) return 95;
+  if(/heavy.*rain|torren/.test(t)) return 65;
+  if(/rain|shower|drizzl/.test(t)) return 61;
+  if(/snow|blizzard|sleet/.test(t)) return 71;
+  if(/fog|mist|haze/.test(t)) return 45;
+  if(/overcast|cloud/.test(t)) return 3;
+  if(/partly/.test(t)) return 2;
+  return 0;
 }
 
 /* ════════════════════════════════
@@ -3987,7 +4103,7 @@ async function fetchWeatherAPI(icao){
     // forecast.json gives us current + 3-day + AQI + alerts in one call
     const url = PROXY_BASE
       ? `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}&days=3&aqi=yes&alerts=yes`
-      : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=3&aqi=yes&alerts=yes`;
+      : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=7&aqi=yes&alerts=yes`;
     const res = await fetch(url, {cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
     store.api[icao] = await res.json();
@@ -4448,39 +4564,66 @@ async function loadCaribbeanNews(){
    FCAST_LOCATIONS is used only for labels/coords; data comes from store.api.
 ════════════════════════════════ */
 function buildForecastSummary(days, loc){
-  // days = forecast.forecastday[] from WeatherAPI
   const today = days[0]?.day;
   if(!today) return '';
 
-  const windKt = Math.round((today.maxwind_kph||0) * 0.539957);
-  const todayTxt = days[0]?.day?.condition?.text || '';
-  const tempHi = Math.round(today.maxtemp_c);
-  const tempLo = Math.round(today.mintemp_c);
+  const windKt   = Math.round((today.maxwind_kph||0) * 0.539957);
+  const condText = days[0]?.day?.condition?.text || '';
+  const tempHi   = Math.round(today.maxtemp_c);
+  const tempLo   = Math.round(today.mintemp_c);
+  const tempAvg  = Math.round((today.avgtemp_c||((today.maxtemp_c+today.mintemp_c)/2)));
+  const rainPct  = today.daily_chance_of_rain || 0;
+  const hum      = today.avghumidity || 0;
+  const vis      = today.avgvis_km || 10;
+  const uv       = today.uv || 0;
 
-  const rainProbs = days.map(d=>d.day.daily_chance_of_rain);
-  const rainMms   = days.map(d=>d.day.totalprecip_mm);
-  const maxWinds  = days.map(d=>Math.round(d.day.maxwind_kph*0.539957));
-  const maxGustEst= maxWinds.map(w=>Math.round(w*1.3)); // WeatherAPI lacks gust daily; estimate
-  const conds     = days.map(d=>d.day.condition.text.toLowerCase());
+  // Pull max gust from hourly for today
+  const allHours0  = days[0]?.hour || [];
+  const gustKt     = allHours0.length
+    ? Math.round(Math.max(...allHours0.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957)))
+    : Math.round(windKt*1.2);
 
-  const stormDays  = conds.filter(t=>t.includes('thunder')||t.includes('storm')).length;
-  const showerDays = conds.filter(t=>t.includes('rain')||t.includes('shower')||t.includes('drizzle')).length;
+  // 3-day outlook analysis
+  const rainProbs  = days.map(d=>d.day.daily_chance_of_rain);
+  const windMaxes  = days.map(d=>Math.round(d.day.maxwind_kph*0.539957));
+  const condTexts  = days.map(d=>d.day.condition.text.toLowerCase());
+  const stormDays  = condTexts.filter(t=>t.includes('thunder')||t.includes('storm')).length;
+  const showerDays = condTexts.filter(t=>t.includes('rain')||t.includes('shower')||t.includes('drizzle')).length;
   const wetDays    = rainProbs.filter(p=>p>=50).length;
-  const peakRain   = Math.max(...rainMms);
+  const peakGust   = Math.max(...days.map((d,i)=>{
+    const hrs = d.hour||[];
+    return hrs.length ? Math.round(Math.max(...hrs.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957))) : windMaxes[i]*1.2;
+  }));
   const peakHi     = Math.max(...days.map(d=>d.day.maxtemp_c));
-  const peakWind   = Math.max(...maxWinds);
+  const peakRainMm = Math.max(...days.map(d=>d.day.totalprecip_mm));
 
-  const part1 = `<strong>Today:</strong> ${todayTxt.toLowerCase()}, ${tempHi}°/${tempLo}°, wind ${windKt} kt.`;
+  // Today line
+  const windStr  = windKt<3 ? 'calm winds' : gustKt>windKt+4 ? `${windKt}–${gustKt} kt gusts` : `${windKt} kt winds`;
+  const rainStr  = rainPct>=70 ? `${rainPct}% rain chance` : rainPct>=30 ? `${rainPct}% chance of showers` : '';
+  const humNote  = hum > 82 ? ', humid' : hum < 55 ? ', dry' : '';
+  const uvNote   = uv >= 8 ? ` · UV extreme (${uv.toFixed(0)})` : uv >= 6 ? ` · UV high (${uv.toFixed(0)})` : '';
+  const visNote  = vis < 5 ? ` · reduced vis ${vis} km` : '';
 
+  const todayParts = [`<strong>Today:</strong> ${condText.toLowerCase()}, ${tempHi}°/${tempLo}°`, windStr];
+  if(rainStr) todayParts.push(rainStr);
+  const todayLine = todayParts.join(', ') + humNote + uvNote + visNote + '.';
+
+  // Outlook line
   let outlook;
-  if(stormDays>0)        outlook = `Thunderstorms expected in the outlook.`;
-  else if(showerDays>=2) outlook = `Showers likely most days, peak ${peakRain.toFixed(0)} mm.`;
-  else if(wetDays===1)   outlook = `One wet day ahead (≥50% chance).`;
-  else if(peakWind>=25)  outlook = `Brisk trade winds, peaking at ${peakWind} kt.`;
-  else if(peakHi>=33)    outlook = `Hot — highs up to ${Math.round(peakHi)}°.`;
-  else                   outlook = `Mostly dry & pleasant through the period.`;
+  if(stormDays > 0)
+    outlook = `⛈ Thunderstorms in the 3-day outlook. Exercise caution.`;
+  else if(showerDays >= 2)
+    outlook = `🌧 Showers likely most days — peak accumulation ${peakRainMm.toFixed(0)} mm.`;
+  else if(wetDays === 1)
+    outlook = `🌦 One wet day expected (≥50% rain chance).`;
+  else if(peakGust >= 28)
+    outlook = `💨 Brisk trade winds — gusts to ${peakGust} kt expected.`;
+  else if(peakHi >= 34)
+    outlook = `🌡 Hot through the period, peaking at ${Math.round(peakHi)}°.`;
+  else
+    outlook = `✅ Mostly dry and pleasant — ${Math.round(Math.min(...days.map(d=>d.day.mintemp_c)))}–${Math.round(peakHi)}° range.`;
 
-  return part1 + ' ' + outlook;
+  return `${todayLine} <span style="opacity:.75">${outlook}</span>`;
 }
 
 /* Scrollable 24-hour strip — shows hours from now forward.
@@ -4499,7 +4642,7 @@ function buildHourlyStrip(day0, icao, day1){
 
   const show = allHours.slice(0, 20); // show up to 20 hours
   const maxPrecip = Math.max(1, ...show.map(h=>h.precip_mm||0));
-  const maxWind   = Math.max(1, ...show.map(h=>(h.wind_kph||0)*0.539957));
+  const maxWind   = Math.max(1, ...show.map(h=>Math.max((h.wind_kph||0),(h.gust_kph||0))*0.539957));
 
   const cells = show.map(h=>{
     const t      = new Date(h.time);
@@ -4514,21 +4657,26 @@ function buildHourlyStrip(day0, icao, day1){
     const rain   = h.chance_of_rain||0;
     const precip = h.precip_mm||0;
     const windKt = Math.round((h.wind_kph||0)*0.539957);
+    const gustKt = Math.round((h.gust_kph||h.wind_kph||0)*0.539957);
+    const dewC   = h.dewpoint_c !== undefined ? Math.round(h.dewpoint_c) : null;
     const rainH  = Math.round((precip/maxPrecip)*28);
     const windH  = Math.round((windKt/maxWind)*20);
     const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.25)';
-    const windCol= windKt>=25?'#f87171':windKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
+    const windCol= gustKt>=25?'#f87171':gustKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
+    const gustBar= gustKt>windKt+3 ? `<div class="hourly-bar-gust" style="height:${Math.round((gustKt/maxWind)*20)}px;background:${windCol}" title="Gust ${gustKt} kt"></div>` : '';
 
     return `<div class="hourly-cell${isNow?' hourly-now':''}${isMid?' hourly-midnight':''}">
       <div class="hourly-time${isMid?' hourly-mid-lbl':''}">${lbl}</div>
       <div class="hourly-icon" style="width:22px;height:22px;margin:0 auto">${animatedWeatherSVG(wmoC)}</div>
       <div class="hourly-temp">${tempC}°</div>
+      ${dewC!==null?`<div class="hourly-dew">D:${dewC}°</div>`:'<div class="hourly-dew"></div>'}
       <div class="hourly-bars">
         <div class="hourly-bar-rain" style="height:${Math.max(2,rainH)}px;background:${rainCol}" title="${rain}% · ${precip.toFixed(1)}mm"></div>
         <div class="hourly-bar-wind" style="height:${Math.max(2,windH)}px;background:${windCol}" title="${windKt} kt"></div>
+        ${gustBar}
       </div>
       <div class="hourly-rain">${rain?rain+'%':''}</div>
-      <div class="hourly-wind" style="color:${windCol}">${windKt}</div>
+      <div class="hourly-wind" style="color:${windCol}">${windKt}${gustKt>windKt+3?'<span style="opacity:.6;font-size:.42rem"> G'+gustKt+'</span>':''}</div>
     </div>`;
   }).join('');
 
@@ -4538,13 +4686,17 @@ function buildHourlyStrip(day0, icao, day1){
   </div>`;
 }
 
-async function loadForecast(){
+async function loadForecast(forceNewsUpdate=false){
   forecastLoaded = true;
   const container = document.getElementById('forecast-content');
   setBadge('fcastBadge','LOADING','loading');
 
-  loadDustForecast();
-  loadCaribbeanNews();
+  // Only update news/dust on first load or explicit force (not every 6-min re-render)
+  if(forceNewsUpdate || !window._fcastNewsLoaded){
+    window._fcastNewsLoaded = true;
+    loadDustForecast();
+    loadCaribbeanNews();
+  }
 
   try{
     // Fetch WeatherAPI forecast.json directly for all 3 islands in parallel.
@@ -4552,7 +4704,7 @@ async function loadForecast(){
     const results = await Promise.all(FCAST_LOCATIONS.map(async loc=>{
       const url = PROXY_BASE
         ? `${PROXY_BASE}/wx?q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`
-        : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`;
+        : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=7&aqi=yes&alerts=yes`;
       const res = await fetch(url, {cache:'no-store'});
       if(!res.ok) throw new Error(`WeatherAPI ${loc.icao}: HTTP ${res.status}`);
       const data = await res.json();
@@ -4601,17 +4753,22 @@ async function loadForecast(){
         const sunrise = d.astro?.sunrise || '—';
         const sunset  = d.astro?.sunset  || '—';
 
-        // Representative wind direction from noon hour (hour 12) if available
-        const noonHour = d.hour?.find(h=> new Date(h.time).getHours()===12 );
-        const windDeg  = noonHour?.wind_degree ?? 0;
-        const windToDeg= (windDeg + 180) % 360;
-        const windCard = ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
-        const arrowLen = Math.min(27, 10 + windKt*0.6);
+        // Wind: use dominant direction from hourly data (most frequent direction during the day)
+        // Fallback: use noon hour, then first available hour
+        const allHours = d.hour || [];
+        const noonHour = allHours.find(h=> new Date(h.time).getHours()===12);
+        const repHour  = noonHour || allHours[allHours.length > 14 ? 14 : Math.floor(allHours.length/2)] || allHours[0];
+        const windDeg  = repHour?.wind_degree ?? 0;
+        const windCard = wdCard(windDeg);
+        // Max gust from all hourly values — more accurate than daily avg
+        const realGustKt = allHours.length
+          ? Math.round(Math.max(...allHours.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957)))
+          : Math.round(windKt * 1.25);
+        const windColD = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
 
+        const rainCol  = rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
         const loFrac   = ((tempLo - tMin) / tSpan) * 100;
         const hiFrac   = ((tempHi - tMin) / tSpan) * 100;
-        const rainCol  = rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
-        const windCol  = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
 
         dayCards += `<div class="fcast-day" style="--day-delay:${i*0.08}s">
           <div class="fcast-day-hdr">
@@ -4648,19 +4805,10 @@ async function loadForecast(){
 
           <div class="fcast-meter-row">
             <div class="fcast-meter">
-              <svg class="fcast-wind-compass" viewBox="0 0 70 70" style="--arrow-deg:${windToDeg}deg;--arrow-color:${windCol}">
-                <circle cx="35" cy="35" r="30" fill="none" stroke="rgba(34,211,238,0.18)" stroke-width="1"/>
-                <circle cx="35" cy="35" r="22" fill="none" stroke="rgba(34,211,238,0.08)" stroke-width="1" stroke-dasharray="2 4"/>
-                <text x="35" y="11" text-anchor="middle" font-size="6" fill="rgba(155,212,255,0.5)" font-family="monospace">N</text>
-                <g class="fcast-wind-rotor">
-                  <line x1="35" y1="35" x2="35" y2="${35-arrowLen}" stroke="${windCol}" stroke-width="2.5" stroke-linecap="round"/>
-                  <polygon points="35,${35-arrowLen-5} 32,${35-arrowLen+2} 38,${35-arrowLen+2}" fill="${windCol}"/>
-                </g>
-                <circle cx="35" cy="35" r="2.5" fill="${windCol}"/>
-              </svg>
+              ${windRoseSVG({deg: windDeg, speedKt: windKt, gustKt: realGustKt, size: 46, windCol: windColD})}
               <div class="fcast-meter-lbl">Wind to</div>
-              <div class="fcast-meter-val" style="color:${windCol}">${windKt} <span style="font-size:.5rem;opacity:.7">${windCard}</span></div>
-              <div class="fcast-meter-sub">max kt</div>
+              <div class="fcast-meter-val" style="color:${windColD}">${windKt===0?'CALM':`${windKt} <span style="font-size:.5rem;opacity:.7">${windCard}</span>`}</div>
+              <div class="fcast-meter-sub">G${realGustKt} kt max</div>
             </div>
 
             <div class="fcast-meter">
@@ -4721,9 +4869,9 @@ async function loadForecast(){
     if(el) el.textContent = `Updated ${ts} AST`;
 
   }catch(e){
+    forecastLoaded = false; // allow retry on next tab switch
     container.innerHTML = `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Forecast load failed: ${e.message}</div>`;
     setBadge('fcastBadge','ERROR','error');
-    forecastLoaded = false;
   }
 }
 
