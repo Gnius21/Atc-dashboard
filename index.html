@@ -4,14 +4,8 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="theme-color" content="#05080f"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="ATC Dashboard"/>
-<meta name="mobile-web-app-capable" content="yes"/>
 <title>ATC &amp; WEATHER DASHBOARD — Curaçao</title>
 
-<!-- Inline manifest (no separate file needed) -->
-<link rel="manifest" href='data:application/manifest+json,{"name":"ATC %26 Weather Dashboard","short_name":"ATC Dashboard","description":"ATC %26 weather dashboard for Cura%C3%A7ao, Aruba, Bonaire","start_url":".","display":"standalone","orientation":"any","background_color":"%2304060b","theme_color":"%2305080f","icons":[{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22%3E%3Crect width=%22192%22 height=%22192%22 rx=%2240%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2270%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%224%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%2245%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.5%22/%3E%3Cline x1=%2296%22 y1=%2226%22 x2=%2296%22 y2=%22166%22 stroke=%22%2322d3ee%22 stroke-width=%221%22 opacity=%220.4%22/%3E%3Cline x1=%2226%22 y1=%2296%22 x2=%22166%22 y2=%2296%22 stroke=%22%2322d3ee%22 stroke-width=%221%22 opacity=%220.4%22/%3E%3Cpath d=%22M96 96 L150 60 Z%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%223%22/%3E%3Ccircle cx=%2296%22 cy=%2296%22 r=%226%22 fill=%22%2322d3ee%22/%3E%3C/svg%3E","sizes":"192x192","type":"image/svg+xml","purpose":"any"},{"src":"data:image/svg%2Bxml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22186%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%2210%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%22120%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%225%22 opacity=%220.5%22/%3E%3Cline x1=%22256%22 y1=%2270%22 x2=%22256%22 y2=%22442%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.4%22/%3E%3Cline x1=%2270%22 y1=%22256%22 x2=%22442%22 y2=%22256%22 stroke=%22%2322d3ee%22 stroke-width=%222%22 opacity=%220.4%22/%3E%3Cpath d=%22M256 256 L400 160 Z%22 fill=%22none%22 stroke=%22%2322d3ee%22 stroke-width=%228%22/%3E%3Ccircle cx=%22256%22 cy=%22256%22 r=%2216%22 fill=%22%2322d3ee%22/%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}'/>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -687,94 +681,6 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 }
 .taf-col-hdr:last-child{border-right:none}
 
-.notam-badge-fresh,.notam-badge-recent,.notam-badge-warn{
-  font-size:.48rem;padding:1px 5px;border-radius:3px;
-  border:1px solid;margin-left:6px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;
-}
-.notam-badge-fresh{color:#4ade80;border-color:#4ade80}
-.notam-badge-recent{color:#fbbf24;border-color:#fbbf24}
-.notam-badge-warn{color:#f87171;border-color:#f87171}
-
-.notam-panel{
-  border:1px solid var(--border);border-radius:var(--radius-lg);
-  background:linear-gradient(180deg,var(--panel),var(--bg2));
-  overflow:hidden;
-  box-shadow:var(--shadow-panel);
-}
-.notam-body{padding:10px 14px 14px}
-.notam-list{
-  display:flex;flex-direction:column;gap:8px;
-  max-height:480px;overflow-y:auto;
-  scrollbar-width:thin;scrollbar-color:var(--border-hi) transparent;
-  padding-right:4px;
-}
-.notam-list::-webkit-scrollbar{width:6px}
-.notam-list::-webkit-scrollbar-track{background:transparent}
-.notam-list::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
-
-.notam-item{
-  padding:10px 12px;
-  border:1px solid var(--border);border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(8,12,20,0.3));
-  border-left:3px solid var(--cyan);
-  font-family:var(--mono);font-size:.62rem;line-height:1.7;
-  color:var(--text);word-break:break-word;font-weight:500;
-  transition:all .15s;
-}
-.notam-item:hover{border-color:var(--border-hi);background:rgba(8,12,20,0.6)}
-.notam-item .notam-id{
-  display:block;color:var(--cyan);font-size:.65rem;
-  letter-spacing:.1em;margin-bottom:4px;font-weight:600;
-}
-.notam-item.warn{border-left-color:var(--amber)}
-.notam-item.warn .notam-id{color:var(--amber)}
-
-.notam-tab-header{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 18px 8px;
-  font-family:var(--mono);font-size:.62rem;color:var(--text-dim);
-  font-weight:500;
-}
-.notam-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-  animation:pulseLed 2s ease-in-out infinite;flex-shrink:0;
-}
-.notam-open-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;font-family:var(--mono);font-size:.62rem;
-  letter-spacing:.14em;text-transform:uppercase;font-weight:500;
-  color:var(--cyan);border:1px solid var(--border-hi);
-  border-radius:var(--radius);background:rgba(34,211,238,0.06);
-  text-decoration:none;
-  transition:all .2s;
-  margin-left:auto;
-}
-.notam-open-btn:hover{
-  background:rgba(34,211,238,0.14);
-  border-color:var(--border-bright);
-  box-shadow:0 0 18px var(--cyan-glow);
-}
-
-.notam-filter{display:flex;gap:6px;padding:0 18px 10px;flex-wrap:wrap}
-.notam-filter-btn{
-  padding:4px 12px;
-  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;font-weight:500;
-  text-transform:uppercase;
-  border:1px solid var(--border-hi);border-radius:3px;
-  background:transparent;color:var(--text-dim);
-  cursor:pointer;
-  user-select:none;
-  transition:all .15s;
-}
-.notam-filter-btn:hover{color:var(--accent-bright);border-color:var(--accent-bright)}
-.notam-filter-btn.active{
-  color:var(--cyan);border-color:var(--cyan);
-  background:rgba(34,211,238,0.08);
-  box-shadow:0 0 12px var(--cyan-glow);
-}
 
 /* ── ATC INLINE PLAYERS ── */
 .atc-players{
@@ -1032,10 +938,10 @@ body.night .tab-btn.active{
 }
 
 /* ── SMOOTH CONTENT UPDATES ── */
-#metar-strip,#taf-strip,#island-cards,#forecast-content,#marine-content,#sigmet-content{
+#metar-strip,#taf-strip,#island-cards,#forecast-content,#marine-content{
   transition:opacity .25s ease;
 }
-#metar-strip *,#taf-strip *,#island-cards *,#forecast-content *,#marine-content *,#sigmet-content *{
+#metar-strip *,#taf-strip *,#island-cards *,#forecast-content *,#marine-content *{
   transition:color .2s ease, background-color .2s ease;
 }
 
@@ -1150,29 +1056,6 @@ body.night .tab-btn.active{
 .data-badge:not(.loading):not(.error){
   background:rgba(74,222,128,0.1);
   box-shadow:0 0 14px rgba(74,222,128,0.25), inset 0 0 0 1px rgba(74,222,128,0.3);
-}
-
-/* ── INSTALL APP BUTTON ── */
-.install-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 12px;
-  background:linear-gradient(180deg,rgba(34,211,238,0.18),rgba(0,0,0,0.4));
-  border:1px solid var(--border-bright);border-radius:var(--radius);
-  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:600;
-  text-transform:uppercase;color:var(--cyan);
-  cursor:pointer;
-  transition:all .2s;
-  box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
-  animation:installPulse 2.5s ease-in-out infinite;
-}
-.install-btn:hover{
-  background:linear-gradient(180deg,rgba(34,211,238,0.3),rgba(0,0,0,0.4));
-  box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1);
-  transform:translateY(-1px);
-}
-@keyframes installPulse{
-  0%,100%{box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06)}
-  50%   {box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1)}
 }
 
 /* ── STORM ALERT ── */
@@ -2306,57 +2189,6 @@ body.night .tab-btn.active{
   100%{transform:scale(1);opacity:1}
 }
 
-/* ── SIGMETs ── */
-.sigmet-list{display:flex;flex-direction:column;gap:8px;padding:12px 16px}
-.sigmet-item{
-  padding:10px 14px;
-  border:1px solid rgba(251,146,60,0.3);
-  border-left:3px solid #fb923c;
-  border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(251,146,60,0.05),rgba(0,0,0,0.3));
-  display:flex;flex-direction:column;gap:5px;
-}
-.sigmet-item.sigmet-warn{
-  border-color:rgba(248,113,113,0.45);
-  border-left-color:#f87171;
-  background:linear-gradient(180deg,rgba(248,113,113,0.08),rgba(0,0,0,0.3));
-}
-.sig-hdr{
-  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
-}
-.sig-hazard{
-  font-family:var(--display);font-size:.7rem;font-weight:800;letter-spacing:.14em;
-  padding:2px 8px;border:1px solid;border-radius:3px;
-  flex-shrink:0;
-}
-.sig-fir{
-  font-family:var(--mono);font-size:.58rem;color:var(--accent-bright);
-  font-weight:600;letter-spacing:.1em;
-}
-.sig-time{
-  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
-  margin-left:auto;letter-spacing:.08em;font-weight:500;
-}
-.sig-raw{
-  font-family:var(--mono);font-size:.6rem;color:var(--text);
-  line-height:1.65;font-weight:500;
-  word-break:break-word;
-}
-.sigmet-empty{
-  padding:20px;text-align:center;
-  font-family:var(--mono);font-size:.65rem;color:var(--green);
-  border:1px dashed rgba(74,222,128,0.35);border-radius:var(--radius);
-  background:rgba(74,222,128,0.04);margin:12px;
-}
-/* SIGMET active pulse on NOTAMs tab button */
-.tab-btn.sigmet-active{
-  animation:sigmetTabPulse 2s ease-in-out infinite;
-}
-@keyframes sigmetTabPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(251,146,60,0)}
-  50%{box-shadow:0 0 14px 2px rgba(251,146,60,0.4)}
-}
-
 /* ── TIDE PANEL ── */
 .tide-wrap{
   padding:14px 18px;
@@ -2427,6 +2259,133 @@ body.night .tab-btn.active{
   text-transform:uppercase;
 }
 
+/* I1 — LIVE CONDITIONS STRIP (always visible) */
+.live-strip{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  background:var(--border);
+  border-bottom:1px solid var(--border);
+  margin:0 6px;
+  border-radius:0;
+  overflow:hidden;
+}
+.live-cell{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  background:linear-gradient(180deg,rgba(8,12,20,0.6),rgba(4,6,11,0.85));
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.06em;
+  color:var(--text);
+  min-width:0;
+  transition:background .25s;
+  border-left:3px solid transparent;
+}
+.live-cell:hover{background:linear-gradient(180deg,rgba(34,211,238,0.06),rgba(4,6,11,0.85))}
+.live-flag{font-size:1.2rem;line-height:1;flex-shrink:0}
+.live-name{
+  font-family:var(--display);font-size:.7rem;font-weight:700;
+  letter-spacing:.14em;color:var(--accent-bright);
+  white-space:nowrap;
+}
+.live-temp{
+  font-family:var(--display);font-size:1rem;font-weight:700;
+  color:var(--cyan);font-variant-numeric:tabular-nums;
+  text-shadow:0 0 12px rgba(34,211,238,0.4);
+  letter-spacing:-.02em;flex-shrink:0;
+}
+.live-icon{flex-shrink:0;display:inline-flex;align-items:center}
+.live-cond{
+  flex:1;min-width:0;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-size:.58rem;color:var(--text);font-weight:500;
+  opacity:.85;
+}
+.live-wind{
+  flex-shrink:0;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;
+  color:var(--accent-bright);letter-spacing:.04em;
+}
+@media(max-width:900px){
+  .live-strip{grid-template-columns:1fr;gap:0}
+  .live-cell{padding:6px 10px;font-size:.58rem;border-bottom:1px solid var(--border)}
+  .live-cell:last-child{border-bottom:none}
+  .live-name{font-size:.62rem}
+  .live-temp{font-size:.92rem}
+}
+
+/* I2 — MARINE VERDICT PILLS (Beach / Boat / Dive) */
+.verdicts-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--border);
+  background:rgba(0,0,0,0.2);
+}
+.verdict{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  grid-template-rows:auto auto;
+  gap:2px 12px;
+  align-items:center;
+  padding:10px 14px;
+  border:1px solid var(--border);
+  border-left:4px solid;
+  border-radius:var(--radius);
+  background:rgba(0,0,0,0.35);
+  min-width:0;
+  transition:transform .2s;
+}
+.verdict:hover{transform:translateY(-1px)}
+.verdict .v-icon{
+  grid-row:1/3;
+  font-size:1.8rem;line-height:1;
+  filter:drop-shadow(0 0 6px currentColor);
+}
+.verdict .v-meta{display:flex;align-items:baseline;gap:8px;min-width:0}
+.verdict .v-name{
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--text-dim);font-weight:600;
+}
+.verdict .v-label{
+  font-family:var(--display);font-size:.9rem;font-weight:700;
+  letter-spacing:.04em;
+}
+.verdict .v-text{
+  grid-column:2;
+  font-family:var(--mono);font-size:.55rem;color:var(--text-dim);
+  letter-spacing:.04em;line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.verdict.v-good   {border-left-color:#4ade80}
+.verdict.v-good   .v-label{color:#4ade80;text-shadow:0 0 8px rgba(74,222,128,0.4)}
+.verdict.v-fair   {border-left-color:#fbbf24}
+.verdict.v-fair   .v-label{color:#fbbf24;text-shadow:0 0 8px rgba(251,191,36,0.4)}
+.verdict.v-caution{border-left-color:#fb923c}
+.verdict.v-caution .v-label{color:#fb923c;text-shadow:0 0 8px rgba(251,146,60,0.4)}
+.verdict.v-bad    {border-left-color:#f87171;background:rgba(248,113,113,0.06)}
+.verdict.v-bad    .v-label{color:#f87171;text-shadow:0 0 10px rgba(248,113,113,0.5)}
+@media(max-width:900px){
+  .verdicts-row{grid-template-columns:1fr;gap:6px;padding:10px 12px}
+  .verdict{padding:8px 12px;gap:1px 10px}
+  .verdict .v-icon{font-size:1.5rem}
+  .verdict .v-label{font-size:.78rem}
+}
+
+/* I4 — ABC MAP PANEL */
+#abcMap{
+  min-height:120px;
+  display:flex;align-items:center;justify-content:center;
+}
+#abcMap svg{
+  border-radius:var(--radius);
+  background:#081626;
+}
+
 /* ── ENTRY ANIMATIONS ── */
 .layout > *{animation:fadeUp .5s cubic-bezier(.4,0,.2,1) both}
 .layout > *:nth-child(1){animation-delay:.04s}
@@ -2486,6 +2445,15 @@ body.night .tab-btn.active{
   </div>
   <span class="header-title">ATC &amp; Weather Dashboard</span>
   <div class="header-actions">
+    <div class="header-pill" id="tropicsPill" title="Atlantic tropical activity (NHC)">
+      <span class="tropics-dot"></span>
+      <span class="tropics-lbl">Tropics:</span>
+      <span id="tropicsText">—</span>
+    </div>
+    <div class="header-pill" id="sunPill" title="Sun events">
+      <span id="sunIcon">🌅</span>
+      <span id="sunText">—</span>
+    </div>
     <div class="sync-indicator" id="syncIndicator" title="Last data refresh">
       <span class="sync-dot"></span>
       <span id="syncTime">—</span>
@@ -2499,14 +2467,41 @@ body.night .tab-btn.active{
   </div>
 </header>
 
+<!-- LIVE CONDITIONS STRIP (I1) — visible on all tabs -->
+<div class="live-strip" id="liveStrip">
+  <div class="live-cell" data-icao="TNCA">
+    <span class="live-flag">🇦🇼</span>
+    <span class="live-name">Aruba</span>
+    <span class="live-temp" data-temp>—</span>
+    <span class="live-icon" data-icon></span>
+    <span class="live-cond" data-cond>—</span>
+    <span class="live-wind" data-wind>—</span>
+  </div>
+  <div class="live-cell" data-icao="TNCC">
+    <span class="live-flag">🇨🇼</span>
+    <span class="live-name">Curaçao</span>
+    <span class="live-temp" data-temp>—</span>
+    <span class="live-icon" data-icon></span>
+    <span class="live-cond" data-cond>—</span>
+    <span class="live-wind" data-wind>—</span>
+  </div>
+  <div class="live-cell" data-icao="TNCB">
+    <span class="live-flag">🇧🇶</span>
+    <span class="live-name">Bonaire</span>
+    <span class="live-temp" data-temp>—</span>
+    <span class="live-icon" data-icon></span>
+    <span class="live-cond" data-cond>—</span>
+    <span class="live-wind" data-wind>—</span>
+  </div>
+</div>
+
 <!-- TAB BAR -->
 <div class="tab-bar">
   <div class="tab-btn active" data-tab="atc">📡 ATC <span class="tab-key">1</span></div>
   <div class="tab-btn" data-tab="weather">🌤 Weather <span class="tab-key">2</span></div>
   <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
   <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
-  <div class="tab-btn" data-tab="notams">📋 NOTAMs <span class="tab-key">5</span></div>
-  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">6</span></div>
+  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">5</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -2720,43 +2715,6 @@ body.night .tab-btn.active{
 </div>
 </div>
 
-<!-- ═══ TAB: NOTAMs ═══ -->
-<div class="tab-pane" id="tab-notams">
-<div class="layout">
-
-  <!-- SIGMETs + AIRMETs -->
-  <div class="full">
-    <div class="section-title">SIGMETs · AIRMETs — Caribbean FIR <span class="data-badge loading" id="sigmetBadge">LOADING</span></div>
-    <div class="panel" id="sigmetPanel">
-      <div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Fetching active SIGMETs…</div>
-    </div>
-  </div>
-
-  <!-- NOTAMs -->
-  <div class="full">
-    <div class="section-title">NOTAMs — TNCA · TNCC · TNCB — Live · AWC <span class="data-badge loading" id="notamBadge">LOADING</span></div>
-    <div class="notam-panel">
-      <div class="notam-tab-header">
-        <span class="notam-dot"></span>
-        <span id="notamStatusText">Fetching live NOTAMs…</span>
-        <a class="notam-open-btn" href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank">🔗 AWC NOTAM ↗</a>
-      </div>
-      <div class="notam-filter" id="notamFilter">
-        <button class="notam-filter-btn active" data-filter="ALL">All</button>
-        <button class="notam-filter-btn" data-filter="FRESH">🟢 Fresh</button>
-        <button class="notam-filter-btn" data-filter="RECENT">🟡 Recent</button>
-        <button class="notam-filter-btn" data-filter="AGING">⬜ Aging</button>
-        <button class="notam-filter-btn" data-filter="WARN">⚠ Warnings</button>
-      </div>
-      <div class="notam-body">
-        <div class="notam-list" id="notamList"><div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Fetching live NOTAMs from AWC…</div></div>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div>
-
 <!-- ═══ TAB: 3-DAY FORECAST ═══ -->
 <div class="tab-pane" id="tab-forecast">
 <div class="layout">
@@ -2788,6 +2746,17 @@ body.night .tab-btn.active{
 <!-- ═══ TAB: MARINE ═══ -->
 <div class="tab-pane" id="tab-marine">
 <div class="layout">
+
+  <!-- I4: Inline ABC islands map with wave arrows -->
+  <div class="full">
+    <div class="section-title">Sea State — ABC Islands Map <span class="data-badge loading" id="abcMapBadge">LOADING</span></div>
+    <div class="panel" id="abcMapPanel">
+      <div id="abcMap" style="padding:14px;text-align:center">
+        <div style="font-family:var(--mono);font-size:.6rem;color:var(--text-dim);padding:18px">Loading map…</div>
+      </div>
+    </div>
+  </div>
+
   <div class="full">
     <div class="section-title">Marine Conditions — ABC Islands <span class="data-badge loading" id="marineBadge">LOADING</span></div>
     <div class="panel" style="overflow:visible">
@@ -2851,7 +2820,9 @@ body.night .tab-btn.active{
 const CHECKWX_KEY    = 'fb135a94c0574db4b26082b70705b4af';
 const WX_API_KEY     = 'fef2a58ed5fa4b2ea08221244260405';
 const PROXY_BASE     = '';
-const REFRESH_MS     = 5 * 60 * 1000;
+const REFRESH_MS    = 5 * 60 * 1000;        // METAR/TAF — fast
+const WX_REFRESH_MS = 15 * 60 * 1000;       // WeatherAPI + Open-Meteo — slower (preserve API quota)
+let _lastWxFetch    = 0;
 
 const AIRPORTS = {
   TNCA:{ label:"Queen Beatrix Int'l · Aruba 🇦🇼",  name:'Aruba',   flag:'🇦🇼', q:'iata:AUA', lat:12.501, lon:-70.015 },
@@ -2891,6 +2862,79 @@ function updateClocks(){
 }
 setInterval(updateClocks,1000);
 updateClocks();
+
+/* I6 — Sunset/sunrise countdown pill.
+   Uses NOAA solar position algorithm for Curaçao (12.19°N, 68.96°W).
+   Updates every 30 s. */
+function calcSunTimes(lat, lon, date){
+  // NOAA-style sunrise/sunset calculation (yields UTC times).
+  // Source: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
+  const rad = d => d*Math.PI/180;
+  const deg = r => r*180/Math.PI;
+  const N = Math.floor((date - new Date(date.getUTCFullYear(), 0, 0)) / 86400000);
+  const lngHr = lon / 15;
+
+  function calc(isRise){
+    const t = N + ((isRise ? 6 : 18) - lngHr) / 24;
+    const M = (0.9856 * t) - 3.289;
+    let L = M + (1.916 * Math.sin(rad(M))) + (0.020 * Math.sin(rad(2*M))) + 282.634;
+    L = ((L % 360) + 360) % 360;
+    let RA = deg(Math.atan(0.91764 * Math.tan(rad(L))));
+    RA = ((RA % 360) + 360) % 360;
+    const Lquad = Math.floor(L/90)*90;
+    const RAquad = Math.floor(RA/90)*90;
+    RA = RA + (Lquad - RAquad);
+    RA = RA / 15;
+    const sinDec = 0.39782 * Math.sin(rad(L));
+    const cosDec = Math.cos(Math.asin(sinDec));
+    const cosH = (Math.cos(rad(90.833)) - (sinDec * Math.sin(rad(lat)))) / (cosDec * Math.cos(rad(lat)));
+    if(cosH >  1 || cosH < -1) return null;
+    let H = isRise ? 360 - deg(Math.acos(cosH)) : deg(Math.acos(cosH));
+    H = H / 15;
+    const T = H + RA - (0.06571 * t) - 6.622;
+    let UT = T - lngHr;
+    UT = ((UT % 24) + 24) % 24;
+    const d = new Date(date);
+    d.setUTCHours(Math.floor(UT), Math.round((UT % 1) * 60), 0, 0);
+    return d;
+  }
+  return { rise: calc(true), set: calc(false) };
+}
+
+function updateSunPill(){
+  const el  = document.getElementById('sunText');
+  const ic  = document.getElementById('sunIcon');
+  if(!el || !ic) return;
+
+  const lat = 12.19, lon = -68.96;
+  const now = new Date();
+  let times = calcSunTimes(lat, lon, now);
+  // If after sunset, get tomorrow's sunrise
+  if(times.set && now > times.set){
+    const tom = new Date(now); tom.setDate(tom.getDate()+1);
+    const t2 = calcSunTimes(lat, lon, tom);
+    times = { rise: t2.rise, set: null };
+  }
+
+  let target, label, icon;
+  if(times.rise && now < times.rise){
+    target = times.rise; label = 'Sunrise'; icon = '🌄';
+  } else if(times.set && now < times.set){
+    target = times.set; label = 'Sunset'; icon = '🌅';
+  }
+
+  if(!target){ el.textContent = '—'; return; }
+  const diff = target - now;
+  const hrs  = Math.floor(diff / 3600000);
+  const mins = Math.floor((diff % 3600000) / 60000);
+  const timeStr = target.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+  ic.textContent = icon;
+  el.textContent = hrs > 0
+    ? `${label} ${timeStr} (${hrs}h ${mins}m)`
+    : `${label} ${timeStr} (${mins}m)`;
+}
+updateSunPill();
+setInterval(updateSunPill, 30000);
 
 /* ════════════════════════════════
    NIGHT MODE
@@ -3105,7 +3149,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 });
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'flights'};
+  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights'};
   if(map[e.key]) switchTab(map[e.key]);
 });
 
@@ -3145,213 +3189,6 @@ function resetBar(){
   bar.style.width='0%';
   requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.transition='width 1s linear'; }));
 }
-
-/* ════════════════════════════════
-   NOTAMs — live from Aviation Weather Center (FAA)
-   Free, CORS-OK, updated in real time.
-   We fetch for TNCA, TNCC, TNCB and merge + deduplicate.
-════════════════════════════════ */
-let notamData = [];
-let notamFilter = 'ALL';
-
-function classifyNotam(n){
-  // Extract useful fields from AWC NOTAM JSON
-  const text  = (n.traditionalMessage || n.icaoMessage || '').toUpperCase();
-  const klass = n.classification || '';
-  // Warn if OBSTACLE, RWY CLOSED, TAXIWAY CLOSED, NAV AID, AIRSPACE restriction, critical ops
-  const warnKeys = /CLSD|UNSERVICEABLE|OUT OF SERVICE|OBSTACLE|CRANE|BIRD|BIRD HAZARD|HAZARD|GUN|BLASTING|EXPLOSIVE|MIL OPS|UAS|DRONE|LASER|PARA|FIREWORKS/;
-  const warn = warnKeys.test(text) || klass==='CRITICAL';
-
-  // Age classification based on effectiveStart
-  let status = 'AGING';
-  if(n.effectiveStart){
-    const ageHrs = (Date.now() - new Date(n.effectiveStart).getTime()) / 3600000;
-    if(ageHrs < 6)  status = 'FRESH';
-    else if(ageHrs < 48) status = 'RECENT';
-  }
-
-  // Human-readable tag from NOTAM Q-line or subject
-  const qSubj = n.qLine?.subject || n.subject || klass || 'INFO';
-  const icao   = n.icaoId || n.location || '—';
-  const tag    = `${icao} · ${qSubj.replace(/_/g,' ')}`;
-
-  // Time window
-  const start = n.effectiveStart ? new Date(n.effectiveStart).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : '';
-  const end   = n.effectiveEnd   ? new Date(n.effectiveEnd  ).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : 'PERM';
-
-  const body = n.traditionalMessage || n.icaoMessage || n.text || '—';
-
-  return { tag, text: body, time: start && end ? `${start} – ${end}` : start || end, warn, status, icao, raw: body };
-}
-
-function renderNotams(){
-  const STATUS_ORDER = {FRESH:0,RECENT:1,AGING:2};
-  const sorted = [...notamData].sort((a,b)=>{
-    const sd = (STATUS_ORDER[a.status]??3) - (STATUS_ORDER[b.status]??3);
-    if(sd!==0) return sd;
-    return (b.warn?1:0)-(a.warn?1:0);
-  });
-  const filtered = notamFilter==='WARN' ? sorted.filter(n=>n.warn)
-    : notamFilter==='ALL' ? sorted
-    : sorted.filter(n=>n.status===notamFilter);
-
-  const fresh  = sorted.filter(n=>n.status==='FRESH').length;
-  const recent = sorted.filter(n=>n.status==='RECENT').length;
-  const warns  = sorted.filter(n=>n.warn).length;
-  document.getElementById('notamStatusText').textContent =
-    sorted.length ? `${sorted.length} active · ${fresh} fresh · ${recent} recent · ${warns} warnings`
-                  : 'Loading…';
-
-  if(!filtered.length){
-    document.getElementById('notamList').innerHTML =
-      `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${notamData.length?'No NOTAMs match current filter.':'Fetching live NOTAMs…'}</div>`;
-    return;
-  }
-
-  document.getElementById('notamList').innerHTML = filtered.map(n=>{
-    const statusBadge = n.status==='FRESH'
-      ? `<span class="notam-badge-fresh">FRESH</span>`
-      : n.status==='RECENT'
-      ? `<span class="notam-badge-recent">RECENT</span>` : '';
-    const warnPfx = n.warn ? `<span class="notam-badge-warn">⚠ WARN</span>` : '';
-    return `<div class="notam-item${n.warn?' warn':''}">
-      <span class="notam-id">${n.tag}${statusBadge}${warnPfx}
-        <span style="opacity:.5;font-size:.52rem;font-weight:500;margin-left:4px">${n.time}</span>
-      </span>
-      ${n.text}
-    </div>`;
-  }).join('');
-}
-
-async function fetchNotams(){
-  setBadge('notamBadge','LOADING','loading');
-  try{
-    let raw;
-    const primaryUrl  = `https://aviationweather.gov/api/data/notam?icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
-    const fallbackUrl = `https://aviationweather.gov/cgi-bin/data/notam.php?ids=TNCA,TNCC,TNCB&format=json`;
-    try{
-      const r = await fetch(primaryUrl, {cache:'no-store'});
-      if(!r.ok) throw new Error('primary '+r.status);
-      raw = await r.json();
-    }catch{
-      const r2 = await fetch(fallbackUrl, {cache:'no-store'});
-      if(!r2.ok) throw new Error('AWC NOTAM '+r2.status);
-      raw = await r2.json();
-    }
-    const items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
-    const seen = new Set();
-    notamData = items.filter(n=>{
-      const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
-      if(seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    }).map(classifyNotam);
-    renderNotams();
-    setBadge('notamBadge','LIVE');
-    const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
-    const btn = document.querySelector('.tab-btn[data-tab="notams"]');
-    if(btn && critCount>0) btn.title=`${critCount} active warning NOTAM${critCount>1?'s':''}`;
-  }catch(err){
-    console.warn('[NOTAMs]', err.message);
-    setBadge('notamBadge','ERROR','error');
-    document.getElementById('notamList').innerHTML=
-      `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
-        NOTAM fetch failed: ${err.message}<br>
-        <a href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank" style="color:var(--cyan)">AWC NOTAM ↗</a>
-      </div>`;
-  }
-}
-
-// Initial fetch + refresh every 30 min
-fetchNotams();
-setInterval(fetchNotams, 30 * 60 * 1000);
-
-document.getElementById('notamFilter').addEventListener('click', e=>{
-  const btn = e.target.closest('.notam-filter-btn');
-  if(!btn) return;
-  document.querySelectorAll('.notam-filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  notamFilter = btn.dataset.filter;
-  renderNotams();
-});
-
-/* ════════════════════════════════
-   SIGMETs + AIRMETs — Caribbean FIR
-   AWC /api/data/sigmet — free, CORS-OK.
-   Filters to the Caribbean region bounding box.
-════════════════════════════════ */
-async function fetchSigmets(){
-  setBadge('sigmetBadge','LOADING','loading');
-  const el = document.getElementById('sigmetPanel');
-  try{
-    // Fetch international SIGMETs for the Caribbean FIR (TJZS / MUFG / TTZP)
-    // Also fetch US AIRMETs — Caribbean is partly covered.
-    // Region: lat 8–22, lon -85 to -58 covers all ABC + wider Caribbean.
-    const url = `https://aviationweather.gov/api/data/sigmet?format=json&hazard=ALL&date=0`;
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('AWC SIGMET '+r.status);
-    const all = await r.json();
-
-    // Filter to Caribbean region
-    const items = (Array.isArray(all)?all:(all.data||[])).filter(s=>{
-      // Check if any vertex is in the Caribbean bounding box
-      const verts = s.coords || s.geometry?.coordinates?.[0] || [];
-      if(!verts.length){
-        // Try centroid from area
-        const lat = parseFloat(s.lat || s.latitude || 99);
-        const lon = parseFloat(s.lon || s.longitude || 0);
-        return lat>=5 && lat<=25 && lon>=-90 && lon<=-55;
-      }
-      return verts.some(v=>{
-        const lat = Array.isArray(v)?v[1]:v.lat;
-        const lon = Array.isArray(v)?v[0]:v.lon;
-        return lat>=5 && lat<=25 && lon>=-90 && lon<=-55;
-      });
-    });
-
-    if(!items.length){
-      el.innerHTML = `<div class="sigmet-empty">✅ No active SIGMETs or AIRMETs for the Caribbean region.</div>`;
-      setBadge('sigmetBadge','CLEAR');
-      return;
-    }
-
-    setBadge('sigmetBadge',`${items.length} ACTIVE`,'error');
-
-    // Pulse the NOTAMs tab button if SIGMETs are active
-    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
-    if(notamTabBtn) notamTabBtn.classList.add('sigmet-active');
-
-    el.innerHTML = `<div class="sigmet-list">
-      ${items.map(s=>{
-        const hazard  = (s.hazard||s.phenomenon||'SIGMET').toUpperCase();
-        const fir     = s.firId || s.area || s.seriesId || '—';
-        const validStr= s.validTimeFrom && s.validTimeTo
-          ? `${fmtUTC(s.validTimeFrom)} → ${fmtUTC(s.validTimeTo)}`
-          : s.validTime || '';
-        const raw     = s.rawSigmet || s.rawAirmet || s.text || JSON.stringify(s).slice(0,120);
-        const isWarn  = /TS|CB|TURB|ICE|VA|TC|LLWS/.test(hazard);
-        const hCol    = isWarn?'#f87171':'#fbbf24';
-        return `<div class="sigmet-item${isWarn?' sigmet-warn':''}">
-          <div class="sig-hdr">
-            <span class="sig-hazard" style="color:${hCol};border-color:${hCol}40;background:${hCol}11">${hazard}</span>
-            <span class="sig-fir">${fir}</span>
-            <span class="sig-time">${validStr}</span>
-          </div>
-          <div class="sig-raw">${raw}</div>
-        </div>`;
-      }).join('')}
-    </div>`;
-  }catch(err){
-    console.warn('[SIGMET]', err.message);
-    setBadge('sigmetBadge','ERROR','error');
-    el.innerHTML = `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
-      SIGMET fetch failed: ${err.message}<br>
-      <a href="https://aviationweather.gov/sigmet" target="_blank" style="color:var(--cyan)">AWC SIGMETs ↗</a>
-    </div>`;
-  }
-}
-fetchSigmets();
-setInterval(fetchSigmets, 15 * 60 * 1000); // SIGMETs change fast — refresh every 15 min
 
 /* ════════════════════════════════
    TIDE PREDICTIONS — NOAA CO-OPS
@@ -3808,6 +3645,38 @@ function windRoseSVG({deg=0, speedKt=0, gustKt=0, size=80, windCol='#22d3ee'}){
   </svg>`;
 }
 
+/* I1 — Live conditions strip populator.
+   Always-visible header strip with current conditions for all 3 islands. */
+function updateLiveStrip(){
+  ICAOS.forEach(icao=>{
+    const cell = document.querySelector(`#liveStrip .live-cell[data-icao="${icao}"]`);
+    if(!cell) return;
+    const m = store.metar[icao];
+    const a = store.api[icao];
+
+    const tempC = m?.temperature?.celsius ?? a?.current?.temp_c;
+    const cat   = m?.flight_category || '';
+    const condText = a?.current?.condition?.text || '';
+    const wmoCode  = mapWeatherApiToWMO(a?.current?.condition?.code, condText);
+    const iconHtml = `<span style="display:inline-block;width:22px;height:22px;vertical-align:middle">${animatedWeatherSVG(wmoCode)}</span>`;
+
+    const windDeg = m?.wind?.degrees ?? a?.current?.wind_degree;
+    const windKt  = m?.wind?.speed_kts ?? (a?.current ? Math.round(a.current.wind_kph*0.539957) : null);
+    const gustKt  = m?.wind?.gust_kts ?? (a?.current?.gust_kph ? Math.round(a.current.gust_kph*0.539957) : null);
+    const card    = windDeg !== undefined ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8] : '';
+
+    cell.querySelector('[data-temp]').textContent  = tempC !== undefined ? `${Math.round(tempC)}°` : '—';
+    cell.querySelector('[data-icon]').innerHTML    = iconHtml;
+    cell.querySelector('[data-cond]').textContent  = condText || '—';
+    cell.querySelector('[data-wind]').innerHTML    = windKt !== null
+      ? `${windKt}kt${card?' '+card:''}${gustKt && gustKt>windKt+2 ? ` <span style="opacity:.65">G${gustKt}</span>` : ''}`
+      : '—';
+
+    cell.style.borderLeft = cat ? `3px solid ${catCol(cat)}` : '';
+    cell.title = cat ? `${cat} · ${condText}` : condText;
+  });
+}
+
 function renderIslandCards(){
   const container=document.getElementById('island-cards');
   let html='';
@@ -4145,9 +4014,15 @@ async function refresh(){
     renderTAFStrip(null);
   }
 
-  await Promise.all(ICAOS.map(fetchWeatherAPI));
+  // WeatherAPI quota guard — only refresh every WX_REFRESH_MS (15 min)
+  // unless this is the first call of the session.
+  if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
+    await Promise.all(ICAOS.map(fetchWeatherAPI));
+    _lastWxFetch = Date.now();
+  }
 
   renderIslandCards();
+  updateLiveStrip();
   setBadge('islandBadge','LIVE');
 
   // Stamp last-sync time in header
@@ -4473,9 +4348,10 @@ function renderDustAlert(now, peak, peakTime){
   const el   = document.getElementById('dustAlert');
   if(!wrap || !el) return;
 
-  // Thresholds (µg/m³): <20 baseline, 20-50 light, 50-100 moderate, >100 heavy
-  const presentNow = now >= 50;
-  const incoming   = peak >= 50 && !presentNow;
+  // Thresholds (µg/m³) calibrated for Caribbean Saharan dust events:
+  // <80 = baseline trade-wind haze, 80-150 = light, 150-250 = moderate, >250 = heavy.
+  const presentNow = now >= 80;
+  const incoming   = peak >= 80 && !presentNow;
 
   if(!presentNow && !incoming){
     wrap.style.display = 'none';
@@ -4487,19 +4363,19 @@ function renderDustAlert(now, peak, peakTime){
     weekday:'short', hour:'2-digit', minute:'2-digit', hour12:false, timeZone:'America/Curacao'
   }) : '—';
 
-  const level = peak >= 100 ? {cls:'dust-heavy', label:'HEAVY'} :
-                peak >= 50  ? {cls:'dust-moderate', label:'MODERATE'} :
-                              {cls:'dust-light', label:'LIGHT'};
+  const level = peak >= 250 ? {cls:'dust-heavy',    label:'HEAVY'} :
+                peak >= 150 ? {cls:'dust-moderate', label:'MODERATE'} :
+                              {cls:'dust-light',    label:'LIGHT'};
 
   const headline = presentNow
     ? `Saharan dust currently affecting the islands · ${Math.round(now)} µg/m³`
     : `Incoming Saharan dust expected · peak ${Math.round(peak)} µg/m³ around ${peakStr}`;
 
-  const advice = peak >= 100
-    ? 'Limit prolonged outdoor exertion. Sensitive groups stay indoors.'
-    : peak >= 50
-    ? 'Hazy conditions likely. Visibility reduced. Allergy sufferers take care.'
-    : '';
+  const advice = peak >= 250
+    ? 'Heavy dust event — limit outdoor exertion. Sensitive groups stay indoors.'
+    : peak >= 150
+    ? 'Hazy conditions, reduced visibility. Asthma & allergy sufferers take care.'
+    : 'Light haze possible. Sensitive groups may notice irritation.';
 
   el.className = `dust-alert ${level.cls}`;
   el.innerHTML = `
@@ -4540,7 +4416,7 @@ async function loadCaribbeanNews(){
     if(!items.length){ el.textContent='No recent Caribbean weather/aviation news.'; return; }
 
     // Pick the two most relevant — anything matching weather, hurricane, flight, airline, ATC
-    const keywords = /hurricane|tropical|storm|caribbean|cura[çc]ao|aruba|bonaire|aviation|flight|airport|atc|sigmet|weather/i;
+    const keywords = /hurricane|tropical|storm|caribbean|cura[çc]ao|aruba|bonaire|aviation|flight|airport|atc|weather/i;
     const relevant = items.filter(i => keywords.test((i.title||'') + ' ' + (i.description||''))).slice(0,2);
     const picks = relevant.length ? relevant : items.slice(0,2);
 
@@ -4686,12 +4562,76 @@ function buildHourlyStrip(day0, icao, day1){
   </div>`;
 }
 
+/* ════════════════════════════════
+   FORECAST — Multi-model ensemble (ECMWF + GFS + ICON + UKMO) + WeatherAPI
+   - Open-Meteo's free /v1/forecast endpoint exposes individual models.
+   - We fetch 4 deterministic models, average them, and use the spread
+     (max-min) as a confidence indicator.
+   - WeatherAPI stays as the source for AQI, alerts, hourly text/icon.
+════════════════════════════════ */
+const FCAST_MODELS = ['ecmwf_ifs025','gfs_seamless','icon_seamless','ukmo_seamless'];
+const FCAST_CACHE_MS = 15 * 60 * 1000;
+const _fcastCache = {}; // {icao: {ts, days, hourly}}
+
+async function fetchOpenMeteoModels(lat, lon){
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+    `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunrise,sunset,weather_code`+
+    `&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,dewpoint_2m,relativehumidity_2m,visibility`+
+    `&models=${FCAST_MODELS.join(',')}`+
+    `&timezone=America%2FCuracao&forecast_days=3&wind_speed_unit=kn`;
+  const r = await fetch(url,{cache:'no-store'});
+  if(!r.ok) throw new Error('Open-Meteo '+r.status);
+  return r.json();
+}
+
+// Average a set of model values for a single forecast index, return {mean, spread, n}
+function blendModelValues(data, baseVar, dayIdx){
+  const vals = [];
+  for(const m of FCAST_MODELS){
+    const key = `${baseVar}_${m}`;
+    const v = data.daily?.[key]?.[dayIdx];
+    if(v != null && !Number.isNaN(v)) vals.push(v);
+  }
+  if(!vals.length){
+    // Fallback to non-suffixed key (when models= is dropped)
+    const v = data.daily?.[baseVar]?.[dayIdx];
+    if(v != null) vals.push(v);
+  }
+  if(!vals.length) return {mean:null, spread:null, n:0};
+  const mean = vals.reduce((a,b)=>a+b,0)/vals.length;
+  const spread = Math.max(...vals) - Math.min(...vals);
+  return {mean, spread, n:vals.length};
+}
+
+// Same for hourly
+function blendHourlyValues(data, baseVar, hourIdx){
+  const vals = [];
+  for(const m of FCAST_MODELS){
+    const key = `${baseVar}_${m}`;
+    const v = data.hourly?.[key]?.[hourIdx];
+    if(v != null && !Number.isNaN(v)) vals.push(v);
+  }
+  if(!vals.length){
+    const v = data.hourly?.[baseVar]?.[hourIdx];
+    if(v != null) vals.push(v);
+  }
+  if(!vals.length) return {mean:null, spread:null, n:0};
+  return {mean: vals.reduce((a,b)=>a+b,0)/vals.length, spread: Math.max(...vals)-Math.min(...vals), n:vals.length};
+}
+
+// Confidence label from spread + how many models contributed
+function confidenceLevel(tempSpread, n){
+  if(n < 2) return {lvl:'single', label:'Single model', col:'#94a3b8', glow:'rgba(148,163,184,0.3)'};
+  if(tempSpread <= 1.5) return {lvl:'high',   label:'High confidence', col:'#4ade80', glow:'rgba(74,222,128,0.45)'};
+  if(tempSpread <= 3.0) return {lvl:'medium', label:'Some spread',     col:'#fbbf24', glow:'rgba(251,191,36,0.45)'};
+  return                  {lvl:'low',    label:'Low confidence',  col:'#f87171', glow:'rgba(248,113,113,0.45)'};
+}
+
 async function loadForecast(forceNewsUpdate=false){
   forecastLoaded = true;
   const container = document.getElementById('forecast-content');
   setBadge('fcastBadge','LOADING','loading');
 
-  // Only update news/dust on first load or explicit force (not every 6-min re-render)
   if(forceNewsUpdate || !window._fcastNewsLoaded){
     window._fcastNewsLoaded = true;
     loadDustForecast();
@@ -4699,29 +4639,41 @@ async function loadForecast(forceNewsUpdate=false){
   }
 
   try{
-    // Fetch WeatherAPI forecast.json directly for all 3 islands in parallel.
-    // This is independent of the store.api cycle — forecast always gets fresh data.
+    // Per-island: WeatherAPI for current+AQI+alerts, Open-Meteo multi-model for forecast.
     const results = await Promise.all(FCAST_LOCATIONS.map(async loc=>{
-      const url = PROXY_BASE
-        ? `${PROXY_BASE}/wx?q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`
-        : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=7&aqi=yes&alerts=yes`;
-      const res = await fetch(url, {cache:'no-store'});
-      if(!res.ok) throw new Error(`WeatherAPI ${loc.icao}: HTTP ${res.status}`);
-      const data = await res.json();
-      // Also update store.api so Weather tab stays in sync
-      store.api[loc.icao] = data;
-      if(!data.forecast?.forecastday) throw new Error(`${loc.icao}: no forecastday in response`);
-      return { loc, days: data.forecast.forecastday, aqi: data.current?.air_quality, alerts: data.alerts?.alert||[] };
+      const c = _fcastCache[loc.icao];
+      let wxapi, models;
+
+      if(c && (Date.now()-c.ts) < FCAST_CACHE_MS){
+        // Reuse cache to preserve API quota
+        wxapi  = c.wxapi;
+        models = c.models;
+      } else {
+        // Fetch both in parallel
+        const wxUrl = PROXY_BASE
+          ? `${PROXY_BASE}/wx?q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`
+          : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=3&aqi=yes&alerts=yes`;
+        const [wxR, mR] = await Promise.allSettled([
+          fetch(wxUrl,{cache:'no-store'}).then(r=>r.ok?r.json():null),
+          fetchOpenMeteoModels(loc.lat, loc.lon),
+        ]);
+        wxapi  = wxR.status==='fulfilled' ? wxR.value  : null;
+        models = mR.status==='fulfilled' ? mR.value : null;
+        if(!wxapi && !models) throw new Error(`${loc.icao}: both sources failed`);
+        _fcastCache[loc.icao] = {ts: Date.now(), wxapi, models};
+      }
+
+      if(wxapi) store.api[loc.icao] = wxapi; // keep Weather tab in sync
+
+      return { loc, wxapi, models };
     }));
 
     let html = '';
-    results.forEach(({loc, days, aqi, alerts})=>{
-      // Temp range across 3 days for proportional bar
-      const allHi = days.map(d=>d.day.maxtemp_c);
-      const allLo = days.map(d=>d.day.mintemp_c);
-      const tMin  = Math.min(...allLo) - 1;
-      const tMax  = Math.max(...allHi) + 1;
-      const tSpan = tMax - tMin;
+    results.forEach(({loc, wxapi, models})=>{
+
+      const wxDays = wxapi?.forecast?.forecastday || [];
+      const aqi    = wxapi?.current?.air_quality;
+      const alerts = wxapi?.alerts?.alert||[];
 
       const aqiEpa = aqi?.['us-epa-index'] || 0;
       const aqiCol = [,'#4ade80','#a3e635','#fbbf24','#fb923c','#f87171','#e879f9'][aqiEpa]||'var(--text-dim)';
@@ -4732,43 +4684,65 @@ async function loadForecast(forceNewsUpdate=false){
         ? `<div class="wxapi-alert" style="margin:8px 18px">${alerts.map(a=>`<div class="wxapi-alert-item">⚠️ <strong>${a.event||'Alert'}</strong>: ${a.headline||''}</div>`).join('')}</div>`
         : '';
 
+      // Determine number of forecast days (use min of available)
+      const nDays = Math.min(3, wxDays.length||3, models?.daily?.time?.length||3);
+
+      // For temp range bar, compute min/max across all blended days
+      const allHi=[], allLo=[];
+      for(let i=0;i<nDays;i++){
+        const hi = blendModelValues(models, 'temperature_2m_max', i).mean ?? wxDays[i]?.day?.maxtemp_c;
+        const lo = blendModelValues(models, 'temperature_2m_min', i).mean ?? wxDays[i]?.day?.mintemp_c;
+        if(hi!=null) allHi.push(hi);
+        if(lo!=null) allLo.push(lo);
+      }
+      const tMin = Math.min(...allLo) - 1;
+      const tMax = Math.max(...allHi) + 1;
+      const tSpan = tMax - tMin;
+
       let dayCards = '';
-      days.forEach((d,i)=>{
-        const dt      = new Date(d.date+'T12:00:00');
+      for(let i=0;i<nDays;i++){
+        const wxDay = wxDays[i];
+        const dt    = wxDay ? new Date(wxDay.date+'T12:00:00') : new Date(Date.now()+i*86400000);
+        const date  = wxDay?.date || dt.toISOString().slice(0,10);
         const dayName = i===0?'Today':i===1?'Tomorrow':dt.toLocaleDateString('en-US',{weekday:'long'});
         const dateStr = dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-        const cond    = d.day.condition;
-        const uv      = d.day.uv;
-        const uvC     = uvCol(uv);
-        const uvL     = uvLbl(uv);
-        const wmoC    = mapWeatherApiToWMO(cond.code, cond.text);
-        const tempHi  = Math.round(d.day.maxtemp_c);
-        const tempLo  = Math.round(d.day.mintemp_c);
-        const windKt  = Math.round(d.day.maxwind_kph * 0.539957);
-        const rainPct = d.day.daily_chance_of_rain;
-        const rainMm  = d.day.totalprecip_mm;
-        const vis     = d.day.avgvis_km;
-        const hum     = d.day.avghumidity;
 
-        const sunrise = d.astro?.sunrise || '—';
-        const sunset  = d.astro?.sunset  || '—';
+        // Blended values from Open-Meteo, fallback to WeatherAPI
+        const tempHiB = blendModelValues(models, 'temperature_2m_max', i);
+        const tempLoB = blendModelValues(models, 'temperature_2m_min', i);
+        const rainPctB= blendModelValues(models, 'precipitation_probability_max', i);
+        const rainMmB = blendModelValues(models, 'precipitation_sum', i);
+        const windKtB = blendModelValues(models, 'wind_speed_10m_max', i);
+        const windDgB = blendModelValues(models, 'wind_direction_10m_dominant', i);
+        const uvB     = blendModelValues(models, 'uv_index_max', i);
 
-        // Wind: use dominant direction from hourly data (most frequent direction during the day)
-        // Fallback: use noon hour, then first available hour
-        const allHours = d.hour || [];
-        const noonHour = allHours.find(h=> new Date(h.time).getHours()===12);
-        const repHour  = noonHour || allHours[allHours.length > 14 ? 14 : Math.floor(allHours.length/2)] || allHours[0];
-        const windDeg  = repHour?.wind_degree ?? 0;
-        const windCard = wdCard(windDeg);
-        // Max gust from all hourly values — more accurate than daily avg
-        const realGustKt = allHours.length
-          ? Math.round(Math.max(...allHours.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957)))
-          : Math.round(windKt * 1.25);
-        const windColD = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
+        const tempHi = Math.round(tempHiB.mean  ?? wxDay?.day?.maxtemp_c ?? 0);
+        const tempLo = Math.round(tempLoB.mean  ?? wxDay?.day?.mintemp_c ?? 0);
+        const rainPct= Math.round(rainPctB.mean ?? wxDay?.day?.daily_chance_of_rain ?? 0);
+        const rainMm = (rainMmB.mean ?? wxDay?.day?.totalprecip_mm ?? 0);
+        const windKt = Math.round(windKtB.mean ?? (wxDay?.day?.maxwind_kph||0)*0.539957);
+        const windDeg= Math.round(windDgB.mean ?? wxDay?.hour?.find(h=>h.wind_degree!==undefined)?.wind_degree ?? 0);
+        const uv     = uvB.mean ?? wxDay?.day?.uv ?? 0;
 
-        const rainCol  = rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
+        // Confidence: based on temp spread
+        const conf = confidenceLevel(tempHiB.spread ?? 99, tempHiB.n);
+
+        // Use WeatherAPI for icon (it has accurate condition text)
+        const cond = wxDay?.day?.condition || {code:1003, text:'—'};
+        const wmoC = mapWeatherApiToWMO(cond.code, cond.text);
+        const uvC  = uvCol(uv);
+        const uvL  = uvLbl(uv);
+
+        const sunrise = wxDay?.astro?.sunrise || '—';
+        const sunset  = wxDay?.astro?.sunset  || '—';
+        const vis     = wxDay?.day?.avgvis_km ?? 10;
+        const hum     = wxDay?.day?.avghumidity ?? '—';
+
+        const windCard = ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
         const loFrac   = ((tempLo - tMin) / tSpan) * 100;
         const hiFrac   = ((tempHi - tMin) / tSpan) * 100;
+        const rainCol  = rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
+        const windCol  = windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
 
         dayCards += `<div class="fcast-day" style="--day-delay:${i*0.08}s">
           <div class="fcast-day-hdr">
@@ -4782,6 +4756,13 @@ async function loadForecast(forceNewsUpdate=false){
           <div class="fcast-cond-row">
             <span class="fcast-cond-text">${cond.text}</span>
             <span class="fcast-aqi-badge" style="color:${aqiCol};border-color:${aqiCol}44;background:${aqiCol}11">AQI ${aqiL}</span>
+          </div>
+
+          <!-- Confidence badge -->
+          <div class="fcast-conf-row" title="Based on agreement between ${tempHiB.n} models (temp spread ${tempHiB.spread?tempHiB.spread.toFixed(1):'?'}°)">
+            <span class="fcast-conf-dot" style="background:${conf.col};box-shadow:0 0 6px ${conf.glow}"></span>
+            <span class="fcast-conf-lbl" style="color:${conf.col}">${conf.label}</span>
+            <span class="fcast-conf-sub">${tempHiB.n} model${tempHiB.n===1?'':'s'}</span>
           </div>
 
           <div class="fcast-temp-section">
@@ -4805,10 +4786,10 @@ async function loadForecast(forceNewsUpdate=false){
 
           <div class="fcast-meter-row">
             <div class="fcast-meter">
-              ${windRoseSVG({deg: windDeg, speedKt: windKt, gustKt: realGustKt, size: 46, windCol: windColD})}
+              ${windRoseSVG({deg: windDeg, speedKt: windKt, gustKt: Math.round(windKt*1.3), size: 46, cssClass: 'fcast-wind-rotor', rotVar: '--arrow-deg', colVar: '--arrow-color', windCol})}
               <div class="fcast-meter-lbl">Wind to</div>
-              <div class="fcast-meter-val" style="color:${windColD}">${windKt===0?'CALM':`${windKt} <span style="font-size:.5rem;opacity:.7">${windCard}</span>`}</div>
-              <div class="fcast-meter-sub">G${realGustKt} kt max</div>
+              <div class="fcast-meter-val" style="color:${windCol}">${windKt===0?'CALM':`${windKt} <span style="font-size:.5rem;opacity:.7">${windCard}</span>`}</div>
+              <div class="fcast-meter-sub">max kt</div>
             </div>
 
             <div class="fcast-meter">
@@ -4844,19 +4825,22 @@ async function loadForecast(forceNewsUpdate=false){
           </div>
           <div class="fcast-sun-len">RH ${hum}% · Vis ${vis} km</div>
         </div>`;
-      });
+      }
+
+      // Build a summary from WeatherAPI days (textually richest)
+      const summary = wxDays.length ? buildForecastSummary(wxDays, loc) : 'Forecast loading…';
 
       html += `<div class="fcast-island">
         <div class="fcast-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div style="flex:1;min-width:0">
             <div class="fcast-name">${loc.name}</div>
-            <div class="fcast-sub">${loc.icao} · WeatherAPI · ${loc.lat.toFixed(2)}°, ${loc.lon.toFixed(2)}°</div>
+            <div class="fcast-sub">${loc.icao} · ECMWF + GFS + ICON + UKMO + WeatherAPI · ${loc.lat.toFixed(2)}°, ${loc.lon.toFixed(2)}°</div>
           </div>
-          <div class="fcast-summary">${buildForecastSummary(days, loc)}</div>
+          <div class="fcast-summary">${summary}</div>
         </div>
         ${alertHtml}
-        ${buildHourlyStrip(days[0], loc.icao, days[1])}
+        ${wxDays[0] ? buildHourlyStrip(wxDays[0], loc.icao, wxDays[1]) : ''}
         <div class="fcast-days">${dayCards}</div>
       </div>`;
     });
@@ -4869,15 +4853,37 @@ async function loadForecast(forceNewsUpdate=false){
     if(el) el.textContent = `Updated ${ts} AST`;
 
   }catch(e){
-    forecastLoaded = false; // allow retry on next tab switch
     container.innerHTML = `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Forecast load failed: ${e.message}</div>`;
     setBadge('fcastBadge','ERROR','error');
+    forecastLoaded = false;
   }
 }
 
 /* ════════════════════════════════
    MARINE — Open-Meteo Marine API (free, no key)
 ════════════════════════════════ */
+/* I2 — Simplified verdicts for Beach / Boat / Dive.
+   Each returns {cls, label, text} for a traffic-light pill. */
+function verdictBeach(waveM, windKt, weatherCode){
+  if(weatherCode>=95 || waveM>=2.5)            return {cls:'v-bad',     label:'Unsafe',    text:'Storm/heavy surf — stay ashore'};
+  if(waveM>=1.5 || windKt>=24)                 return {cls:'v-caution', label:'Caution',   text:'Strong surf — sheltered bays only'};
+  if(waveM>=0.8 || windKt>=18)                 return {cls:'v-fair',    label:'Fair',      text:'Choppy — experienced swimmers'};
+  return                                              {cls:'v-good',    label:'Excellent', text:'Calm seas — all beaches'};
+}
+function verdictBoat(waveM, windKt, gustKt, weatherCode){
+  if(weatherCode>=95 || waveM>=2.5 || gustKt>=35) return {cls:'v-bad',     label:'No Go',     text:'SCA warning — port only'};
+  if(waveM>=1.5 || windKt>=22 || gustKt>=28)      return {cls:'v-caution', label:'Caution',   text:'Small craft advisory'};
+  if(waveM>=1.0 || windKt>=18)                    return {cls:'v-fair',    label:'Fair',      text:'Moderate chop — exp sailors'};
+  return                                                {cls:'v-good',    label:'Excellent', text:'Light winds, gentle seas'};
+}
+function verdictDive(waveM, windKt, weatherCode, visKm){
+  if(weatherCode>=95 || waveM>=2.0)            return {cls:'v-bad',     label:'No Go',     text:'Rough surface — cancel'};
+  if(waveM>=1.3 || windKt>=22)                 return {cls:'v-caution', label:'Caution',   text:'Surge & poor entry'};
+  if(waveM>=0.7 || windKt>=18)                 return {cls:'v-fair',    label:'Fair',      text:'Some current — leeward sites'};
+  if(visKm && visKm<8)                         return {cls:'v-fair',    label:'Fair',      text:'Reduced surface visibility'};
+  return                                              {cls:'v-good',    label:'Excellent', text:'Calm surface, leeward & windward'};
+}
+
 function getBeachAdvice(waveM, windKt, gustKt, weatherCode){
   // Conservative advice for ABC island swimmers / small craft.
   if(weatherCode>=95 || waveM>=2.5 || gustKt>=35) return {cls:'adv-danger', icon:'⛔', text:'NOT SAFE — stay ashore'};
@@ -4914,6 +4920,125 @@ function animatedWaveSVG(waveM, color){
   </svg>`;
 }
 
+/* I4 — Inline ABC islands SVG map with wave + wind arrows per island.
+   Coordinates approximate, scaled for visual clarity (not geographic). */
+function renderAbcMap(islandsData){
+  const el = document.getElementById('abcMap');
+  if(!el) return;
+
+  // SVG bounds: wide rectangular ocean. Islands left-to-right: Aruba, Curaçao, Bonaire.
+  const W = 720, H = 240;
+  // Mapping (relative islands position in svg coords)
+  const SVG_POS = {
+    TNCA: { cx: 130, cy: 110, name:'Aruba',   flag:'🇦🇼' },
+    TNCC: { cx: 360, cy: 130, name:'Curaçao', flag:'🇨🇼' },
+    TNCB: { cx: 560, cy: 145, name:'Bonaire', flag:'🇧🇶' },
+  };
+
+  // Island shape generator (irregular blob)
+  function islandPath(cx, cy, rx, ry){
+    // Slightly irregular blob using cubic curves
+    return `M ${cx-rx} ${cy} `+
+      `C ${cx-rx} ${cy-ry*0.95}, ${cx-rx*0.3} ${cy-ry}, ${cx} ${cy-ry*0.9} `+
+      `C ${cx+rx*0.6} ${cy-ry}, ${cx+rx} ${cy-ry*0.4}, ${cx+rx} ${cy} `+
+      `C ${cx+rx*0.9} ${cy+ry*0.7}, ${cx+rx*0.2} ${cy+ry}, ${cx-rx*0.2} ${cy+ry*0.95} `+
+      `C ${cx-rx*0.7} ${cy+ry*0.8}, ${cx-rx} ${cy+ry*0.4}, ${cx-rx} ${cy} Z`;
+  }
+
+  // Sea-state color from wave height
+  function seaCol(waveM){
+    return waveM>=2.5?'#f87171':waveM>=1.5?'#fbbf24':waveM>=0.8?'#22d3ee':'#5ab8ff';
+  }
+
+  // Build island markers
+  const islands = islandsData.map(d=>{
+    const pos = SVG_POS[d.icao];
+    if(!pos) return '';
+    const col = seaCol(d.waveM);
+    // Wave-FROM arrow: points TOWARDS the island from upstream of the swell
+    const waveDeg = d.waveDir || 0; // direction FROM which waves come
+    const rad     = (waveDeg-90) * Math.PI/180; // rotate so 0=E
+    const distOut = 72;
+    // Origin = island - distance in the "from" direction (so arrow points TO the island)
+    const fromX = pos.cx + Math.cos((waveDeg-90)*Math.PI/180) * distOut;
+    const fromY = pos.cy + Math.sin((waveDeg-90)*Math.PI/180) * distOut;
+    // Endpoint near island
+    const toX   = pos.cx + Math.cos((waveDeg-90)*Math.PI/180) * 28;
+    const toY   = pos.cy + Math.sin((waveDeg-90)*Math.PI/180) * 28;
+
+    // Wind arrow (smaller, alongside)
+    const windDeg = d.windFromDeg || 0;
+    const fromXw = pos.cx + Math.cos((windDeg-90)*Math.PI/180) * 50;
+    const fromYw = pos.cy + Math.sin((windDeg-90)*Math.PI/180) * 50;
+    const toXw   = pos.cx + Math.cos((windDeg-90)*Math.PI/180) * 26;
+    const toYw   = pos.cy + Math.sin((windDeg-90)*Math.PI/180) * 26;
+
+    const arrowId = `abc-arrow-${d.icao}`;
+    const windArrowId = `abc-warrow-${d.icao}`;
+
+    return `
+      <!-- Wave arrow ${d.icao} -->
+      <defs>
+        <marker id="${arrowId}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="${col}"/>
+        </marker>
+        <marker id="${windArrowId}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 z" fill="#fbbf24"/>
+        </marker>
+      </defs>
+      <line x1="${fromX}" y1="${fromY}" x2="${toX}" y2="${toY}"
+        stroke="${col}" stroke-width="3" stroke-linecap="round"
+        marker-end="url(#${arrowId})" opacity="0.92"
+        style="filter:drop-shadow(0 0 4px ${col})"/>
+      <line x1="${fromXw}" y1="${fromYw}" x2="${toXw}" y2="${toYw}"
+        stroke="#fbbf24" stroke-width="1.8" stroke-linecap="round"
+        marker-end="url(#${windArrowId})" opacity="0.75" stroke-dasharray="3 2"/>
+
+      <!-- Island shape -->
+      <path d="${islandPath(pos.cx, pos.cy, 22, 12)}"
+        fill="#1a2a3f" stroke="${col}" stroke-width="2"
+        style="filter:drop-shadow(0 0 6px ${col}88)"/>
+
+      <!-- Labels -->
+      <text x="${pos.cx}" y="${pos.cy-22}" text-anchor="middle" font-family="var(--display)" font-size="13" font-weight="700" fill="#cfe6ff" style="text-shadow:0 0 6px rgba(0,0,0,0.8)">${pos.name}</text>
+      <text x="${pos.cx}" y="${pos.cy+5}" text-anchor="middle" font-family="monospace" font-size="11" font-weight="700" fill="${col}">${d.waveM.toFixed(1)}m</text>
+      <text x="${pos.cx}" y="${pos.cy+25}" text-anchor="middle" font-family="monospace" font-size="9" fill="#9bd4ff" opacity="0.8">${d.windKt}kt ${d.windCard||''}</text>
+    `;
+  }).join('');
+
+  // Venezuela coastline hint at the bottom
+  const venezuela = `<path d="M -20 220 Q 200 200 360 215 T 740 210 L 740 240 L -20 240 Z"
+    fill="#0c1626" opacity="0.7"/>
+    <text x="360" y="232" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="rgba(155,212,255,0.4)" letter-spacing="3">VENEZUELA</text>`;
+
+  // Sea background with subtle gradient
+  el.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-height:300px" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="abcSea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#0a1828" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#0e2236" stop-opacity="1"/>
+        </linearGradient>
+        <pattern id="abcWaves" width="40" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 0 10 Q 10 6, 20 10 T 40 10" stroke="rgba(34,211,238,0.07)" fill="none" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="${W}" height="${H}" fill="url(#abcSea)"/>
+      <rect width="${W}" height="${H}" fill="url(#abcWaves)"/>
+      ${venezuela}
+      ${islands}
+      <!-- Legend -->
+      <g transform="translate(10, 10)">
+        <line x1="0" y1="6" x2="20" y2="6" stroke="#22d3ee" stroke-width="2.5" marker-end="url(#abc-arrow-TNCA)" opacity="0.9"/>
+        <text x="26" y="9" font-family="var(--mono)" font-size="9" fill="rgba(155,212,255,0.7)">Waves from</text>
+        <line x1="0" y1="22" x2="20" y2="22" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.8"/>
+        <text x="26" y="25" font-family="var(--mono)" font-size="9" fill="rgba(251,191,36,0.85)">Wind from</text>
+      </g>
+    </svg>
+  `;
+  setBadge('abcMapBadge','LIVE');
+}
+
 async function loadMarine(){
   marineLoaded=true;
   const container=document.getElementById('marine-content');
@@ -4921,23 +5046,24 @@ async function loadMarine(){
 
   try{
     const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+      // Only fetch marine waves/swell from Open-Meteo Marine.
+      // Wind/temp/conditions come from WeatherAPI (store.api) — same source as Forecast.
       const marineUrl=`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
         `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
         `&hourly=wave_height,swell_wave_height,wave_period`+
         `&timezone=America%2FCuracao&forecast_days=1`;
-      const wxUrl=`https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}`+
-        `&current=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,visibility`+
-        `&timezone=America%2FCuracao`;
-      const [marineR,wxR]=await Promise.all([fetch(marineUrl,{cache:'no-store'}),fetch(wxUrl,{cache:'no-store'})]);
-      const marine = marineR.ok ? await marineR.json() : null;
-      const wx     = wxR.ok     ? await wxR.json()     : null;
-      return { loc, marine, wx, metar: store.metar[loc.icao] };
+      const marineR = await fetch(marineUrl,{cache:'no-store'});
+      const marine  = marineR.ok ? await marineR.json() : null;
+      return { loc, marine, wxApi: store.api[loc.icao], metar: store.metar[loc.icao] };
     }));
 
     let html='';
-    results.forEach(({loc,marine,wx,metar})=>{
+    const islandsForMap = [];
+    results.forEach(({loc,marine,wxApi,metar})=>{
       const m=marine?.current||{};
-      const w=wx?.current||{};
+      // ── Atmospheric data from WeatherAPI (unified source) ──
+      const wxCur = wxApi?.current || {};
+      const wcCode = wxCur?.condition?.code;
       const waveM   = m.wave_height ?? 0;
       const waveFt  = (waveM*3.281).toFixed(1);
       const swellM  = m.swell_wave_height ?? 0;
@@ -4949,17 +5075,60 @@ async function loadMarine(){
       const sd=m.swell_wave_direction ?? 0;
       const sdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((sd%360)/45)%8];
 
-      const windKt = w.wind_speed_10m ? Math.round(w.wind_speed_10m*0.539957) : 0;
-      const gustKt = w.wind_gusts_10m ? Math.round(w.wind_gusts_10m*0.539957) : 0;
-      const wxWindDir=w.wind_direction_10m;
-      const wxWindCard=wxWindDir!==undefined?['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8]:'';
+      const windKt = wxCur.wind_kph ? Math.round(wxCur.wind_kph*0.539957) : 0;
+      const gustKt = wxCur.gust_kph ? Math.round(wxCur.gust_kph*0.539957) : 0;
+      const wxWindDir  = wxCur.wind_degree;
+      const wxWindCard = wxWindDir!==undefined ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8] : '';
+      const wmoForAdvice = mapWeatherApiToWMO(wcCode, wxCur?.condition?.text||'');
 
       const cloud=getCloudHeight(metar);
       const cloudStr = cloud ? `${cloud.ft} ft / ${cloud.m} m` : 'CAVOK';
       const visMtr = metar?.visibility?.meters;
       const visStr = visMtr!==undefined ? (visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km') : '—';
 
-      const advice=getBeachAdvice(waveM, windKt, gustKt, w.weather_code);
+      const advice=getBeachAdvice(waveM, windKt, gustKt, wmoForAdvice);
+
+      // Push for ABC inline map
+      islandsForMap.push({
+        icao: loc.icao,
+        waveM,
+        waveDir: wd,
+        windKt,
+        windFromDeg: wxWindDir ?? 0,
+        windCard: wxWindCard,
+      });
+
+      // Verdicts
+      const vBeach = verdictBeach(waveM, windKt, wmoForAdvice);
+      const vBoat  = verdictBoat (waveM, windKt, gustKt, wmoForAdvice);
+      const vDive  = verdictDive (waveM, windKt, wmoForAdvice, wxCur.vis_km);
+      const verdictsHtml = `
+        <div class="verdicts-row">
+          <div class="verdict ${vBeach.cls}">
+            <div class="v-icon">🏖️</div>
+            <div class="v-meta">
+              <div class="v-name">Beach</div>
+              <div class="v-label">${vBeach.label}</div>
+            </div>
+            <div class="v-text">${vBeach.text}</div>
+          </div>
+          <div class="verdict ${vBoat.cls}">
+            <div class="v-icon">⛵</div>
+            <div class="v-meta">
+              <div class="v-name">Boat</div>
+              <div class="v-label">${vBoat.label}</div>
+            </div>
+            <div class="v-text">${vBoat.text}</div>
+          </div>
+          <div class="verdict ${vDive.cls}">
+            <div class="v-icon">🤿</div>
+            <div class="v-meta">
+              <div class="v-name">Dive</div>
+              <div class="v-label">${vDive.label}</div>
+            </div>
+            <div class="v-text">${vDive.text}</div>
+          </div>
+        </div>`;
 
       // Wave/swell visualization sizing (clamped)
       const waveBarPct  = Math.min(100, (waveM  / 4) * 100);
@@ -4986,6 +5155,8 @@ async function loadMarine(){
             <span class="marine-icon">${advice.icon}</span>${advice.text}
           </span>
         </div>
+
+        ${verdictsHtml}
 
         <!-- Wave / Swell / Wind bars row -->
         <div class="marine-bars">
@@ -5022,8 +5193,8 @@ async function loadMarine(){
           <div class="marine-cell"><div class="marine-cell-lbl">Sea State</div><div class="marine-cell-val" style="font-size:.78rem">${waveM<0.5?'Calm':waveM<1.25?'Slight':waveM<2.5?'Moderate':waveM<4?'Rough':'Very Rough'}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Visibility</div><div class="marine-cell-val">${visStr}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Cloud Base</div><div class="marine-cell-val" style="font-size:.78rem">${cloudStr}</div></div>
-          <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${w.temperature_2m?.toFixed(0)||'—'}°C</div></div>
-          <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.65rem">${WMO_TEXT[w.weather_code]||'—'}</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${wxCur.temp_c!==undefined?Math.round(wxCur.temp_c):'—'}°C</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.65rem">${wxCur?.condition?.text||'—'}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.55rem">Open-Meteo · ECMWF</div></div>
         </div>
 
@@ -5051,6 +5222,7 @@ async function loadMarine(){
     container.innerHTML=html;
     window._marineLastRender = Date.now();
     setBadge('marineBadge','LIVE');
+    renderAbcMap(islandsForMap);
   }catch(e){
     container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}</div>`;
     setBadge('marineBadge','ERROR','error');
@@ -5072,125 +5244,6 @@ setInterval(()=>{
 /* No more page reload — ATC audio must stay alive.
    Iframes are watched separately and only reloaded if they go stale
    AND the user is not currently on that tab AND it's not the ATC tab. */
-
-/* ════════════════════════════════════════════════════════
-   PROGRESSIVE WEB APP (Service Worker)
-   Inline service worker via Blob URL — caches the dashboard
-   shell so it loads instantly offline. Live data still goes
-   over the network when available.
-
-   CAVEAT: Service workers only register over HTTPS or localhost.
-   If you open this file with file:// it'll skip registration
-   silently — that's expected and not a bug.
-════════════════════════════════════════════════════════ */
-(function setupPWA(){
-  if(!('serviceWorker' in navigator)) return;
-  if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
-
-  const swCode = `
-    const CACHE = 'atc-dashboard-v1';
-    const SHELL = [self.location.origin + '/', self.registration.scope];
-
-    self.addEventListener('install', e => {
-      self.skipWaiting();
-      e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL).catch(()=>{})));
-    });
-
-    self.addEventListener('activate', e => {
-      e.waitUntil(
-        caches.keys().then(keys =>
-          Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-        ).then(() => self.clients.claim())
-      );
-    });
-
-    /* Strategy:
-       - HTML / shell  → network-first, fall back to cache
-       - API / data    → network-only, never cache (must be fresh)
-       - Static assets → cache-first, fall back to network */
-    self.addEventListener('fetch', e => {
-      const url = new URL(e.request.url);
-      if(e.request.method !== 'GET') return;
-
-      // Never cache API calls — they must be live
-      const isAPI =
-        url.hostname.includes('checkwx.com') ||
-        url.hostname.includes('weatherapi.com') ||
-        url.hostname.includes('open-meteo.com') ||
-        url.hostname.includes('aviationweather.gov') ||
-        url.hostname.includes('corsproxy.io') ||
-        url.hostname.includes('liveatc.net') ||
-        url.hostname.includes('nesdis.noaa.gov') ||
-        url.hostname.includes('weather.gov') ||
-        url.hostname.includes('nhc.noaa.gov') ||
-        url.hostname.includes('synopticdata.com') ||
-        url.hostname.includes('rss2json.com') ||
-        url.hostname.includes('air-quality-api.open-meteo.com');
-      if(isAPI) return; // let it pass through normally
-
-      // HTML shell — network-first
-      if(e.request.mode === 'navigate' || e.request.destination === 'document'){
-        e.respondWith(
-          fetch(e.request).then(res => {
-            const copy = res.clone();
-            caches.open(CACHE).then(c => c.put(e.request, copy));
-            return res;
-          }).catch(() => caches.match(e.request))
-        );
-        return;
-      }
-
-      // Everything else — cache-first
-      e.respondWith(
-        caches.match(e.request).then(cached =>
-          cached || fetch(e.request).then(res => {
-            if(res.ok && res.type === 'basic'){
-              const copy = res.clone();
-              caches.open(CACHE).then(c => c.put(e.request, copy));
-            }
-            return res;
-          })
-        )
-      );
-    });
-  `;
-  const blob = new Blob([swCode], {type:'application/javascript'});
-  const swURL = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swURL).then(()=>{
-    console.log('[PWA] Service worker registered');
-  }).catch(err=>{
-    console.warn('[PWA] SW registration failed:',err.message);
-  });
-})();
-
-/* "Install app" prompt button */
-let deferredInstallPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  showInstallButton();
-});
-function showInstallButton(){
-  if(document.getElementById('installBtn')) return;
-  const btn = document.createElement('button');
-  btn.id = 'installBtn';
-  btn.innerHTML = '⬇ Install';
-  btn.title = 'Install as an app';
-  btn.className = 'install-btn';
-  btn.addEventListener('click', async () => {
-    if(!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    btn.remove();
-  });
-  // Add it next to the night/lock buttons in the header
-  const actions = document.querySelector('.header-actions');
-  if(actions) actions.insertBefore(btn, actions.firstChild);
-}
-window.addEventListener('appinstalled', ()=>{
-  const b=document.getElementById('installBtn'); if(b) b.remove();
-});
 
 /* ════════════════════════════════════════════════════════
    STORM-TRACKING ALERTS
@@ -5217,33 +5270,55 @@ function haversineKm(a, b){
 
 async function checkStormAlerts(){
   try{
-    // NHC publishes active storms publicly. Use cors-friendly endpoint.
     const r = await fetch('https://www.nhc.noaa.gov/CurrentStorms.json',{cache:'no-store'});
-    if(!r.ok) return;
+    if(!r.ok){ updateTropicsPill('error'); return; }
     const data = await r.json();
     const storms = data.activeStorms || [];
 
     const nearby = [];
+    const allActive = [];
     for(const s of storms){
       const lat = parseFloat(s.lat);
       const lon = parseFloat(s.lon);
       if(isNaN(lat) || isNaN(lon)) continue;
       const dist = haversineKm(ABC_CENTER, {lat, lon});
-      if(dist <= ALERT_RADIUS_KM){
-        nearby.push({
-          name: s.name || s.id || 'System',
-          id:   s.id   || s.name,
-          lat, lon,
-          dist: Math.round(dist),
-          classification: s.classification || s.type || 'system',
-          intensity: s.intensity || s.intensityMPH || ''
-        });
-      }
+      const item = {
+        name: s.name || s.id || 'System',
+        id:   s.id   || s.name,
+        lat, lon,
+        dist: Math.round(dist),
+        classification: s.classification || s.type || 'system',
+        intensity: s.intensity || s.intensityMPH || ''
+      };
+      allActive.push(item);
+      if(dist <= ALERT_RADIUS_KM) nearby.push(item);
     }
 
     updateStormAlertUI(nearby);
+    updateTropicsPill(allActive.length === 0 ? 'quiet' : nearby.length > 0 ? 'nearby' : 'distant', allActive.length, nearby.length);
   } catch(err){
     console.warn('[Storm] alert check failed:',err.message);
+    updateTropicsPill('error');
+  }
+}
+
+function updateTropicsPill(state, totalCount=0, nearbyCount=0){
+  const pill = document.getElementById('tropicsPill');
+  const text = document.getElementById('tropicsText');
+  if(!pill || !text) return;
+  pill.classList.remove('tropics-quiet','tropics-distant','tropics-nearby','tropics-error');
+  if(state==='quiet'){
+    pill.classList.add('tropics-quiet');
+    text.textContent = 'Quiet';
+  } else if(state==='distant'){
+    pill.classList.add('tropics-distant');
+    text.textContent = `${totalCount} active`;
+  } else if(state==='nearby'){
+    pill.classList.add('tropics-nearby');
+    text.textContent = `${nearbyCount} nearby · ${totalCount} active`;
+  } else {
+    pill.classList.add('tropics-error');
+    text.textContent = '—';
   }
 }
 
