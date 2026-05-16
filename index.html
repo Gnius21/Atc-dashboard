@@ -153,10 +153,13 @@ body::after{
 /* ── HEADER ── */
 header{
   position:relative;z-index:10;
-  display:grid;grid-template-columns:1fr auto 1fr;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
   align-items:center;
-  height:64px;padding:0 18px;
-  background:linear-gradient(180deg,rgba(8,12,20,0.95) 0%,rgba(4,6,11,0.92) 100%);
+  gap:10px;
+  height:56px;
+  padding:0 14px;
+  background:linear-gradient(180deg,rgba(8,12,20,0.97) 0%,rgba(4,6,11,0.95) 100%);
   border-bottom:1px solid var(--border-hi);
   backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
@@ -170,55 +173,46 @@ header::before{
 }
 
 .header-title{
-  grid-column:2;
-  font-family:var(--display);font-weight:700;font-size:.78rem;
-  letter-spacing:.32em;text-transform:uppercase;
+  font-family:var(--display);font-weight:700;font-size:.72rem;
+  letter-spacing:.28em;text-transform:uppercase;
   color:var(--accent-bright);
-  text-shadow:0 0 30px rgba(155,212,255,0.4);
-  white-space:nowrap;text-align:center;padding:0 14px;
-  position:relative;
+  text-shadow:0 0 24px rgba(155,212,255,0.35);
+  white-space:nowrap;text-align:center;
 }
-.header-title::before,.header-title::after{
-  content:'';position:absolute;top:50%;width:24px;height:1px;
-  background:var(--border-hi);
-}
-.header-title::before{right:100%;margin-right:14px}
-.header-title::after{left:100%;margin-left:14px}
 
 /* ── CLOCKS ── */
-.clock-display{display:flex;gap:8px;align-items:center}
+.clock-display{display:flex;gap:6px;align-items:center}
 .clock-block{
   display:flex;flex-direction:column;align-items:center;
-  padding:7px 14px;
+  padding:5px 10px;
   background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
   border:1px solid var(--border-hi);border-radius:var(--radius);
   line-height:1.1;
-  position:relative;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .clock-time{
-  font-family:var(--mono);font-size:1.05rem;font-weight:600;
+  font-family:var(--mono);font-size:.95rem;font-weight:600;
   color:var(--cyan);
-  text-shadow:0 0 24px rgba(34,211,238,0.6);
+  text-shadow:0 0 20px rgba(34,211,238,0.55);
   letter-spacing:.06em;
   font-variant-numeric:tabular-nums;
 }
 .clock-label{
-  font-family:var(--mono);font-size:.5rem;letter-spacing:.22em;
+  font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;
   color:var(--text-dim);text-transform:uppercase;
-  margin-top:4px;font-weight:500;
+  margin-top:3px;font-weight:500;
 }
 
 /* ── HEADER BUTTONS ── */
 .header-actions{
-  display:flex;justify-content:flex-end;gap:8px;align-items:center;
+  display:flex;justify-content:flex-end;gap:6px;align-items:center;
 }
 .night-btn,.toggle-container{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:7px 12px;
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;
   background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(0,0,0,0.2));
   border:1px solid var(--border-hi);border-radius:var(--radius);
-  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:500;
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;font-weight:500;
   text-transform:uppercase;color:var(--accent-bright);
   cursor:pointer;
   user-select:none;
@@ -2259,63 +2253,88 @@ body.night .tab-btn.active{
   text-transform:uppercase;
 }
 
-/* I1 — LIVE CONDITIONS STRIP (always visible) */
-.live-strip{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1px;
-  background:var(--border);
+/* ── COMPACT WEATHER BAR (below header, above tabs) ── */
+.wx-bar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:0;
+  background:linear-gradient(180deg,rgba(4,8,16,0.95),rgba(6,10,18,0.98));
   border-bottom:1px solid var(--border);
-  margin:0 6px;
-  border-radius:0;
-  overflow:hidden;
+  padding:0 10px;
+  height:52px;
+  position:relative;
 }
-.live-cell{
+.wx-bar::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(34,211,238,0.06),transparent 70%);
+  pointer-events:none;
+}
+.wx-bar-cell{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:8px 12px;
-  background:linear-gradient(180deg,rgba(8,12,20,0.6),rgba(4,6,11,0.85));
-  font-family:var(--mono);
-  font-size:.62rem;
-  letter-spacing:.06em;
-  color:var(--text);
-  min-width:0;
-  transition:background .25s;
-  border-left:3px solid transparent;
+  padding:0 22px;
+  height:100%;
+  cursor:default;
+  transition:background .2s;
+  position:relative;
+  flex:1;
+  justify-content:center;
 }
-.live-cell:hover{background:linear-gradient(180deg,rgba(34,211,238,0.06),rgba(4,6,11,0.85))}
-.live-flag{font-size:1.2rem;line-height:1;flex-shrink:0}
-.live-name{
-  font-family:var(--display);font-size:.7rem;font-weight:700;
+.wx-bar-cell:hover{
+  background:rgba(34,211,238,0.05);
+}
+.wx-bar-div{
+  width:1px;height:28px;
+  background:var(--border);
+  flex-shrink:0;
+}
+.wx-bar-flag{
+  font-size:1.25rem;line-height:1;flex-shrink:0;
+}
+.wx-bar-name{
+  font-family:var(--display);font-size:.68rem;font-weight:700;
   letter-spacing:.14em;color:var(--accent-bright);
-  white-space:nowrap;
+  white-space:nowrap;flex-shrink:0;
 }
-.live-temp{
-  font-family:var(--display);font-size:1rem;font-weight:700;
+.wx-bar-icon{
+  display:flex;align-items:center;flex-shrink:0;
+}
+.wx-bar-temp{
+  font-family:var(--display);font-size:1.15rem;font-weight:700;
   color:var(--cyan);font-variant-numeric:tabular-nums;
-  text-shadow:0 0 12px rgba(34,211,238,0.4);
   letter-spacing:-.02em;flex-shrink:0;
+  text-shadow:0 0 14px rgba(34,211,238,0.45);
 }
-.live-icon{flex-shrink:0;display:inline-flex;align-items:center}
-.live-cond{
-  flex:1;min-width:0;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  font-size:.58rem;color:var(--text);font-weight:500;
+.wx-bar-wind{
+  font-family:var(--mono);font-size:.6rem;font-weight:600;
+  color:var(--text-dim);letter-spacing:.04em;
+  white-space:nowrap;flex-shrink:0;
+}
+.wx-bar-cat{
+  font-family:var(--mono);font-size:.52rem;font-weight:700;
+  letter-spacing:.14em;flex-shrink:0;
+  padding:2px 5px;
+  border:1px solid currentColor;
+  border-radius:3px;
   opacity:.85;
 }
-.live-wind{
-  flex-shrink:0;
-  font-family:var(--mono);font-size:.6rem;font-weight:600;
-  color:var(--accent-bright);letter-spacing:.04em;
-}
 @media(max-width:900px){
-  .live-strip{grid-template-columns:1fr;gap:0}
-  .live-cell{padding:6px 10px;font-size:.58rem;border-bottom:1px solid var(--border)}
-  .live-cell:last-child{border-bottom:none}
-  .live-name{font-size:.62rem}
-  .live-temp{font-size:.92rem}
+  .wx-bar-cell{padding:0 12px;gap:6px}
+  .wx-bar-name{display:none}
+  .wx-bar-wind{display:none}
+  .wx-bar-cat{display:none}
+  .wx-bar-temp{font-size:1rem}
 }
+@media(max-width:560px){
+  .wx-bar{height:42px;padding:0 4px}
+  .wx-bar-cell{padding:0 8px;gap:5px;flex:1;justify-content:center}
+  .wx-bar-flag{font-size:1.1rem}
+  .wx-bar-temp{font-size:.9rem}
+  .wx-bar-cat{display:none}
+}
+
 
 /* I2 — MARINE VERDICT PILLS (Beach / Boat / Dive) */
 .verdicts-row{
@@ -2400,28 +2419,58 @@ body.night .tab-btn.active{
 }
 
 /* ── RESPONSIVE ── */
-@media(max-width:1100px){
-  .tab-btn{padding:10px 12px;font-size:.62rem;letter-spacing:.14em}
-}
+
+/* Tablet */
 @media(max-width:900px){
   .col-6{grid-column:1/-1}
-  .header-title{font-size:.62rem;letter-spacing:.18em}
-  .header-title::before,.header-title::after{display:none}
+  header{height:50px;padding:0 10px;gap:8px}
+  .header-title{font-size:.58rem;letter-spacing:.18em}
+  .clock-time{font-size:.82rem}
+  .clock-block{padding:4px 8px}
+  .clock-label{font-size:.42rem}
   .taf-period,.taf-header-row{grid-template-columns:160px 60px 1fr 60px 1fr 80px}
-  .tab-btn{padding:9px 10px;font-size:.58rem;letter-spacing:.12em;gap:6px;min-width:72px}
+  .tab-btn{padding:9px 10px;font-size:.58rem;letter-spacing:.1em;gap:5px;min-width:64px}
+  .tropics-lbl{display:none}
+  .sync-indicator span:last-child{display:none}
 }
+
+/* Large phone */
 @media(max-width:600px){
-  .layout{padding:10px 10px 28px;gap:10px}
+  header{height:46px;padding:0 8px;gap:6px}
   .header-title{display:none}
-  .clock-block{padding:5px 9px}
-  .clock-time{font-size:.85rem}
-  .clock-label{font-size:.44rem}
-  .radar-box{height:260px}
+  .clock-block{padding:4px 7px}
+  .clock-time{font-size:.78rem}
+  .clock-label{font-size:.4rem;letter-spacing:.14em}
+  .layout{padding:8px 8px 24px;gap:8px}
+  .radar-box{height:240px}
   .metar-decoded{grid-template-columns:repeat(2,1fr)}
-  .tab-bar{padding:6px 8px;gap:4px;margin:0 6px;border-radius:0 0 12px 12px}
-  .tab-btn{padding:8px 8px;font-size:.55rem;letter-spacing:.1em;gap:4px;min-width:60px;border-radius:8px}
+  .tab-bar{padding:5px 6px;gap:3px;margin:0 4px}
+  .tab-btn{padding:7px 7px;font-size:.52rem;letter-spacing:.08em;gap:3px;min-width:54px;border-radius:7px}
   .tab-key{display:none}
-  .btn{padding:6px 11px;font-size:.65rem}
+  .btn{padding:5px 9px;font-size:.6rem}
+  /* Header actions — icon-only on small phones */
+  .night-btn,.toggle-container{padding:5px 8px;font-size:.7rem;letter-spacing:0}
+  .header-pill{padding:4px 8px;font-size:.48rem}
+  /* wx-bar tighter */
+  .wx-bar{height:46px}
+  .wx-bar-cell{gap:5px;padding:0 10px}
+  .wx-bar-name,.wx-bar-wind,.wx-bar-cat{display:none}
+  .wx-bar-temp{font-size:1rem}
+}
+
+/* Small phone */
+@media(max-width:400px){
+  header{height:44px;padding:0 6px;gap:4px}
+  .clock-display{gap:4px}
+  .clock-block{padding:3px 6px}
+  .clock-time{font-size:.72rem}
+  .header-pill{display:none}
+  .sync-indicator{display:none}
+  .tab-btn{padding:6px 5px;font-size:.5rem;min-width:48px}
+  .wx-bar{height:40px}
+  .wx-bar-cell{padding:0 6px;gap:4px}
+  .wx-bar-flag{font-size:1.1rem}
+  .wx-bar-temp{font-size:.88rem}
 }
 </style>
 </head>
@@ -2450,48 +2499,45 @@ body.night .tab-btn.active{
       <span class="tropics-lbl">Tropics:</span>
       <span id="tropicsText">—</span>
     </div>
-    <div class="header-pill" id="sunPill" title="Sun events">
-      <span id="sunIcon">🌅</span>
-      <span id="sunText">—</span>
-    </div>
     <div class="sync-indicator" id="syncIndicator" title="Last data refresh">
       <span class="sync-dot"></span>
       <span id="syncTime">—</span>
     </div>
-    <div class="night-btn" id="nightToggle">🌙 Night</div>
+    <div class="night-btn" id="nightToggle">🌙</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
       <span id="lockIcon">🔒</span>
-      <span>Lock</span>
     </div>
   </div>
 </header>
 
-<!-- LIVE CONDITIONS STRIP (I1) — visible on all tabs -->
-<div class="live-strip" id="liveStrip">
-  <div class="live-cell" data-icao="TNCA">
-    <span class="live-flag">🇦🇼</span>
-    <span class="live-name">Aruba</span>
-    <span class="live-temp" data-temp>—</span>
-    <span class="live-icon" data-icon></span>
-    <span class="live-cond" data-cond>—</span>
-    <span class="live-wind" data-wind>—</span>
+<!-- COMPACT WEATHER BAR — 3 islands side by side, icons only -->
+<div class="wx-bar" id="wxBar">
+  <div class="wx-bar-cell" data-icao="TNCA">
+    <span class="wx-bar-flag">🇦🇼</span>
+    <span class="wx-bar-name">Aruba</span>
+    <span class="wx-bar-icon" data-icon></span>
+    <span class="wx-bar-temp" data-temp>—</span>
+    <span class="wx-bar-wind" data-wind>—</span>
+    <span class="wx-bar-cat" data-cat></span>
   </div>
-  <div class="live-cell" data-icao="TNCC">
-    <span class="live-flag">🇨🇼</span>
-    <span class="live-name">Curaçao</span>
-    <span class="live-temp" data-temp>—</span>
-    <span class="live-icon" data-icon></span>
-    <span class="live-cond" data-cond>—</span>
-    <span class="live-wind" data-wind>—</span>
+  <div class="wx-bar-div"></div>
+  <div class="wx-bar-cell" data-icao="TNCC">
+    <span class="wx-bar-flag">🇨🇼</span>
+    <span class="wx-bar-name">Curaçao</span>
+    <span class="wx-bar-icon" data-icon></span>
+    <span class="wx-bar-temp" data-temp>—</span>
+    <span class="wx-bar-wind" data-wind>—</span>
+    <span class="wx-bar-cat" data-cat></span>
   </div>
-  <div class="live-cell" data-icao="TNCB">
-    <span class="live-flag">🇧🇶</span>
-    <span class="live-name">Bonaire</span>
-    <span class="live-temp" data-temp>—</span>
-    <span class="live-icon" data-icon></span>
-    <span class="live-cond" data-cond>—</span>
-    <span class="live-wind" data-wind>—</span>
+  <div class="wx-bar-div"></div>
+  <div class="wx-bar-cell" data-icao="TNCB">
+    <span class="wx-bar-flag">🇧🇶</span>
+    <span class="wx-bar-name">Bonaire</span>
+    <span class="wx-bar-icon" data-icon></span>
+    <span class="wx-bar-temp" data-temp>—</span>
+    <span class="wx-bar-wind" data-wind>—</span>
+    <span class="wx-bar-cat" data-cat></span>
   </div>
 </div>
 
@@ -2862,79 +2908,6 @@ function updateClocks(){
 }
 setInterval(updateClocks,1000);
 updateClocks();
-
-/* I6 — Sunset/sunrise countdown pill.
-   Uses NOAA solar position algorithm for Curaçao (12.19°N, 68.96°W).
-   Updates every 30 s. */
-function calcSunTimes(lat, lon, date){
-  // NOAA-style sunrise/sunset calculation (yields UTC times).
-  // Source: https://gml.noaa.gov/grad/solcalc/solareqns.PDF
-  const rad = d => d*Math.PI/180;
-  const deg = r => r*180/Math.PI;
-  const N = Math.floor((date - new Date(date.getUTCFullYear(), 0, 0)) / 86400000);
-  const lngHr = lon / 15;
-
-  function calc(isRise){
-    const t = N + ((isRise ? 6 : 18) - lngHr) / 24;
-    const M = (0.9856 * t) - 3.289;
-    let L = M + (1.916 * Math.sin(rad(M))) + (0.020 * Math.sin(rad(2*M))) + 282.634;
-    L = ((L % 360) + 360) % 360;
-    let RA = deg(Math.atan(0.91764 * Math.tan(rad(L))));
-    RA = ((RA % 360) + 360) % 360;
-    const Lquad = Math.floor(L/90)*90;
-    const RAquad = Math.floor(RA/90)*90;
-    RA = RA + (Lquad - RAquad);
-    RA = RA / 15;
-    const sinDec = 0.39782 * Math.sin(rad(L));
-    const cosDec = Math.cos(Math.asin(sinDec));
-    const cosH = (Math.cos(rad(90.833)) - (sinDec * Math.sin(rad(lat)))) / (cosDec * Math.cos(rad(lat)));
-    if(cosH >  1 || cosH < -1) return null;
-    let H = isRise ? 360 - deg(Math.acos(cosH)) : deg(Math.acos(cosH));
-    H = H / 15;
-    const T = H + RA - (0.06571 * t) - 6.622;
-    let UT = T - lngHr;
-    UT = ((UT % 24) + 24) % 24;
-    const d = new Date(date);
-    d.setUTCHours(Math.floor(UT), Math.round((UT % 1) * 60), 0, 0);
-    return d;
-  }
-  return { rise: calc(true), set: calc(false) };
-}
-
-function updateSunPill(){
-  const el  = document.getElementById('sunText');
-  const ic  = document.getElementById('sunIcon');
-  if(!el || !ic) return;
-
-  const lat = 12.19, lon = -68.96;
-  const now = new Date();
-  let times = calcSunTimes(lat, lon, now);
-  // If after sunset, get tomorrow's sunrise
-  if(times.set && now > times.set){
-    const tom = new Date(now); tom.setDate(tom.getDate()+1);
-    const t2 = calcSunTimes(lat, lon, tom);
-    times = { rise: t2.rise, set: null };
-  }
-
-  let target, label, icon;
-  if(times.rise && now < times.rise){
-    target = times.rise; label = 'Sunrise'; icon = '🌄';
-  } else if(times.set && now < times.set){
-    target = times.set; label = 'Sunset'; icon = '🌅';
-  }
-
-  if(!target){ el.textContent = '—'; return; }
-  const diff = target - now;
-  const hrs  = Math.floor(diff / 3600000);
-  const mins = Math.floor((diff % 3600000) / 60000);
-  const timeStr = target.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
-  ic.textContent = icon;
-  el.textContent = hrs > 0
-    ? `${label} ${timeStr} (${hrs}h ${mins}m)`
-    : `${label} ${timeStr} (${mins}m)`;
-}
-updateSunPill();
-setInterval(updateSunPill, 30000);
 
 /* ════════════════════════════════
    NIGHT MODE
@@ -3649,31 +3622,38 @@ function windRoseSVG({deg=0, speedKt=0, gustKt=0, size=80, windCol='#22d3ee'}){
    Always-visible header strip with current conditions for all 3 islands. */
 function updateLiveStrip(){
   ICAOS.forEach(icao=>{
-    const cell = document.querySelector(`#liveStrip .live-cell[data-icao="${icao}"]`);
+    const cell = document.querySelector(`#wxBar .wx-bar-cell[data-icao="${icao}"]`);
     if(!cell) return;
     const m = store.metar[icao];
     const a = store.api[icao];
 
-    const tempC = m?.temperature?.celsius ?? a?.current?.temp_c;
-    const cat   = m?.flight_category || '';
-    const condText = a?.current?.condition?.text || '';
-    const wmoCode  = mapWeatherApiToWMO(a?.current?.condition?.code, condText);
-    const iconHtml = `<span style="display:inline-block;width:22px;height:22px;vertical-align:middle">${animatedWeatherSVG(wmoCode)}</span>`;
+    const tempC   = m?.temperature?.celsius ?? a?.current?.temp_c;
+    const cat     = m?.flight_category || '';
+    const condCode= a?.current?.condition?.code;
+    const condText= a?.current?.condition?.text || '';
+    const wmoCode = mapWeatherApiToWMO(condCode, condText);
+
+    // Tiny 28px icon
+    const iconHtml = `<span style="display:inline-block;width:28px;height:28px;vertical-align:middle;flex-shrink:0">${animatedWeatherSVG(wmoCode)}</span>`;
 
     const windDeg = m?.wind?.degrees ?? a?.current?.wind_degree;
     const windKt  = m?.wind?.speed_kts ?? (a?.current ? Math.round(a.current.wind_kph*0.539957) : null);
-    const gustKt  = m?.wind?.gust_kts ?? (a?.current?.gust_kph ? Math.round(a.current.gust_kph*0.539957) : null);
+    const gustKt  = m?.wind?.gust_kts  ?? (a?.current?.gust_kph ? Math.round(a.current.gust_kph*0.539957) : null);
     const card    = windDeg !== undefined ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8] : '';
 
-    cell.querySelector('[data-temp]').textContent  = tempC !== undefined ? `${Math.round(tempC)}°` : '—';
-    cell.querySelector('[data-icon]').innerHTML    = iconHtml;
-    cell.querySelector('[data-cond]').textContent  = condText || '—';
-    cell.querySelector('[data-wind]').innerHTML    = windKt !== null
-      ? `${windKt}kt${card?' '+card:''}${gustKt && gustKt>windKt+2 ? ` <span style="opacity:.65">G${gustKt}</span>` : ''}`
+    cell.querySelector('[data-temp]').textContent = tempC !== undefined ? `${Math.round(tempC)}°` : '—';
+    cell.querySelector('[data-icon]').innerHTML   = iconHtml;
+    cell.querySelector('[data-wind]').innerHTML   = windKt !== null
+      ? `${windKt}${card ? ' '+card : ''}${gustKt && gustKt > windKt+2 ? ` G${gustKt}` : ''} kt`
       : '—';
 
-    cell.style.borderLeft = cat ? `3px solid ${catCol(cat)}` : '';
-    cell.title = cat ? `${cat} · ${condText}` : condText;
+    const catEl = cell.querySelector('[data-cat]');
+    if(catEl){
+      catEl.textContent  = cat || '';
+      catEl.style.color  = catCol(cat);
+      catEl.style.display= cat ? '' : 'none';
+    }
+    cell.title = `${condText}${cat ? ' · '+cat : ''}`;
   });
 }
 
