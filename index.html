@@ -89,6 +89,201 @@ body.night .scanline{
   background:linear-gradient(transparent,rgba(255,107,53,0.025) 50%,transparent);
 }
 
+/* ── THEME: MIDNIGHT PURPLE (iOS Weather inspired) ── */
+body.theme-purple{
+  --accent:#a78bfa;
+  --accent-bright:#c4b5fd;
+  --accent-dim:#4c1d95;
+  --accent-glow:rgba(167,139,250,0.15);
+  --cyan:#818cf8;
+  --cyan-glow:rgba(129,140,248,0.25);
+  --green:#34d399;
+  --amber:#fbbf24;
+  --red:#f87171;
+  --magenta:#e879f9;
+
+  --bg:#12082a;
+  --bg2:#1a1040;
+  --bg3:#231558;
+  --panel:rgba(30,18,70,0.75);
+  --panel-hi:rgba(45,27,105,0.88);
+
+  --border:rgba(167,139,250,0.12);
+  --border-hi:rgba(167,139,250,0.28);
+  --border-bright:rgba(167,139,250,0.55);
+
+  --text:#e2d9f3;
+  --text-dim:#9d8dc4;
+  --muted:#4c3880;
+
+  --radius:12px;
+  --radius-lg:18px;
+}
+body.theme-purple::before{
+  background-image:
+    linear-gradient(rgba(129,140,248,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(129,140,248,0.04) 1px,transparent 1px);
+}
+body.theme-purple::after{
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%,rgba(139,92,246,0.18) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 20% 80%,rgba(99,102,241,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 80% 20%,rgba(217,70,239,0.06) 0%,transparent 60%);
+}
+body.theme-purple .scanline{
+  background:linear-gradient(transparent,rgba(129,140,248,0.018) 50%,transparent);
+}
+/* Pill-style cards for purple theme */
+body.theme-purple .fd-detail-cell,
+body.theme-purple .ic-stat,
+body.theme-purple .synoptic-cell{border-radius:10px}
+body.theme-purple .fcast-day{border-radius:0}
+body.theme-purple .panel{border-radius:16px}
+
+/* ── THEME: DEEP NAVY BLUE (Concettolabs style) ── */
+body.theme-navy{
+  --accent:#60a5fa;
+  --accent-bright:#93c5fd;
+  --accent-dim:#1e3a5f;
+  --accent-glow:rgba(96,165,250,0.15);
+  --cyan:#38bdf8;
+  --cyan-glow:rgba(56,189,248,0.25);
+  --green:#4ade80;
+  --amber:#fbbf24;
+  --red:#f87171;
+  --magenta:#a78bfa;
+
+  --bg:#070e20;
+  --bg2:#0d1b3e;
+  --bg3:#162040;
+  --panel:rgba(13,27,62,0.8);
+  --panel-hi:rgba(22,40,85,0.92);
+
+  --border:rgba(96,165,250,0.1);
+  --border-hi:rgba(96,165,250,0.25);
+  --border-bright:rgba(56,189,248,0.5);
+
+  --text:#dbeafe;
+  --text-dim:#7aa0c4;
+  --muted:#1e3a5f;
+
+  --radius:10px;
+  --radius-lg:16px;
+}
+body.theme-navy::before{
+  background-image:
+    linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px);
+}
+body.theme-navy::after{
+  background:
+    radial-gradient(ellipse 90% 45% at 50% -8%,rgba(56,189,248,0.12) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 0% 50%,rgba(96,165,250,0.06) 0%,transparent 60%);
+}
+body.theme-navy .scanline{
+  background:linear-gradient(transparent,rgba(56,189,248,0.02) 50%,transparent);
+}
+/* Bold glassmorphism panels for navy */
+body.theme-navy .panel{
+  background:rgba(13,27,62,0.65);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(96,165,250,0.18);
+}
+body.theme-navy .fcast-day{
+  background:rgba(13,27,62,0.8);
+  backdrop-filter:blur(16px);
+}
+
+/* ── THEME: LAVENDER LIGHT (clean minimal) ── */
+body.theme-lavender{
+  --accent:#4f46e5;
+  --accent-bright:#6366f1;
+  --accent-dim:#c7d2fe;
+  --accent-glow:rgba(79,70,229,0.12);
+  --cyan:#4338ca;
+  --cyan-glow:rgba(67,56,202,0.18);
+  --green:#059669;
+  --amber:#d97706;
+  --red:#dc2626;
+  --magenta:#7c3aed;
+
+  --bg:#eef0f7;
+  --bg2:#e4e7f5;
+  --bg3:#dde1f2;
+  --panel:rgba(255,255,255,0.82);
+  --panel-hi:rgba(255,255,255,0.96);
+
+  --border:rgba(99,102,241,0.1);
+  --border-hi:rgba(99,102,241,0.22);
+  --border-bright:rgba(79,70,229,0.4);
+
+  --text:#1e1b4b;
+  --text-dim:#6366a0;
+  --muted:#c7d2fe;
+
+  --radius:12px;
+  --radius-lg:20px;
+}
+body.theme-lavender{
+  background:var(--bg);
+}
+body.theme-lavender::before{
+  background-image:
+    linear-gradient(rgba(99,102,241,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,102,241,0.04) 1px,transparent 1px);
+}
+body.theme-lavender::after{
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%,rgba(139,92,246,0.1) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 80%,rgba(99,102,241,0.06) 0%,transparent 60%);
+}
+body.theme-lavender .scanline{display:none}
+/* Light mode text inversions */
+body.theme-lavender header{
+  background:linear-gradient(180deg,rgba(232,234,246,0.98),rgba(224,228,250,0.95));
+  border-bottom-color:rgba(99,102,241,0.2);
+}
+body.theme-lavender .tab-bar{
+  background:rgba(232,234,246,0.95);
+  border-color:rgba(99,102,241,0.15);
+}
+body.theme-lavender .tab-btn{
+  color:var(--text);
+  border-color:rgba(99,102,241,0.12);
+}
+body.theme-lavender .tab-btn.active{
+  background:white;
+  color:var(--accent);
+  box-shadow:0 2px 12px rgba(99,102,241,0.2);
+}
+body.theme-lavender .panel{
+  background:rgba(255,255,255,0.88);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(99,102,241,0.12);
+  box-shadow:0 4px 24px rgba(99,102,241,0.08);
+}
+body.theme-lavender .fcast-day{
+  background:rgba(255,255,255,0.85);
+}
+body.theme-lavender .wx-bar{
+  background:rgba(232,234,246,0.98);
+  border-bottom-color:rgba(99,102,241,0.15);
+}
+body.theme-lavender .section-title{color:var(--accent);border-bottom-color:rgba(99,102,241,0.15)}
+body.theme-lavender .data-badge{border-color:rgba(99,102,241,0.3)}
+body.theme-lavender .fd-detail-cell{background:rgba(99,102,241,0.05);border-color:rgba(99,102,241,0.1)}
+body.theme-lavender .clock-block{background:rgba(255,255,255,0.7);border-color:rgba(99,102,241,0.2)}
+body.theme-lavender .clock-time{color:var(--accent)}
+body.theme-lavender .night-btn,.theme-lavender .toggle-container{
+  background:rgba(255,255,255,0.7);border-color:rgba(99,102,241,0.2);color:var(--accent);
+}
+body.theme-lavender .fd-temp-hi{color:#7c3aed}
+body.theme-lavender .fd-temp-lo{color:#4338ca}
+body.theme-lavender .fd-day-name{color:var(--accent)}
+body.theme-lavender .fd-cond{color:var(--accent-bright)}
+
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
@@ -201,6 +396,77 @@ header::before{
   font-family:var(--mono);font-size:.46rem;letter-spacing:.2em;
   color:var(--text-dim);text-transform:uppercase;
   margin-top:3px;font-weight:500;
+}
+
+/* ── THEME PICKER ── */
+.theme-picker{
+  position:fixed;inset:0;
+  z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.65);
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  animation:themePickerIn .18s ease;
+}
+@keyframes themePickerIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.theme-picker-inner{
+  background:var(--bg2);
+  border:1px solid var(--border-hi);
+  border-radius:18px;
+  padding:24px;
+  width:min(440px,92vw);
+  box-shadow:0 24px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.03) inset;
+  position:relative;
+}
+.theme-picker-title{
+  font-family:var(--display);font-size:.9rem;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent-bright);text-align:center;
+  margin-bottom:20px;
+}
+.theme-options{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:10px;
+}
+.theme-opt{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:none;border:2px solid transparent;cursor:pointer;
+  padding:8px 4px;border-radius:12px;
+  transition:all .2s;
+}
+.theme-opt:hover{background:rgba(255,255,255,0.05);border-color:var(--border-hi)}
+.theme-opt.active{background:rgba(255,255,255,0.08);border-color:var(--accent)}
+.theme-swatch{
+  width:52px;height:52px;border-radius:12px;
+  border:2px solid;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s,box-shadow .2s;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.theme-opt:hover .theme-swatch,.theme-opt.active .theme-swatch{
+  transform:scale(1.1);box-shadow:0 8px 24px rgba(0,0,0,0.45);
+}
+.theme-opt-name{
+  font-family:var(--display);font-size:.58rem;font-weight:700;
+  color:var(--accent-bright);letter-spacing:.08em;text-align:center;
+}
+.theme-opt-sub{
+  font-family:var(--mono);font-size:.44rem;color:var(--text-dim);
+  letter-spacing:.04em;text-align:center;line-height:1.3;
+}
+.theme-picker-close{
+  position:absolute;top:12px;right:14px;
+  background:none;border:none;cursor:pointer;
+  color:var(--text-dim);font-size:.95rem;
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.theme-picker-close:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+@media(max-width:480px){
+  .theme-options{grid-template-columns:repeat(3,1fr);gap:8px}
+  .theme-swatch{width:44px;height:44px;border-radius:10px}
+  .theme-picker-inner{padding:18px}
 }
 
 /* ── HEADER BUTTONS ── */
@@ -2475,7 +2741,7 @@ body.night .tab-btn.active{
       <span class="sync-dot"></span>
       <span id="syncTime">—</span>
     </div>
-    <div class="night-btn" id="nightToggle">🌙</div>
+    <div class="night-btn" id="themeBtn" title="Change theme">🎨</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
       <span id="lockIcon">🔒</span>
@@ -2483,7 +2749,52 @@ body.night .tab-btn.active{
   </div>
 </header>
 
-<!-- COMPACT WEATHER BAR — 3 islands side by side, icons only -->
+<!-- THEME PICKER MODAL -->
+<div id="themePicker" class="theme-picker" style="display:none">
+  <div class="theme-picker-inner">
+    <div class="theme-picker-title">Choose Theme</div>
+    <div class="theme-options">
+      <button class="theme-opt" data-theme="dark" title="ATC Dark — deep navy + cyan">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#04060b,#080c14);border-color:rgba(34,211,238,0.5)">
+          <span style="color:#22d3ee;font-size:1rem">📡</span>
+        </div>
+        <span class="theme-opt-name">ATC Dark</span>
+        <span class="theme-opt-sub">Default · Navy + Cyan</span>
+      </button>
+      <button class="theme-opt" data-theme="night" title="Night Vision — amber tactical">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#05030a,#150a06);border-color:rgba(255,107,53,0.5)">
+          <span style="color:#ff6b35;font-size:1rem">🌙</span>
+        </div>
+        <span class="theme-opt-name">Night Vision</span>
+        <span class="theme-opt-sub">Amber · Low-light</span>
+      </button>
+      <button class="theme-opt" data-theme="purple" title="Midnight Purple — iOS Weather style">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#1a1040,#2d1b69);border-color:rgba(167,139,250,0.6)">
+          <span style="font-size:1rem">🟣</span>
+        </div>
+        <span class="theme-opt-name">Midnight</span>
+        <span class="theme-opt-sub">Purple · iOS Style</span>
+      </button>
+      <button class="theme-opt" data-theme="navy" title="Deep Navy Blue — bold glassmorphism">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#0d1b3e,#1a2d5a);border-color:rgba(59,130,246,0.6)">
+          <span style="font-size:1rem">🔵</span>
+        </div>
+        <span class="theme-opt-name">Deep Navy</span>
+        <span class="theme-opt-sub">Blue · Glassmorphism</span>
+      </button>
+      <button class="theme-opt" data-theme="lavender" title="Lavender Light — clean minimal">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#e8eaf6,#c5cae9);border-color:rgba(99,102,241,0.5)">
+          <span style="font-size:1rem">🌸</span>
+        </div>
+        <span class="theme-opt-name">Lavender</span>
+        <span class="theme-opt-sub">Light · Clean Minimal</span>
+      </button>
+    </div>
+    <button class="theme-picker-close" id="themePickerClose">✕</button>
+  </div>
+</div>
+
+
 <div class="wx-bar" id="wxBar">
   <div class="wx-bar-cell" data-icao="TNCA">
     <span class="wx-bar-flag">🇦🇼</span>
@@ -2888,13 +3199,53 @@ updateClocks();
 /* ════════════════════════════════
    NIGHT MODE
 ════════════════════════════════ */
-const nightBtn=document.getElementById('nightToggle');
-let isNight=false;
-nightBtn.onclick=()=>{
-  isNight=!isNight;
-  document.body.classList.toggle('night',isNight);
-  nightBtn.textContent=isNight?'☀️ Day':'🌙 Night';
-};
+/* ════════════════════════════════
+   THEME SYSTEM
+   Five themes: dark (default), night, purple, navy, lavender.
+   Persisted in localStorage so choice survives page reload.
+════════════════════════════════ */
+const THEMES = ['dark','night','purple','navy','lavender'];
+const THEME_CLASSES = THEMES.filter(t=>t!=='dark').map(t=>'theme-'+t).concat(['night']);
+
+function applyTheme(theme){
+  // Remove all theme classes first
+  document.body.classList.remove('night','theme-purple','theme-navy','theme-lavender','theme-dark');
+  if(theme==='night')     document.body.classList.add('night');
+  else if(theme!=='dark') document.body.classList.add(`theme-${theme}`);
+  localStorage.setItem('atc_theme',''+theme);
+  // Update active state in picker
+  document.querySelectorAll('.theme-opt').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.theme===theme);
+  });
+  // Update theme-btn emoji
+  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸'};
+  const themeBtn=document.getElementById('themeBtn');
+  if(themeBtn) themeBtn.textContent=icons[theme]||'🎨';
+}
+
+// Restore saved theme on load
+(()=>{
+  const saved=localStorage.getItem('atc_theme')||'dark';
+  applyTheme(saved);
+})();
+
+// Theme picker open/close
+const themeBtn    = document.getElementById('themeBtn');
+const themePicker = document.getElementById('themePicker');
+const themeClose  = document.getElementById('themePickerClose');
+
+themeBtn.onclick = ()=>{ themePicker.style.display='flex'; };
+themeClose.onclick = ()=>{ themePicker.style.display='none'; };
+themePicker.addEventListener('click', e=>{ if(e.target===themePicker) themePicker.style.display='none'; });
+
+document.querySelectorAll('.theme-opt').forEach(btn=>{
+  btn.onclick=()=>{
+    applyTheme(btn.dataset.theme);
+    setTimeout(()=>{ themePicker.style.display='none'; }, 200);
+  };
+});
+
+
 
 /* ════════════════════════════════
    MAP LOCK
