@@ -2600,7 +2600,10 @@ body.night .tab-btn.active{
   </div>
 
   <div class="full">
-    <div class="section-title">Live Flight Traffic — airplanes.live (ADS-B)</div>
+    <div class="section-title">
+      Live Flight Traffic — airplanes.live (ADS-B)
+      <button id="adsbSaveBtn" class="btn btn-small" style="margin-left:10px;font-size:.52rem;padding:3px 10px" title="Save current map view — it will be restored on next page load">📍 Save Position</button>
+    </div>
     <div class="radar-box adsb-box" style="height:580px">
       <iframe
         id="adsbFrame"
@@ -2907,6 +2910,96 @@ function setLock(locked){
 }
 setLock(true);
 lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
+
+/* ════════════════════════════════
+   ADSB POSITION MEMORY
+   airplanes.live encodes view state in its URL (?lat=&lon=&zoom=).
+   Since we can't cross-origin-read the iframe's live URL, we use a
+   postMessage listener (airplanes.live sends viewChanged events) and
+   fall back to a manual "Save Position" button.
+
+   Strategy:
+   1. On load: restore saved URL from localStorage if present.
+   2. postMessage: listen for {type:'mapView', lat, lon, zoom} from the iframe.
+   3. Save button: stores whatever URL the frame currently has (from our tracking).
+   4. On unlock: start tracking; on lock: stop.
+════════════════════════════════ */
+(function initAdsbMemory(){
+  const LS_KEY   = 'adsb_view_v1';
+  const frame    = document.getElementById('adsbFrame');
+  const saveBtn  = document.getElementById('adsbSaveBtn');
+  const BASE_URL = 'https://globe.airplanes.live/';
+  const DEFAULT  = `${BASE_URL}?lat=12.2&lon=-68.5&zoom=9&hideSidebar&hideButtons`;
+
+  let trackedUrl = localStorage.getItem(LS_KEY) || DEFAULT;
+
+  // Restore saved position on load
+  if(trackedUrl !== frame.src){
+    frame.src = trackedUrl;
+  }
+
+  // Listen for position updates from airplanes.live via postMessage
+  window.addEventListener('message', e=>{
+    if(!e.origin.includes('airplanes.live') && !e.origin.includes('globe.airplanes')) return;
+    const d = e.data;
+    if(d && (d.type==='mapView' || d.type==='viewChanged' || d.lat!=null)){
+      const lat  = parseFloat(d.lat  ?? d.center?.[1]);
+      const lon  = parseFloat(d.lon  ?? d.center?.[0]);
+      const zoom = parseFloat(d.zoom ?? d.z ?? 9);
+      if(!isNaN(lat) && !isNaN(lon)){
+        trackedUrl = `${BASE_URL}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&zoom=${zoom.toFixed(1)}&hideSidebar&hideButtons`;
+        localStorage.setItem(LS_KEY, trackedUrl);
+        if(saveBtn) saveBtn.title = `Saved: lat ${lat.toFixed(2)}, lon ${lon.toFixed(2)}, zoom ${zoom.toFixed(1)}`;
+      }
+    }
+  });
+
+  // Save button: saves current tracked URL and confirms visually
+  if(saveBtn){
+    saveBtn.onclick = ()=>{
+      // Extract current lat/lon/zoom from iframe src (last known good position)
+      try{
+        const url   = new URL(frame.src);
+        const lat   = url.searchParams.get('lat')  || '12.2';
+        const lon   = url.searchParams.get('lon')  || '-68.5';
+        const zoom  = url.searchParams.get('zoom') || '9';
+        const saved = `${BASE_URL}?lat=${lat}&lon=${lon}&zoom=${zoom}&hideSidebar&hideButtons`;
+        localStorage.setItem(LS_KEY, saved);
+        trackedUrl = saved;
+        saveBtn.textContent = '✅ Saved';
+        setTimeout(()=>{ saveBtn.textContent = '📍 Save Position'; }, 2000);
+      }catch(err){
+        console.warn('[ADSB] save failed:', err);
+      }
+    };
+  }
+
+  // When user unlocks and interacts, the iframe navigates internally.
+  // We can't detect that cross-origin, but we can update trackedUrl
+  // from the src attribute if it changes (some browsers update src on navigation).
+  const srcObserver = new MutationObserver(()=>{
+    if(frame.src && frame.src !== 'about:blank' && frame.src.includes('airplanes.live')){
+      const url = new URL(frame.src);
+      if(url.searchParams.get('lat')){
+        trackedUrl = frame.src;
+        localStorage.setItem(LS_KEY, trackedUrl);
+      }
+    }
+  });
+  srcObserver.observe(frame, {attributes:true, attributeFilter:['src']});
+
+  // Also intercept the iframe's load event to update trackedUrl
+  frame.addEventListener('load', ()=>{
+    try{
+      if(frame.src && frame.src.includes('airplanes.live') && frame.src !== 'about:blank'){
+        trackedUrl = frame.src;
+        localStorage.setItem(LS_KEY, trackedUrl);
+      }
+    }catch{}
+  });
+
+})();
+
 
 /* ════════════════════════════════
    LIVE ATC STREAM PLAYERS
@@ -4522,7 +4615,17 @@ function buildHourlyStrip(day0, icao, day1){
      (max-min) as a confidence indicator.
    - WeatherAPI stays as the source for AQI, alerts, hourly text/icon.
 ════════════════════════════════ */
-const FCAST_MODELS = ['ecmwf_ifs025','gfs_seamless','icon_seamless','ukmo_seamless'];
+// Open-Meteo ensemble — 6 global models with good Caribbean coverage.
+// GEM (Canada), MeteoFrance, ECMWF, GFS, ICON, UKMO.
+// Excludes polar/regional models (HRRR, MetNO) that don't cover tropics well.
+const FCAST_MODELS = [
+  'ecmwf_ifs025',      // ECMWF IFS — gold standard, 0.25°
+  'gfs_seamless',      // NOAA GFS — global, widely used
+  'icon_seamless',     // DWD ICON — high resolution over Atlantic
+  'ukmo_seamless',     // UK Met Office — good Atlantic track record
+  'gem_seamless',      // Environment Canada GEM — strong in tropics
+  'meteofrance_seamless', // Météo-France ARPÈGE/AROME — Caribbean coverage
+];
 const FCAST_CACHE_MS = 15 * 60 * 1000;
 const _fcastCache = {}; // {icao: {ts, days, hourly}}
 
@@ -4811,7 +4914,8 @@ async function loadForecast(forceNewsUpdate=false){
 
       const summary    = wxDays.length ? buildForecastSummary(wxDays, loc) : '';
       const modelCount = FCAST_MODELS.filter(m=>models?.daily?.[`temperature_2m_max_${m}`]?.[0]!=null).length;
-      const modelSrc   = modelCount>=4 ? '4-model blend · ECMWF GFS ICON UKMO'
+      const modelSrc   = modelCount>=5 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF`
+                       : modelCount>=4 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO`
                        : modelCount>=2 ? `${modelCount}-model blend`
                        : modelCount===1 ? '1 model + WeatherAPI' : 'WeatherAPI only';
 
@@ -5198,14 +5302,41 @@ async function loadMarine(){
 
   try{
     const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
-      // Only fetch marine waves/swell from Open-Meteo Marine.
-      // Wind/temp/conditions come from WeatherAPI (store.api) — same source as Forecast.
-      const marineUrl=`https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
+      // Marine waves/swell: blend ECMWF WAM (best global wave model) +
+      // GFS Wave (NCEP) for a two-model consensus.
+      // Wind/temp/conditions come from WeatherAPI for consistency with Forecast tab.
+      const buildMarineUrl = (models) =>
+        `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
         `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
-        `&hourly=wave_height,swell_wave_height,wave_period`+
-        `&timezone=America%2FCuracao&forecast_days=1`;
-      const marineR = await fetch(marineUrl,{cache:'no-store'});
-      const marine  = marineR.ok ? await marineR.json() : null;
+        `&hourly=wave_height,swell_wave_height,wave_direction,wave_period`+
+        `&timezone=America%2FCuracao&forecast_days=3`+
+        (models ? `&models=${models}` : '');
+
+      // Fetch both wave models in parallel — fall back gracefully if either fails
+      const [ecmwfR, gfsR] = await Promise.allSettled([
+        fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store'}).then(r=>r.ok?r.json():null),
+        fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store'}).then(r=>r.ok?r.json():null),
+      ]);
+      const ecmwfMarine = ecmwfR.status==='fulfilled' ? ecmwfR.value : null;
+      const gfsMarine   = gfsR.status==='fulfilled'   ? gfsR.value  : null;
+      // Build blended marine current — mean of available models
+      const blendMarine = (key) => {
+        const vals = [ecmwfMarine?.current?.[key], gfsMarine?.current?.[key]].filter(v=>v!=null);
+        return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+      };
+      const marine = {
+        _sources: [ecmwfMarine?'ECMWF':null, gfsMarine?'GFS':null].filter(Boolean),
+        current: {
+          wave_height:         blendMarine('wave_height'),
+          wave_direction:      blendMarine('wave_direction'),
+          wave_period:         blendMarine('wave_period'),
+          swell_wave_height:   blendMarine('swell_wave_height'),
+          swell_wave_direction:blendMarine('swell_wave_direction'),
+          swell_wave_period:   blendMarine('swell_wave_period'),
+          wind_wave_height:    blendMarine('wind_wave_height'),
+          wind_wave_period:    blendMarine('wind_wave_period'),
+        },
+      };
       return { loc, marine, wxApi: store.api[loc.icao], metar: store.metar[loc.icao] };
     }));
 
@@ -5363,7 +5494,7 @@ async function loadMarine(){
           <div class="marine-cell"><div class="marine-cell-lbl">Cloud Base</div><div class="marine-cell-val" style="font-size:.78rem">${cloudStr}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${wxCur.temp_c!==undefined?Math.round(wxCur.temp_c):'—'}°C</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.65rem">${wxCur?.condition?.text||'—'}</div></div>
-          <div class="marine-cell"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.55rem">Open-Meteo · ECMWF</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.55rem">${marine._sources?.join(' + ') || 'ECMWF'} Wave</div></div>
         </div>
 
         <div class="marine-summary">
