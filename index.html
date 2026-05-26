@@ -3212,6 +3212,9 @@ body.night .tab-btn.active{
 // have it deployed (see atc-proxy.js) to hide them from view-source.
 const CHECKWX_KEY    = 'fb135a94c0574db4b26082b70705b4af';
 const WX_API_KEY     = 'fef2a58ed5fa4b2ea08221244260405';
+// KNMI Data Platform — Royal Netherlands Meteorological Institute
+// Provides Harmonie-Arome 2.5 km NWP + AWS station obs for Caribbean Netherlands
+const KNMI_KEY       = 'eyJvcmciOiI1ZTU1NGUxOTI3NGE5NjAwMDEyYTNlYjEiLCJpZCI6ImY0MTMyMjA3NzVjYzQ3N2ZiZWFkMGRiYjZhODk5MGExIiwiaCI6Im11cm11cjEyOCJ9';
 const PROXY_BASE     = '';
 const REFRESH_MS    = 5 * 60 * 1000;        // METAR/TAF — fast
 const WX_REFRESH_MS = 15 * 60 * 1000;       // WeatherAPI + Open-Meteo — slower (preserve API quota)
@@ -3227,7 +3230,7 @@ const ICAOS = ['TNCA','TNCC','TNCB'];
 /* ════════════════════════════════
    SHARED DATA STORE
 ════════════════════════════════ */
-const store = { metar:{}, taf:{}, api:{} };
+const store = { metar:{}, taf:{}, api:{}, knmi:{} };
 
 /* ════════════════════════════════
    HELPERS
@@ -4115,7 +4118,7 @@ function updateLiveStrip(){
     const m = store.metar[icao];
     const a = store.api[icao];
 
-    const tempC   = m?.temperature?.celsius ?? a?.current?.temp_c;
+    const tempC   = m?.temperature?.celsius ?? a?.current?.temp_c ?? store.knmi[icao]?.tempC;
     const cat     = m?.flight_category || '';
     const condCode= a?.current?.condition?.code;
     const condText= a?.current?.condition?.text || '';
@@ -4153,6 +4156,7 @@ function renderIslandCards(){
     const ap=AIRPORTS[icao];
     const m=store.metar[icao];
     const a=store.api[icao];
+    const k=store.knmi[icao]; // KNMI 10-min station obs (may be undefined)
 
     const cat   =m?.flight_category||'—';
     const tempC =m?.temperature?.celsius;
@@ -4283,7 +4287,7 @@ function renderIslandCards(){
             <svg class="ic-uv-gauge" viewBox="0 0 80 80">
               <path d="M 14 58 A 26 26 0 0 1 66 58" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6" stroke-linecap="round"/>
               <path d="M 14 58 A 26 26 0 0 1 66 58" fill="none" stroke="${uvCl}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${Math.min(uv,11)/11 * 82} 100" style="filter:drop-shadow(0 0 6px ${uvCl})"/>
-              <text x="40" y="54" text-anchor="middle" font-size="16" fill="${uvCl}" font-weight="700" font-family="var(--display),sans-serif">${uv.toFixed(1)}</text>
+              <text x="40" y="54" text-anchor="middle" font-size="16" fill="${uvCl}" font-weight="700" font-family="var(--display),sans-serif">${(uv||0).toFixed(1)}</text>
             </svg>
             <div class="ic-meter-info">
               <div class="ic-meter-lbl">UV Index</div>
@@ -4323,6 +4327,12 @@ function renderIslandCards(){
         </div>
 
         ${rawStr?`<div class="ic-raw"><span class="ic-raw-lbl">RAW</span>${rawStr}</div>`:''}
+        ${k?`<div class="ic-raw" style="margin-top:4px;border-top:1px solid var(--border)">
+          <span class="ic-raw-lbl" style="color:#5ab8ff;border-color:#5ab8ff22">KNMI</span>
+          <span style="color:var(--text-dim)">
+            ${k.tempC!=null?`T ${k.tempC.toFixed(1)}°C`:''}${k.rhPct!=null?` · RH ${Math.round(k.rhPct)}%`:''}${k.windKt!=null?` · Wind ${k.windDir!=null?Math.round(k.windDir)+'°':''} ${k.windKt}kt${k.gustKt!=null&&k.gustKt>k.windKt+2?' G'+k.gustKt:''}`:''}${k.slpHpa!=null?` · ${k.slpHpa.toFixed(1)} hPa`:''}${k.time?' · '+k.time.slice(11,16)+'Z':''}
+          </span>
+        </div>`:''}
       </div>`;
   });
 
@@ -4447,6 +4457,109 @@ async function fetchWeatherAPI(icao){
   }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
 }
 
+
+/* ════════════════════════════════
+   KNMI — Royal Netherlands Meteorological Institute
+   Dataset: Actuele10mindataKNMIstations (10-min AWS observations)
+   Auth: Bearer JWT via KNMI_KEY
+   Stations: 599=Curaçao Hato, may include Aruba/Bonaire
+   Adds ground-truth obs to supplement METAR data.
+════════════════════════════════ */
+async function fetchKNMI(){
+  try{
+    // Step 1: get list of available files (sorted desc — latest first)
+    const listUrl = 'https://api.dataplatform.knmi.nl/open/v1/datasets/Actuele10mindataKNMIstations/versions/2/files' +
+      '?maxKeys=5&orderBy=lastModified&sorting=desc';
+    const listRes = await fetch(listUrl, {
+      headers:{ 'Authorization': `Bearer ${KNMI_KEY}` },
+      cache:'no-store'
+    });
+    if(!listRes.ok){ console.warn('[KNMI] list HTTP', listRes.status); return; }
+    const listData = await listRes.json();
+    const files = listData.files || [];
+    if(!files.length){ console.warn('[KNMI] no files returned'); return; }
+
+    // Step 2: get presigned download URL for the latest file
+    const latest = files[0].filename;
+    const urlRes = await fetch(
+      `https://api.dataplatform.knmi.nl/open/v1/datasets/Actuele10mindataKNMIstations/versions/2/files/${encodeURIComponent(latest)}/url`,
+      { headers:{ 'Authorization': `Bearer ${KNMI_KEY}` }, cache:'no-store' }
+    );
+    if(!urlRes.ok){ console.warn('[KNMI] url HTTP', urlRes.status); return; }
+    const { temporaryDownloadUrl } = await urlRes.json();
+    if(!temporaryDownloadUrl){ console.warn('[KNMI] no download URL'); return; }
+
+    // Step 3: download and parse the CSV/text data file
+    const dataRes = await fetch(temporaryDownloadUrl, {cache:'no-store'});
+    if(!dataRes.ok){ console.warn('[KNMI] data HTTP', dataRes.status); return; }
+    const text = await dataRes.text();
+    parseKNMIData(text);
+  }catch(e){
+    console.warn('[KNMI] fetch failed:', e.message);
+  }
+}
+
+function parseKNMIData(text){
+  // KNMI 10-min format: fixed-width or CSV with header row starting with #
+  // Key columns: STN, YYYYMMDD, HH, MM, DD, FF, FX, T, T10N, TD, SQ, R, P0, U, WW, IX
+  //   DD = wind direction (degrees), FF = wind speed (0.1 m/s)
+  //   T = temperature (0.1 °C), P0 = sea-level pressure (0.1 hPa), U = relative humidity (%)
+  //   FX = max gust in last 10min (0.1 m/s)
+  const lines = text.split('\n');
+  let headers = null;
+  const STATION_ICAO = { '599':'TNCC', '586':'TNCA', '592':'TNCB' };
+
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line) continue;
+    // Header line starts with # STN or STN
+    if(line.startsWith('#') || line.startsWith('STN')){
+      const h = line.replace(/^#+\s*/,'');
+      headers = h.split(',').map(s=>s.trim());
+      continue;
+    }
+    if(!headers) continue;
+    const cols = line.split(',').map(s=>s.trim());
+    if(cols.length < 4) continue;
+
+    const row = {};
+    headers.forEach((h,i)=>{ if(cols[i]!==undefined) row[h]=cols[i]; });
+
+    const stn = row['STN'] || row['# STN'] || row['#STN'] || '';
+    const icao = STATION_ICAO[stn];
+    if(!icao) continue;
+
+    // Parse values — KNMI uses sentinel 9999/99999 for missing
+    const safeNum = (v, scale=1) => {
+      const n = parseFloat(v);
+      return (!isNaN(n) && Math.abs(n) < 9990) ? n * scale : null;
+    };
+
+    const obs = {
+      source:   'KNMI',
+      stn,
+      time:     `${row['YYYYMMDD']||''}T${(row['HH']||'').padStart(2,'0')}:${(row['MM']||'').padStart(2,'0')}Z`,
+      windDir:  safeNum(row['DD']),           // degrees
+      windMs:   safeNum(row['FF'],  0.1),     // m/s (raw is 0.1 m/s)
+      gustMs:   safeNum(row['FX'],  0.1),     // m/s
+      windKt:   safeNum(row['FF'])  != null ? Math.round(safeNum(row['FF'],0.1) * 1.94384) : null,
+      gustKt:   safeNum(row['FX']) != null ? Math.round(safeNum(row['FX'],0.1) * 1.94384) : null,
+      tempC:    safeNum(row['T'],   0.1),     // °C
+      dewC:     safeNum(row['TD'],  0.1),     // °C
+      rhPct:    safeNum(row['U']),            // %
+      slpHpa:   safeNum(row['P0'],  0.1),     // hPa
+    };
+
+    // Only store if we got at least temp or wind
+    if(obs.tempC !== null || obs.windKt !== null){
+      store.knmi[icao] = obs;
+    }
+  }
+  if(Object.keys(store.knmi).length){
+    console.info('[KNMI] parsed observations for:', Object.keys(store.knmi).join(', '));
+  }
+}
+
 /* ════════════════════════════════
    MAIN REFRESH CYCLE
 ════════════════════════════════ */
@@ -4485,7 +4598,10 @@ async function refresh(){
   // WeatherAPI quota guard — only refresh every WX_REFRESH_MS (15 min)
   // unless this is the first call of the session.
   if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
-    await Promise.all(ICAOS.map(fetchWeatherAPI));
+    await Promise.all([
+      ...ICAOS.map(fetchWeatherAPI),
+      fetchKNMI(),   // KNMI 10-min station obs — runs in parallel
+    ]);
     _lastWxFetch = Date.now();
   }
 
@@ -4913,9 +5029,8 @@ function buildForecastSummary(days, loc){
 
   const windKt   = Math.round((today.maxwind_kph||0) * 0.539957);
   const condText = days[0]?.day?.condition?.text || '';
-  const tempHi   = Math.round(today.maxtemp_c);
-  const tempLo   = Math.round(today.mintemp_c);
-  const tempAvg  = Math.round((today.avgtemp_c||((today.maxtemp_c+today.mintemp_c)/2)));
+  const tempHi   = Math.round(today.maxtemp_c || 30);
+  const tempLo   = Math.round(today.mintemp_c || 25);
   const rainPct  = today.daily_chance_of_rain || 0;
   const hum      = today.avghumidity || 0;
   const vis      = today.avgvis_km || 10;
@@ -4927,26 +5042,27 @@ function buildForecastSummary(days, loc){
     ? Math.round(Math.max(...allHours0.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957)))
     : Math.round(windKt*1.2);
 
-  // 3-day outlook analysis
-  const rainProbs  = days.map(d=>d.day.daily_chance_of_rain);
-  const windMaxes  = days.map(d=>Math.round(d.day.maxwind_kph*0.539957));
-  const condTexts  = days.map(d=>d.day.condition.text.toLowerCase());
+  // 3-day outlook analysis — guard every property access
+  const safeDays = days.filter(d=>d?.day);
+  const rainProbs  = safeDays.map(d=>d.day.daily_chance_of_rain||0);
+  const windMaxes  = safeDays.map(d=>Math.round((d.day.maxwind_kph||0)*0.539957));
+  const condTexts  = safeDays.map(d=>(d.day.condition?.text||'').toLowerCase());
   const stormDays  = condTexts.filter(t=>t.includes('thunder')||t.includes('storm')).length;
   const showerDays = condTexts.filter(t=>t.includes('rain')||t.includes('shower')||t.includes('drizzle')).length;
   const wetDays    = rainProbs.filter(p=>p>=50).length;
-  const peakGust   = Math.max(...days.map((d,i)=>{
+  const peakGust   = safeDays.length ? Math.max(...safeDays.map((d,i)=>{
     const hrs = d.hour||[];
-    return hrs.length ? Math.round(Math.max(...hrs.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957))) : windMaxes[i]*1.2;
-  }));
-  const peakHi     = Math.max(...days.map(d=>d.day.maxtemp_c));
-  const peakRainMm = Math.max(...days.map(d=>d.day.totalprecip_mm));
+    return hrs.length ? Math.round(Math.max(...hrs.map(h=>(h.gust_kph||h.wind_kph||0)*0.539957))) : (windMaxes[i]||0)*1.2;
+  })) : gustKt;
+  const peakHi     = safeDays.length ? Math.max(...safeDays.map(d=>d.day.maxtemp_c||30)) : tempHi;
+  const peakRainMm = safeDays.length ? Math.max(...safeDays.map(d=>d.day.totalprecip_mm||0)) : 0;
 
   // Today line
   const windStr  = windKt<3 ? 'calm winds' : gustKt>windKt+4 ? `${windKt}–${gustKt} kt gusts` : `${windKt} kt winds`;
   const rainStr  = rainPct>=70 ? `${rainPct}% rain chance` : rainPct>=30 ? `${rainPct}% chance of showers` : '';
   const humNote  = hum > 82 ? ', humid' : hum < 55 ? ', dry' : '';
-  const uvNote   = uv >= 8 ? ` · UV extreme (${uv.toFixed(0)})` : uv >= 6 ? ` · UV high (${uv.toFixed(0)})` : '';
-  const visNote  = vis < 5 ? ` · reduced vis ${vis} km` : '';
+  const uvNote   = uv >= 8 ? ` · UV extreme (${(uv||0).toFixed(0)})` : uv >= 6 ? ` · UV high (${(uv||0).toFixed(0)})` : '';
+  const visNote  = vis != null && vis < 5 ? ` · reduced vis ${vis.toFixed ? vis.toFixed(1) : vis} km` : '';
 
   const todayParts = [`<strong>Today:</strong> ${condText.toLowerCase()}, ${tempHi}°/${tempLo}°`, windStr];
   if(rainStr) todayParts.push(rainStr);
@@ -4980,7 +5096,7 @@ function buildHourlyStrip(day0, icao, day1){
   const allHours = [
     ...(day0.hour||[]),
     ...(day1?.hour||[]),
-  ].filter(h => new Date(h.time).getTime() >= now - 1800000);
+  ].filter(h => { const ms = new Date((h.time||'').replace(' ','T')).getTime(); return isFinite(ms) && ms >= now - 1800000; });
 
   if(!allHours.length) return '';
 
@@ -4989,9 +5105,9 @@ function buildHourlyStrip(day0, icao, day1){
   const maxWind   = Math.max(1, ...show.map(h=>Math.max((h.wind_kph||0),(h.gust_kph||0))*0.539957));
 
   const cells = show.map(h=>{
-    const t      = new Date(h.time);
+    const t      = new Date((h.time||'').replace(' ','T'));
     const hr     = t.getHours();
-    const isNow  = Math.abs(t.getTime()-now) < 3600000;
+    const isNow  = isFinite(t.getTime()) && Math.abs(t.getTime()-now) < 3600000;
     const isMid  = hr === 0; // midnight — show day label
     const lbl    = isMid
       ? t.toLocaleDateString('en-US',{weekday:'short',timeZone:'America/Curacao'})
@@ -5003,7 +5119,7 @@ function buildHourlyStrip(day0, icao, day1){
     const windKt = Math.round((h.wind_kph||0)*0.539957);
     const gustKt = Math.round((h.gust_kph||h.wind_kph||0)*0.539957);
     const dewC   = h.dewpoint_c !== undefined ? Math.round(h.dewpoint_c) : null;
-    const rainH  = Math.round((precip/maxPrecip)*28);
+    const rainH  = Math.round(((precip??0)/maxPrecip)*28);
     const windH  = Math.round((windKt/maxWind)*20);
     const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.25)';
     const windCol= gustKt>=25?'#f87171':gustKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
@@ -5052,14 +5168,25 @@ const FCAST_CACHE_MS = 15 * 60 * 1000;
 const _fcastCache = {}; // {icao: {ts, days, hourly}}
 
 async function fetchOpenMeteoModels(lat, lon){
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+  const base = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
     `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant,uv_index_max,sunrise,sunset,weather_code`+
     `&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,dewpoint_2m,relativehumidity_2m,visibility`+
-    `&models=${FCAST_MODELS.join(',')}`+
     `&timezone=America%2FCuracao&forecast_days=4&wind_speed_unit=kn`;
-  const r = await fetch(url,{cache:'no-store'});
-  if(!r.ok) throw new Error('Open-Meteo '+r.status);
-  return r.json();
+
+  // Try full ensemble first, fall back to 3 reliable models, then default
+  const FALLBACK_MODELS = ['ecmwf_ifs025','gfs_seamless','icon_seamless'];
+  for(const modelList of [FCAST_MODELS, FALLBACK_MODELS, null]){
+    const url = modelList ? `${base}&models=${modelList.join(',')}` : base;
+    try{
+      const r = await fetch(url, {cache:'no-store'});
+      if(r.ok) return r.json();
+      console.warn('[Forecast] Open-Meteo', modelList ? modelList.join(',') : 'default', '-> HTTP', r.status, '- trying next');
+    }catch(e){
+      console.warn('[Forecast] Open-Meteo fetch error:', e.message);
+    }
+  }
+  console.warn('[Forecast] Open-Meteo: all attempts failed, returning null');
+  return null;
 }
 
 // Average a set of model values for a single forecast index, return {mean, spread, n}
@@ -5107,8 +5234,9 @@ function confidenceLevel(tempSpread, n){
 }
 
 async function loadForecast(forceNewsUpdate=false){
-  forecastLoaded = true;
   const container = document.getElementById('forecast-content');
+  if(!container){ console.warn('[Forecast] #forecast-content not found'); return; }
+  forecastLoaded = true;
   setBadge('fcastBadge','LOADING','loading');
 
   if(forceNewsUpdate || !window._fcastNewsLoaded){
@@ -5118,7 +5246,7 @@ async function loadForecast(forceNewsUpdate=false){
   }
 
   try{
-    const results = await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+    const results = await Promise.allSettled(FCAST_LOCATIONS.map(async loc=>{
       const c = _fcastCache[loc.icao];
       let wxapi = null, models = null;
 
@@ -5153,11 +5281,23 @@ async function loadForecast(forceNewsUpdate=false){
       return { loc, wxapi, models, error:null };
     }));
 
-    if(!results.some(r=>r.wxapi||r.models))
+    // Unwrap allSettled results; log any that rejected unexpectedly
+    const unwrapped = results.map(r => {
+      if(r.status === 'rejected'){
+        console.warn('[Forecast] island rejected:', r.reason?.message || r.reason);
+        return null;
+      }
+      return r.value;
+    }).filter(Boolean);
+
+    if(!unwrapped.some(r=>r.wxapi||r.models))
       throw new Error('All forecast sources failed — check API keys and network.');
 
     let html = '';
-    results.forEach(({loc, wxapi, models, error})=>{
+    unwrapped.forEach(item=>{
+      const {loc, wxapi, models, error} = item || {};
+      if(!loc) return; // guard against malformed items
+      try{
 
       if(error && !wxapi && !models){
         html += `<div class="fcast-island"><div class="fcast-island-hdr">
@@ -5179,7 +5319,8 @@ async function loadForecast(forceNewsUpdate=false){
 
       const wxLen  = wxDays.length || 0;
       const modLen = models?.daily?.time?.length || 0;
-      const nDays  = Math.min(4, Math.max(wxLen, modLen) || 1);
+      if(!wxLen && !modLen){ html += `<div class="fcast-island"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${loc.flag} ${loc.name} — no forecast data available</div></div>`; return; }
+      const nDays  = Math.min(4, Math.max(wxLen, modLen));
 
       const allHi=[], allLo=[];
       for(let i=0;i<nDays;i++){
@@ -5195,7 +5336,8 @@ async function loadForecast(forceNewsUpdate=false){
       let dayCards = '';
       for(let i=0;i<nDays;i++){
         const wxDay  = wxDays[i] || null;
-        const dt     = wxDay ? new Date(wxDay.date+'T12:00:00') : new Date(Date.now()+i*86400000);
+        const rawDate = wxDay?.date ? new Date(wxDay.date+'T12:00:00') : null;
+        const dt     = (rawDate && isFinite(rawDate)) ? rawDate : new Date(Date.now()+i*86400000);
         const dayName= i===0?'Today':i===1?'Tomorrow':dt.toLocaleDateString('en-US',{weekday:'long'});
         const dateStr= dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
 
@@ -5211,16 +5353,18 @@ async function loadForecast(forceNewsUpdate=false){
         const tempHi = Math.round(tempHiB.mean ?? wxDay?.day?.maxtemp_c ?? 30);
         const tempLo = Math.round(tempLoB.mean ?? wxDay?.day?.mintemp_c ?? 25);
         const rainPct= Math.round(rainPB.mean  ?? wxDay?.day?.daily_chance_of_rain ?? 0);
-        const rainMm = Number((rainMB.mean     ?? wxDay?.day?.totalprecip_mm ?? 0).toFixed(1));
+        const rawRainMm = rainMB.mean ?? wxDay?.day?.totalprecip_mm ?? 0;
+        const rainMm = Number((isFinite(rawRainMm)?rawRainMm:0).toFixed(1));
         const windKt = Math.round(windKB.mean  ?? (wxDay?.day?.maxwind_kph||0)*0.539957);
-        const gustKt = Math.round(gustKB.mean  ?? windKt*1.25);
-        const windDeg= Math.round(windDB.mean  ?? wxDay?.hour?.find(h=>h.wind_degree!=null)?.wind_degree ?? 90);
-        const uv     = Number((uvB.mean        ?? wxDay?.day?.uv ?? 8).toFixed(1));
+        const gustKt = Math.round(gustKB.mean  ?? (windKt > 0 ? windKt * 1.25 : 0));
+        const windDeg= Math.round(windDB.mean ?? wxDay?.hour?.find(h=>h.wind_degree!=null)?.wind_degree ?? 90) || 90;
+        const uvRaw  = uvB.mean ?? wxDay?.day?.uv ?? 8;
+        const uv     = Number((isFinite(uvRaw)?uvRaw:8).toFixed(1));
 
         const avgTmp = wxDay?.day?.avgtemp_c ?? ((tempHi+tempLo)/2);
-        const feelsC = Math.round(avgTmp - (windKt>10?(windKt-10)*0.15:0));
-        const hum    = wxDay?.day?.avghumidity ?? '—';
-        const vis    = wxDay?.day?.avgvis_km   ?? 10;
+        const feelsC = isFinite(avgTmp) ? Math.round(avgTmp - (windKt>10?(windKt-10)*0.15:0)) : tempHi;
+        const hum    = wxDay?.day?.avghumidity ?? null;
+        const vis    = wxDay?.day?.avgvis_km   ?? null;
         const sunrise= wxDay?.astro?.sunrise   || '—';
         const sunset = wxDay?.astro?.sunset    || '—';
 
@@ -5313,16 +5457,16 @@ async function loadForecast(forceNewsUpdate=false){
               </div>
               <div class="fd-detail-cell">
                 <div class="fd-detail-lbl">Humidity</div>
-                <div class="fd-detail-val">${hum}%</div>
+                <div class="fd-detail-val">${hum!=null?Math.round(hum)+'%':'—'}</div>
               </div>
               <div class="fd-detail-cell">
                 <div class="fd-detail-lbl">Visibility</div>
-                <div class="fd-detail-val">${vis}<span class="fd-detail-unit">km</span></div>
+                <div class="fd-detail-val">${typeof vis==='number'?vis.toFixed(0):'—'}<span class="fd-detail-unit">${typeof vis==='number'?'km':''}</span></div>
               </div>
             </div>
             <div class="fd-sun-row">
               <span class="fd-sun-item">🌅 ${sunrise}</span>
-              <span class="fd-conf" style="color:${conf.col}" title="${tempHiB.n} models · spread ${tempHiB.spread!=null?tempHiB.spread.toFixed(1)+'°':'—'}">
+              <span class="fd-conf" style="color:${conf.col}" title="${tempHiB.n||0} models · spread ${(tempHiB.spread!=null&&isFinite(tempHiB.spread))?tempHiB.spread.toFixed(1)+'°':'—'}">
                 <span class="fd-conf-dot" style="background:${conf.col}"></span>${conf.label}
               </span>
               <span class="fd-sun-item">🌇 ${sunset}</span>
@@ -5336,7 +5480,7 @@ async function loadForecast(forceNewsUpdate=false){
       }
 
       const summary    = wxDays.length ? buildForecastSummary(wxDays, loc) : '';
-      const modelCount = FCAST_MODELS.filter(m=>models?.daily?.[`temperature_2m_max_${m}`]?.[0]!=null).length;
+      const modelCount = models ? FCAST_MODELS.filter(m=>models.daily?.[`temperature_2m_max_${m}`]?.[0]!=null).length : 0;
       const modelSrc   = modelCount>=5 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF`
                        : modelCount>=4 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO`
                        : modelCount>=2 ? `${modelCount}-model blend`
@@ -5355,6 +5499,10 @@ async function loadForecast(forceNewsUpdate=false){
         ${wxDays[0] ? buildHourlyStrip(wxDays[0], loc.icao, wxDays[1]) : ''}
         <div class="fcast-days">${dayCards}</div>
       </div>`;
+      }catch(renderErr){
+        console.error('[Forecast] render error for', loc?.icao, renderErr);
+        html += `<div class="fcast-island"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Render error: ${renderErr.message}</div></div>`;
+      }
     });
 
     container.innerHTML = html || '<div style="padding:20px;text-align:center;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">No forecast data available.</div>';
@@ -5449,7 +5597,7 @@ function renderAbcMap(islandsData){
   const seaLine= (cs.getPropertyValue('--cyan')||'#22d3ee').trim();
 
   /* Canvas. Wider to give arrows more room. */
-  const W = 900, H = 370;
+  const W = 900, H = 400;
 
   /* Real approximate positions scaled to canvas.
      Geographic: Aruba ~12.50°N 70.01°W, Curaçao ~12.19°N 68.96°W, Bonaire ~12.13°N 68.27°W
@@ -5630,7 +5778,7 @@ function renderAbcMap(islandsData){
       <!-- Wave height inside island -->
       <text x="${p.cx}" y="${p.cy + 3}"
         text-anchor="middle" font-family="monospace"
-        font-size="10" font-weight="700" fill="${col}">${d.waveM.toFixed(1)}m</text>`;
+        font-size="10" font-weight="700" fill="${col}">${(d.waveM??0).toFixed(1)}m</text>`;
 
     /* Info panel per island — positioned below each island */
     const panelX = p.cx - 68;
@@ -5649,10 +5797,10 @@ function renderAbcMap(islandsData){
       <text x="${panelX+70}" y="${panelY+13}" font-family="monospace" font-size="9" font-weight="700" fill="#fbbf24">${d.windKt}kt ${d.windCard}${d.gustKt > d.windKt+2 ? ' G'+d.gustKt : ''}</text>
 
       <text x="${panelX+6}" y="${panelY+26}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">SWELL</text>
-      <text x="${panelX+70}" y="${panelY+26}" font-family="monospace" font-size="9" font-weight="700" fill="#5ab8ff">${d.swellM.toFixed(1)}m ${d.swellP.toFixed(0)}s</text>
+      <text x="${panelX+70}" y="${panelY+26}" font-family="monospace" font-size="9" font-weight="700" fill="#5ab8ff">${(d.swellM??0).toFixed(1)}m ${(d.swellP??0).toFixed(0)}s</text>
 
       <text x="${panelX+6}" y="${panelY+39}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">PERIOD</text>
-      <text x="${panelX+70}" y="${panelY+39}" font-family="monospace" font-size="9" font-weight="700" fill="${col}">${d.wavePeriod.toFixed(0)}s · ${d.waveCard}</text>
+      <text x="${panelX+70}" y="${panelY+39}" font-family="monospace" font-size="9" font-weight="700" fill="${col}">${(d.wavePeriod??0).toFixed(0)}s · ${d.waveCard||"—"}</text>
 
       <text x="${panelX+6}" y="${panelY+52}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">SEA °C</text>
       <text x="${panelX+70}" y="${panelY+52}" font-family="monospace" font-size="9" font-weight="700"
@@ -5687,13 +5835,24 @@ function renderAbcMap(islandsData){
     </g>
 
     <!-- Wave height colour key -->
-    <g transform="translate(14, ${H-52})">
+    <g transform="translate(14, ${H-90})">
       <rect x="-4" y="-4" width="172" height="48" rx="4"
         fill="rgba(6,14,24,0.78)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
       <text x="0" y="9" font-family="monospace" font-size="7" fill="rgba(155,212,255,0.6)" letter-spacing="1">WAVE HEIGHT</text>
       ${[['#93c5fd','<0.5m Calm'],['#5ab8ff','0.5–1m Slight'],['#22d3ee','1–2m Mod'],['#fbbf24','2–3m Rough'],['#f87171','>3m Heavy']].map((c,i)=>`
       <rect x="${i*34}" y="14" width="10" height="10" rx="2" fill="${c[0]}"/>
       <text x="${i*34}" y="33" font-family="monospace" font-size="6.5" fill="${c[0]}" text-anchor="start">${c[1]}</text>`).join('')}
+    </g>
+
+    <!-- SST colour key -->
+    <g transform="translate(14, ${H-36})">
+      <rect x="-4" y="-4" width="172" height="28" rx="4"
+        fill="rgba(6,14,24,0.78)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+      <text x="0" y="9" font-family="monospace" font-size="7" fill="rgba(155,212,255,0.6)" letter-spacing="1">SEA TEMP</text>
+      ${[['#22d3ee','<27°C'],['#fbbf24','27–29°C'],['#f87171','>29°C']].map((c,i)=>
+        `<rect x="${i*58}" y="14" width="10" height="10" rx="2" fill="${c[0]}"/>` +
+        `<text x="${i*58+13}" y="23" font-family="monospace" font-size="7" fill="${c[0]}">${c[1]}</text>`
+      ).join('')}
     </g>`;
 
   el.innerHTML = `
@@ -5744,39 +5903,51 @@ async function loadMarine(){
       // Wind/temp/conditions come from WeatherAPI for consistency with Forecast tab.
       const buildMarineUrl = (models) =>
         `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
-        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period,sea_surface_temperature`+
-        `&hourly=wave_height,swell_wave_height,wave_direction,wave_period,sea_surface_temperature`+
+        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
+        `&hourly=wave_height,swell_wave_height,wave_direction,wave_period`+
         `&timezone=America%2FCuracao&forecast_days=3`+
         (models ? `&models=${models}` : '');
 
-      // Fetch both wave models in parallel — fall back gracefully if either fails
-      const [ecmwfR, gfsR] = await Promise.allSettled([
+      // SST endpoint: default model (no models= param) — wave-only models don't carry SST
+      const sstUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
+        `&current=sea_surface_temperature&timezone=America%2FCuracao`;
+
+      // Fetch wave models + SST in parallel
+      const [ecmwfR, gfsR, sstR] = await Promise.allSettled([
         fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store'})
           .then(r=>{ if(!r.ok) throw new Error('ECMWF HTTP '+r.status); return r.json(); })
           .catch(e=>{ console.warn(`[Marine] ECMWF ${loc.icao}:`, e.message); return null; }),
         fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store'})
           .then(r=>{ if(!r.ok) throw new Error('GFS HTTP '+r.status); return r.json(); })
           .catch(e=>{ console.warn(`[Marine] GFS ${loc.icao}:`, e.message); return null; }),
+        fetch(sstUrl, {cache:'no-store'})
+          .then(r=>{ if(!r.ok) throw new Error('SST HTTP '+r.status); return r.json(); })
+          .catch(e=>{ console.warn(`[Marine] SST ${loc.icao}:`, e.message); return null; }),
       ]);
       const ecmwfMarine = ecmwfR.status==='fulfilled' ? ecmwfR.value : null;
       const gfsMarine   = gfsR.status==='fulfilled'   ? gfsR.value  : null;
+      const sstData     = sstR.status==='fulfilled'   ? sstR.value  : null;
+
       // Build blended marine current — mean of available models
       const blendMarine = (key) => {
         const vals = [ecmwfMarine?.current?.[key], gfsMarine?.current?.[key]].filter(v=>v!=null);
         return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
       };
+      // SST comes from the dedicated default-model fetch
+      const sstCurrent = sstData?.current?.sea_surface_temperature ?? null;
+
       const marine = {
         _sources: [ecmwfMarine?'ECMWF':null, gfsMarine?'GFS':null].filter(Boolean),
         current: {
-          wave_height:           blendMarine('wave_height'),
-          wave_direction:        blendMarine('wave_direction'),
-          wave_period:           blendMarine('wave_period'),
-          swell_wave_height:     blendMarine('swell_wave_height'),
-          swell_wave_direction:  blendMarine('swell_wave_direction'),
-          swell_wave_period:     blendMarine('swell_wave_period'),
-          wind_wave_height:      blendMarine('wind_wave_height'),
-          wind_wave_period:      blendMarine('wind_wave_period'),
-          sea_surface_temperature: blendMarine('sea_surface_temperature'),
+          wave_height:             blendMarine('wave_height'),
+          wave_direction:          blendMarine('wave_direction'),
+          wave_period:             blendMarine('wave_period'),
+          swell_wave_height:       blendMarine('swell_wave_height'),
+          swell_wave_direction:    blendMarine('swell_wave_direction'),
+          swell_wave_period:       blendMarine('swell_wave_period'),
+          wind_wave_height:        blendMarine('wind_wave_height'),
+          wind_wave_period:        blendMarine('wind_wave_period'),
+          sea_surface_temperature: sstCurrent,
         },
       };
       return { loc, marine, wxApi: store.api[loc.icao], metar: store.metar[loc.icao] };
@@ -5914,18 +6085,18 @@ async function loadMarine(){
           <div class="marine-bar">
             <span class="marine-bar-icon">🌊</span>
             <div class="marine-bar-info">
-              <div class="marine-bar-row1"><span class="marine-bar-lbl">Waves</span><span class="marine-bar-val" style="color:${waveCol}">${waveM.toFixed(1)} m / ${waveFt} ft</span></div>
+              <div class="marine-bar-row1"><span class="marine-bar-lbl">Waves</span><span class="marine-bar-val" style="color:${waveCol}">${(waveM??0).toFixed(1)} m / ${waveFt||"—"} ft</span></div>
               <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${waveBarPct}%;background:linear-gradient(90deg,#5ab8ff,${waveCol})"></div></div>
-              <div class="marine-bar-sub">Period ${wavePeriod.toFixed(0)} s · From ${pad(Math.round(wd))}° ${wdir}</div>
+              <div class="marine-bar-sub">Period ${(wavePeriod??0).toFixed(0)} s · From ${pad(Math.round(wd))}° ${wdir}</div>
             </div>
           </div>
 
           <div class="marine-bar">
             <span class="marine-bar-icon">〰️</span>
             <div class="marine-bar-info">
-              <div class="marine-bar-row1"><span class="marine-bar-lbl">Swell</span><span class="marine-bar-val">${swellM.toFixed(1)} m / ${swellFt} ft</span></div>
+              <div class="marine-bar-row1"><span class="marine-bar-lbl">Swell</span><span class="marine-bar-val">${(swellM??0).toFixed(1)} m / ${swellFt||"—"} ft</span></div>
               <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${swellBarPct}%;background:linear-gradient(90deg,#22d3ee,#9bd4ff)"></div></div>
-              <div class="marine-bar-sub">Period ${swellP.toFixed(0)} s · From ${pad(Math.round(sd))}° ${sdir}</div>
+              <div class="marine-bar-sub">Period ${(swellP??0).toFixed(0)} s · From ${pad(Math.round(sd))}° ${sdir}</div>
             </div>
           </div>
 
