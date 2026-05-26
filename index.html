@@ -3712,13 +3712,13 @@ async function fetchTides(){
     const vSpan= vMax - vMin || 1;
     const svgW=400, svgH=60, pad=20;
     const tMin=events[0]?.time||now; const tMax=events[events.length-1]?.time||now+86400000;
-    const tSpan=tMax-tMin||1;
+    const tSpan=Math.max(1, tMax-tMin);
     const pts = events.map(e=>{
       const x = pad + ((e.time-tMin)/tSpan)*(svgW-2*pad);
       const y = svgH - pad - ((e.v-vMin)/vSpan)*(svgH-2*pad);
       return `${x},${y}`;
     }).join(' ');
-    const nowX = pad + ((now-tMin)/tSpan)*(svgW-2*pad);
+    const nowX = Math.max(pad, Math.min(svgW-pad, pad + ((now-tMin)/tSpan)*(svgW-2*pad)));
 
     el.innerHTML = `
       <div class="tide-wrap">
@@ -4212,7 +4212,7 @@ function renderIslandCards(){
     const tempFrac  = tempC!==undefined ? ((tempC - tMin)/span)*100 : 50;
     const feelsFrac = feelsC!==undefined ? ((feelsC - tMin)/span)*100 : null;
 
-    const ageWarn = ageMin>90;
+    const ageWarn = ageMin !== null && ageMin > 90;
 
     html+=`
       <div data-icao="${icao}" class="island-card-v2">
@@ -4890,7 +4890,7 @@ async function loadCaribbeanNews(){
 
     el.innerHTML = picks.map(i=>{
       const date = i.pubDate ? new Date(i.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '';
-      const source = i.author || (i.link ? new URL(i.link).hostname.replace('www.','') : '');
+      const source = i.author || (i.link ? (() => { try { return new URL(i.link).hostname.replace('www.',''); } catch(e){ return ''; } })() : '');
       return `<a class="news-item" href="${i.link}" target="_blank">
         <span class="news-date">${date}</span>
         <span class="news-title">${i.title}</span>
@@ -5099,7 +5099,8 @@ function blendHourlyValues(data, baseVar, hourIdx){
 
 // Confidence label from spread + how many models contributed
 function confidenceLevel(tempSpread, n){
-  if(n < 2) return {lvl:'single', label:'Single model', col:'#94a3b8', glow:'rgba(148,163,184,0.3)'};
+  if(n === 0 || tempSpread == null) return {lvl:'none',   label:'No model data',   col:'#94a3b8', glow:'rgba(148,163,184,0.3)'};
+  if(n < 2)   return {lvl:'single', label:'Single model',    col:'#94a3b8', glow:'rgba(148,163,184,0.3)'};
   if(tempSpread <= 1.5) return {lvl:'high',   label:'High confidence', col:'#4ade80', glow:'rgba(74,222,128,0.45)'};
   if(tempSpread <= 3.0) return {lvl:'medium', label:'Some spread',     col:'#fbbf24', glow:'rgba(251,191,36,0.45)'};
   return                  {lvl:'low',    label:'Low confidence',  col:'#f87171', glow:'rgba(248,113,113,0.45)'};
@@ -5231,7 +5232,7 @@ async function loadForecast(forceNewsUpdate=false){
         const windCol= windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
         const loFrac = Math.max(0,((tempLo-tMin)/tSpan)*100);
         const hiFrac = Math.min(100,((tempHi-tMin)/tSpan)*100);
-        const conf   = confidenceLevel(tempHiB.spread??99, tempHiB.n);
+        const conf   = confidenceLevel(tempHiB.spread, tempHiB.n);
 
         const t = cond.text.toLowerCase();
         const pType = t.includes('thunder')||t.includes('storm') ? '⛈ Thunderstorm'
@@ -5448,7 +5449,7 @@ function renderAbcMap(islandsData){
   const seaLine= (cs.getPropertyValue('--cyan')||'#22d3ee').trim();
 
   /* Canvas. Wider to give arrows more room. */
-  const W = 900, H = 340;
+  const W = 900, H = 370;
 
   /* Real approximate positions scaled to canvas.
      Geographic: Aruba ~12.50°N 70.01°W, Curaçao ~12.19°N 68.96°W, Bonaire ~12.13°N 68.27°W
@@ -5545,6 +5546,9 @@ function renderAbcMap(islandsData){
         fill="none" stroke-width="1"/>
     </pattern>`;
 
+  /* Safe coordinate formatter — falls back to center if NaN */
+  const safeCoord = (v, fallback) => (isFinite(v) ? v.toFixed(1) : fallback.toFixed(1));
+
   let markers = '';
   let islandSVG = '';
   let infoPanels = '';
@@ -5599,19 +5603,19 @@ function renderAbcMap(islandsData){
 
     islandSVG += `
       <!-- ${d.icao} waves -->
-      <line x1="${wx1.toFixed(1)}" y1="${wy1.toFixed(1)}"
-            x2="${wx2.toFixed(1)}" y2="${wy2.toFixed(1)}"
+      <line x1="${safeCoord(wx1,p.cx)}" y1="${safeCoord(wy1,p.cy)}"
+            x2="${safeCoord(wx2,p.cx)}" y2="${safeCoord(wy2,p.cy)}"
         stroke="${waveCol}" stroke-width="${wStroke}"
         marker-end="url(#${waveAId})" opacity="0.92"
         style="filter:drop-shadow(0 0 5px ${waveCol}66)"/>
       <!-- ${d.icao} swell -->
-      <line x1="${sx1.toFixed(1)}" y1="${sy1.toFixed(1)}"
-            x2="${sx2.toFixed(1)}" y2="${sy2.toFixed(1)}"
+      <line x1="${safeCoord(sx1,p.cx)}" y1="${safeCoord(sy1,p.cy)}"
+            x2="${safeCoord(sx2,p.cx)}" y2="${safeCoord(sy2,p.cy)}"
         stroke="rgba(90,184,255,0.75)" stroke-width="1.8"
         marker-end="url(#${swellAId})" opacity="0.7" stroke-dasharray="5 3"/>
       <!-- ${d.icao} wind -->
-      <line x1="${wnx1.toFixed(1)}" y1="${wny1.toFixed(1)}"
-            x2="${wnx2.toFixed(1)}" y2="${wny2.toFixed(1)}"
+      <line x1="${safeCoord(wnx1,p.cx)}" y1="${safeCoord(wny1,p.cy)}"
+            x2="${safeCoord(wnx2,p.cx)}" y2="${safeCoord(wny2,p.cy)}"
         stroke="rgba(251,191,36,0.8)" stroke-width="1.5"
         marker-end="url(#${windAId})" opacity="0.8" stroke-dasharray="3 2"/>
 
@@ -5638,7 +5642,7 @@ function renderAbcMap(islandsData){
 
     islandSVG += `
       <!-- Info panel ${d.icao} -->
-      <rect x="${panelX}" y="${panelY}" width="136" height="68" rx="5"
+      <rect x="${panelX}" y="${panelY}" width="136" height="82" rx="5"
         fill="rgba(6,16,28,0.82)" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
 
       <text x="${panelX+6}" y="${panelY+13}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">WIND</text>
@@ -5650,9 +5654,13 @@ function renderAbcMap(islandsData){
       <text x="${panelX+6}" y="${panelY+39}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">PERIOD</text>
       <text x="${panelX+70}" y="${panelY+39}" font-family="monospace" font-size="9" font-weight="700" fill="${col}">${d.wavePeriod.toFixed(0)}s · ${d.waveCard}</text>
 
-      <text x="${panelX+6}"  y="${panelY+54}" font-family="monospace" font-size="7.5" fill="${beachCol}">🏖 ${d.vBeach?.label||'—'}</text>
-      <text x="${panelX+52}" y="${panelY+54}" font-family="monospace" font-size="7.5" fill="${boatCol}">⛵ ${d.vBoat?.label||'—'}</text>
-      <text x="${panelX+98}" y="${panelY+54}" font-family="monospace" font-size="7.5" fill="${diveCol}">🤿 ${d.vDive?.label||'—'}</text>`;
+      <text x="${panelX+6}" y="${panelY+52}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">SEA °C</text>
+      <text x="${panelX+70}" y="${panelY+52}" font-family="monospace" font-size="9" font-weight="700"
+        fill="${d.sstC!=null?(d.sstC>=29?'#f87171':d.sstC>=27?'#fbbf24':'#22d3ee'):'rgba(155,212,255,0.5)'}">${d.sstC!=null?d.sstC.toFixed(1)+'°C':'—'}</text>
+
+      <text x="${panelX+6}"  y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${beachCol}">🏖 ${d.vBeach?.label||'—'}</text>
+      <text x="${panelX+52}" y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${boatCol}">⛵ ${d.vBoat?.label||'—'}</text>
+      <text x="${panelX+98}" y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${diveCol}">🤿 ${d.vDive?.label||'—'}</text>`;
   });
 
   /* Legend */
@@ -5726,24 +5734,29 @@ function renderAbcMap(islandsData){
 async function loadMarine(){
   marineLoaded=true;
   const container=document.getElementById('marine-content');
+  if(!container){ console.warn('[Marine] #marine-content not found'); marineLoaded=false; return; }
   setBadge('marineBadge','LOADING','loading');
 
   try{
-    const results=await Promise.all(FCAST_LOCATIONS.map(async loc=>{
+    const results=await Promise.allSettled(FCAST_LOCATIONS.map(async loc=>{
       // Marine waves/swell: blend ECMWF WAM (best global wave model) +
       // GFS Wave (NCEP) for a two-model consensus.
       // Wind/temp/conditions come from WeatherAPI for consistency with Forecast tab.
       const buildMarineUrl = (models) =>
         `https://marine-api.open-meteo.com/v1/marine?latitude=${loc.lat}&longitude=${loc.lon}`+
-        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period`+
-        `&hourly=wave_height,swell_wave_height,wave_direction,wave_period`+
+        `&current=wave_height,wave_direction,wave_period,swell_wave_height,swell_wave_direction,swell_wave_period,wind_wave_height,wind_wave_period,sea_surface_temperature`+
+        `&hourly=wave_height,swell_wave_height,wave_direction,wave_period,sea_surface_temperature`+
         `&timezone=America%2FCuracao&forecast_days=3`+
         (models ? `&models=${models}` : '');
 
       // Fetch both wave models in parallel — fall back gracefully if either fails
       const [ecmwfR, gfsR] = await Promise.allSettled([
-        fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store'}).then(r=>r.ok?r.json():null),
-        fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store'}).then(r=>r.ok?r.json():null),
+        fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store'})
+          .then(r=>{ if(!r.ok) throw new Error('ECMWF HTTP '+r.status); return r.json(); })
+          .catch(e=>{ console.warn(`[Marine] ECMWF ${loc.icao}:`, e.message); return null; }),
+        fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store'})
+          .then(r=>{ if(!r.ok) throw new Error('GFS HTTP '+r.status); return r.json(); })
+          .catch(e=>{ console.warn(`[Marine] GFS ${loc.icao}:`, e.message); return null; }),
       ]);
       const ecmwfMarine = ecmwfR.status==='fulfilled' ? ecmwfR.value : null;
       const gfsMarine   = gfsR.status==='fulfilled'   ? gfsR.value  : null;
@@ -5755,14 +5768,15 @@ async function loadMarine(){
       const marine = {
         _sources: [ecmwfMarine?'ECMWF':null, gfsMarine?'GFS':null].filter(Boolean),
         current: {
-          wave_height:         blendMarine('wave_height'),
-          wave_direction:      blendMarine('wave_direction'),
-          wave_period:         blendMarine('wave_period'),
-          swell_wave_height:   blendMarine('swell_wave_height'),
-          swell_wave_direction:blendMarine('swell_wave_direction'),
-          swell_wave_period:   blendMarine('swell_wave_period'),
-          wind_wave_height:    blendMarine('wind_wave_height'),
-          wind_wave_period:    blendMarine('wind_wave_period'),
+          wave_height:           blendMarine('wave_height'),
+          wave_direction:        blendMarine('wave_direction'),
+          wave_period:           blendMarine('wave_period'),
+          swell_wave_height:     blendMarine('swell_wave_height'),
+          swell_wave_direction:  blendMarine('swell_wave_direction'),
+          swell_wave_period:     blendMarine('swell_wave_period'),
+          wind_wave_height:      blendMarine('wind_wave_height'),
+          wind_wave_period:      blendMarine('wind_wave_period'),
+          sea_surface_temperature: blendMarine('sea_surface_temperature'),
         },
       };
       return { loc, marine, wxApi: store.api[loc.icao], metar: store.metar[loc.icao] };
@@ -5770,7 +5784,12 @@ async function loadMarine(){
 
     let html='';
     const islandsForMap = [];
-    results.forEach(({loc,marine,wxApi,metar})=>{
+    results.forEach(result=>{
+      if(result.status === 'rejected'){
+        console.warn('[Marine] island fetch rejected:', result.reason?.message || result.reason);
+        return; // skip this island rather than crashing the whole render
+      }
+      const {loc, marine, wxApi, metar} = result.value;
       const m=marine?.current||{};
       // ── Atmospheric data from WeatherAPI (unified source) ──
       const wxCur = wxApi?.current || {};
@@ -5799,6 +5818,10 @@ async function loadMarine(){
 
       const advice=getBeachAdvice(waveM, windKt, gustKt, wmoForAdvice);
 
+      // Sea surface temperature — blended from ECMWF + GFS marine models
+      const sstC = m.sea_surface_temperature ?? null;
+      const sstStr = sstC !== null ? `${sstC.toFixed(1)}°C` : '—';
+
       // Push for ABC inline map — include all marine data
       islandsForMap.push({
         icao:      loc.icao,
@@ -5818,6 +5841,7 @@ async function loadMarine(){
         windFromDeg: wxWindDir ?? 0,
         windCard:    wxWindCard,
         tempC:     wxCur.temp_c,
+        sstC,
         condText:  wxCur?.condition?.text || '',
         vis:       wxCur.vis_km,
         vBeach:    verdictBeach(waveM, windKt, wmoForAdvice),
@@ -5921,8 +5945,8 @@ async function loadMarine(){
           <div class="marine-cell"><div class="marine-cell-lbl">Visibility</div><div class="marine-cell-val">${visStr}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Cloud Base</div><div class="marine-cell-val" style="font-size:.78rem">${cloudStr}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Air Temp</div><div class="marine-cell-val">${wxCur.temp_c!==undefined?Math.round(wxCur.temp_c):'—'}°C</div></div>
+          <div class="marine-cell"><div class="marine-cell-lbl">Sea Temp 🌡</div><div class="marine-cell-val" style="color:${sstC!==null?(sstC>=29?'#f87171':sstC>=27?'#fbbf24':'#22d3ee'):'var(--text-dim)'}">${sstStr}</div></div>
           <div class="marine-cell"><div class="marine-cell-lbl">Conditions</div><div class="marine-cell-val" style="font-size:.65rem">${wxCur?.condition?.text||'—'}</div></div>
-          <div class="marine-cell"><div class="marine-cell-lbl">Source</div><div class="marine-cell-val" style="font-size:.55rem">${marine._sources?.join(' + ') || 'ECMWF'} Wave</div></div>
         </div>
 
         <div class="marine-summary">
@@ -5952,7 +5976,8 @@ async function loadMarine(){
     window._lastMarineIslands = islandsForMap;
     renderAbcMap(islandsForMap);
   }catch(e){
-    container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}</div>`;
+    console.error('[Marine] loadMarine failed:', e);
+    container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}<br><span style="opacity:.5;font-size:.5rem">Check console for details</span></div>`;
     setBadge('marineBadge','ERROR','error');
     marineLoaded=false;
   }
@@ -6006,9 +6031,14 @@ async function checkStormAlerts(){
     const nearby = [];
     const allActive = [];
     for(const s of storms){
-      const lat = parseFloat(s.lat);
-      const lon = parseFloat(s.lon);
-      if(isNaN(lat) || isNaN(lon)) continue;
+      // NHC JSON may encode coords as "25.4N" / "80.3W" — parse direction suffix
+      const rawLat = String(s.lat||'');
+      const rawLon = String(s.lon||'');
+      let lat = parseFloat(rawLat);
+      let lon = parseFloat(rawLon);
+      if(/S$/i.test(rawLat)) lat = -Math.abs(lat);
+      if(/W$/i.test(rawLon)) lon = -Math.abs(lon);
+      if(!isFinite(lat) || !isFinite(lon)) continue;
       const dist = haversineKm(ABC_CENTER, {lat, lon});
       const item = {
         name: s.name || s.id || 'System',
