@@ -2488,6 +2488,60 @@ body.night .tab-btn.active{
   100%{transform:scale(1);opacity:1}
 }
 
+/* ── #3: Refresh-all icon inside sync indicator ── */
+.sync-indicator{cursor:pointer;}
+.sync-indicator:hover{border-color:var(--border-hi);background:rgba(0,0,0,0.45);}
+.sync-indicator:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;}
+.sync-refresh-icon{
+  font-size:.85rem;line-height:1;color:var(--accent-bright);
+  opacity:.6;transition:opacity .2s,transform .2s;margin-left:2px;
+}
+.sync-indicator:hover .sync-refresh-icon{opacity:1;}
+.sync-refresh-icon.spinning{animation:refreshSpinAll .9s linear infinite;}
+@keyframes refreshSpinAll{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* ── #2: Data-age staleness on the sync dot/indicator ── */
+.sync-indicator.stale{
+  border-color:rgba(251,191,36,0.5);
+  background:rgba(251,191,36,0.06);
+  color:#fbbf24;
+}
+.sync-indicator.stale .sync-dot{
+  background:#fbbf24;box-shadow:0 0 6px #fbbf24;
+  animation:stalePulse 2s ease-in-out infinite;
+}
+.sync-indicator.very-stale{
+  border-color:rgba(248,113,113,0.55);
+  background:rgba(248,113,113,0.08);
+  color:#f87171;
+}
+.sync-indicator.very-stale .sync-dot{
+  background:#f87171;box-shadow:0 0 6px #f87171;
+  animation:stalePulse 1.2s ease-in-out infinite;
+}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── #1: Offline banner ── */
+#offlineBanner{
+  position:sticky;top:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:9px 16px;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;font-weight:600;
+  color:#1a0d00;
+  background:linear-gradient(180deg,#fbbf24,#f59e0b);
+  box-shadow:0 4px 18px rgba(0,0,0,0.45);
+  animation:offlineSlide .35s cubic-bezier(.4,0,.2,1);
+}
+#offlineBanner.reconnected{
+  background:linear-gradient(180deg,#4ade80,#22c55e);
+}
+#offlineBanner .offline-icon{font-size:.9rem;line-height:1;}
+@keyframes offlineSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@media (prefers-reduced-motion: reduce){
+  #offlineBanner{animation:none;}
+  .sync-refresh-icon.spinning{animation-duration:0s;}
+}
+
 /* ── TIDE PANEL ── */
 .tide-wrap{
   padding:14px 18px;
@@ -2806,17 +2860,24 @@ body.night .tab-btn.active{
       <span class="tropics-lbl">Tropics:</span>
       <span id="tropicsText">—</span>
     </div>
-    <div class="sync-indicator" id="syncIndicator" title="Last data refresh">
+    <div class="sync-indicator" id="syncIndicator" title="Last data refresh — click to refresh now" role="button" tabindex="0" aria-label="Last data refresh, click to refresh now">
       <span class="sync-dot"></span>
       <span id="syncTime">—</span>
+      <span class="sync-refresh-icon" id="refreshAllIcon" aria-hidden="true">↻</span>
     </div>
-    <div class="night-btn" id="themeBtn" title="Change theme">🎨</div>
+    <div class="night-btn" id="themeBtn" title="Change theme" role="button" tabindex="0" aria-label="Change theme">🎨</div>
     <div class="toggle-container" id="lockToggle">
       <span class="lock-led" id="lockLed"></span>
       <span id="lockIcon">🔒</span>
     </div>
   </div>
 </header>
+
+<!-- #1: Offline / connection banner (hidden by default) -->
+<div id="offlineBanner" role="alert" aria-live="assertive" style="display:none">
+  <span class="offline-icon" aria-hidden="true">⚠</span>
+  <span id="offlineBannerText">No internet connection — data may be stale. Retrying automatically…</span>
+</div>
 
 <!-- THEME PICKER MODAL -->
 <div id="themePicker" class="theme-picker" style="display:none">
@@ -2894,16 +2955,16 @@ body.night .tab-btn.active{
 </div>
 
 <!-- TAB BAR -->
-<div class="tab-bar">
-  <div class="tab-btn active" data-tab="atc">📡 ATC <span class="tab-key">1</span></div>
-  <div class="tab-btn" data-tab="weather">🌤 Weather <span class="tab-key">2</span></div>
-  <div class="tab-btn" data-tab="forecast">📅 Forecast <span class="tab-key">3</span></div>
-  <div class="tab-btn" data-tab="marine">🌊 Marine <span class="tab-key">4</span></div>
-  <div class="tab-btn" data-tab="flights">✈ Flights <span class="tab-key">5</span></div>
+<div class="tab-bar" role="tablist" aria-label="Dashboard sections">
+  <div class="tab-btn active" data-tab="atc"      role="tab" id="tabbtn-atc"      aria-controls="tab-atc"      aria-selected="true"  tabindex="0">📡 ATC <span class="tab-key" aria-hidden="true">1</span></div>
+  <div class="tab-btn"        data-tab="weather"  role="tab" id="tabbtn-weather"  aria-controls="tab-weather"  aria-selected="false" tabindex="-1">🌤 Weather <span class="tab-key" aria-hidden="true">2</span></div>
+  <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
+  <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
+  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">5</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
-<div class="tab-pane active" id="tab-atc">
+<div class="tab-pane active" id="tab-atc" role="tabpanel" aria-labelledby="tabbtn-atc">
 <div class="layout">
 
   <div class="full">
@@ -3066,7 +3127,7 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: WEATHER ═══ -->
-<div class="tab-pane" id="tab-weather">
+<div class="tab-pane" id="tab-weather" role="tabpanel" aria-labelledby="tabbtn-weather">
 <div class="layout">
 
   <div class="full">
@@ -3116,7 +3177,7 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: 3-DAY FORECAST ═══ -->
-<div class="tab-pane" id="tab-forecast">
+<div class="tab-pane" id="tab-forecast" role="tabpanel" aria-labelledby="tabbtn-forecast">
 <div class="layout">
 
   <!-- News strip (Caribbean weather/aviation) -->
@@ -3144,7 +3205,7 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: MARINE ═══ -->
-<div class="tab-pane" id="tab-marine">
+<div class="tab-pane" id="tab-marine" role="tabpanel" aria-labelledby="tabbtn-marine">
 <div class="layout">
 
   <!-- I4: Inline ABC islands map with wave arrows -->
@@ -3193,7 +3254,7 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: FLIGHTS (Dep + Arr toggle) ═══ -->
-<div class="tab-pane" id="tab-flights">
+<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights">
 <div class="layout">
   <div class="full">
     <div class="section-title">Flights — Curaçao International (TNCC)
@@ -3555,7 +3616,13 @@ document.querySelectorAll('.atc-player').forEach(card=>{
 ════════════════════════════════ */
 function switchTab(name){
   // ── STEP 1: visual switch — ALWAYS runs first, never blocked by side effects ──
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+  document.querySelectorAll('.tab-btn').forEach(b=>{
+    const sel = b.dataset.tab===name;
+    b.classList.toggle('active', sel);
+    // #4 ARIA: keep aria-selected + roving tabindex in sync
+    b.setAttribute('aria-selected', sel ? 'true' : 'false');
+    b.setAttribute('tabindex', sel ? '0' : '-1');
+  });
   document.querySelectorAll('.tab-pane').forEach(p=>{
     p.classList.toggle('active', p.id==='tab-'+name);
   });
@@ -3627,6 +3694,33 @@ function wireTabs(){
     btn.classList.add('activating');
     setTimeout(()=>btn.classList.remove('activating'), 600);
     try{ switchTab(tab); }catch(err){ console.error('[Tabs] switchTab failed:', err); }
+  });
+
+  // #4 ARIA keyboard nav: Arrow Left/Right/Home/End + Enter/Space to activate.
+  // Follows the WAI-ARIA tablist pattern with roving tabindex.
+  bar.addEventListener('keydown', e=>{
+    const tabs = Array.from(bar.querySelectorAll('.tab-btn'));
+    const cur  = tabs.findIndex(t=>t.getAttribute('aria-selected')==='true');
+    if(cur < 0) return;
+    let next = -1;
+    if(e.key==='ArrowRight' || e.key==='ArrowDown') next = (cur+1) % tabs.length;
+    else if(e.key==='ArrowLeft' || e.key==='ArrowUp') next = (cur-1+tabs.length) % tabs.length;
+    else if(e.key==='Home') next = 0;
+    else if(e.key==='End')  next = tabs.length-1;
+    else if(e.key==='Enter' || e.key===' '){
+      e.preventDefault();
+      const focused = document.activeElement;
+      if(focused && focused.dataset && focused.dataset.tab){
+        try{ switchTab(focused.dataset.tab); }catch(err){ console.error('[Tabs] activate failed:', err); }
+      }
+      return;
+    }
+    if(next >= 0){
+      e.preventDefault();
+      const t = tabs[next];
+      try{ switchTab(t.dataset.tab); }catch(err){ console.error('[Tabs] arrow nav failed:', err); }
+      t.focus();  // move focus to the newly selected tab (automatic-activation pattern)
+    }
   });
 }
 // Keyboard shortcuts 1–5
@@ -4591,6 +4685,7 @@ function parseKNMIData(text){
    MAIN REFRESH CYCLE
 ════════════════════════════════ */
 async function refresh(){
+  _isRefreshing = true;
   resetBar();
 
   try{
@@ -4636,14 +4731,15 @@ async function refresh(){
   updateLiveStrip();
   setBadge('islandBadge','LIVE');
 
-  // Stamp last-sync time in header
-  const syncEl = document.getElementById('syncTime');
-  if(syncEl){
-    const t = new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
-    syncEl.textContent = t+' AST';
-    const dot = document.getElementById('syncIndicator');
-    if(dot){ dot.classList.add('sync-flash'); setTimeout(()=>dot.classList.remove('sync-flash'),1200); }
+  // #2 — Stamp last successful refresh + flash the indicator
+  _lastSuccessfulRefresh = Date.now();
+  const dot = document.getElementById('syncIndicator');
+  if(dot){
+    dot.classList.remove('stale','very-stale');
+    dot.classList.add('sync-flash');
+    setTimeout(()=>dot.classList.remove('sync-flash'),1200);
   }
+  updateDataAge();
 
   // If forecast tab is currently open, re-render it with fresh data
   const activePaneId = document.querySelector('.tab-pane.active')?.id;
@@ -4657,7 +4753,77 @@ async function refresh(){
     void el.offsetWidth;  // force reflow so animation re-runs
     el.classList.add('value-fresh');
   });
+
+  _isRefreshing = false;
 }
+
+/* ════════════════════════════════
+   #1 OFFLINE DETECTION + #2 DATA-AGE + #3 MANUAL REFRESH
+════════════════════════════════ */
+let _lastSuccessfulRefresh = 0;   // ms timestamp of last refresh that completed
+let _isRefreshing = false;
+
+// #1 — Offline / online banner with auto-retry on reconnect
+function showOfflineBanner(reconnected){
+  const b = document.getElementById('offlineBanner');
+  const t = document.getElementById('offlineBannerText');
+  if(!b) return;
+  if(reconnected){
+    b.classList.add('reconnected');
+    if(t) t.textContent = '✓ Back online — refreshing data…';
+    b.style.display = 'flex';
+    setTimeout(()=>{ b.style.display='none'; b.classList.remove('reconnected'); }, 2600);
+  }else{
+    b.classList.remove('reconnected');
+    if(t) t.textContent = 'No internet connection — data may be stale. Retrying automatically…';
+    b.style.display = 'flex';
+  }
+}
+window.addEventListener('offline', ()=>{ showOfflineBanner(false); });
+window.addEventListener('online',  ()=>{ showOfflineBanner(true); refresh(); });
+// If we load while already offline, surface it immediately
+if(typeof navigator!=='undefined' && navigator.onLine===false) showOfflineBanner(false);
+
+// #2 — Update the header "data age" label every 20s so it counts up live
+function updateDataAge(){
+  const ind = document.getElementById('syncIndicator');
+  const txt = document.getElementById('syncTime');
+  if(!ind || !txt || !_lastSuccessfulRefresh) return;
+  const ageMin = Math.floor((Date.now() - _lastSuccessfulRefresh)/60000);
+  // Build a compact label: clock time + relative age
+  const clock = new Date(_lastSuccessfulRefresh).toLocaleTimeString('en-US',
+    {hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+  let rel;
+  if(ageMin < 1) rel = 'just now';
+  else if(ageMin === 1) rel = '1m ago';
+  else rel = ageMin + 'm ago';
+  txt.textContent = `${clock} · ${rel}`;
+  // Staleness coloring — METAR cycle is 5 min, so >12 = stale, >25 = very stale
+  ind.classList.toggle('stale', ageMin >= 12 && ageMin < 25);
+  ind.classList.toggle('very-stale', ageMin >= 25);
+  ind.title = `Last data refresh: ${clock} AST (${rel}) — click to refresh now`;
+}
+setInterval(updateDataAge, 20000);
+
+// #3 — Manual "refresh all" via the sync indicator (click or Enter/Space)
+function triggerManualRefresh(){
+  if(_isRefreshing) return;
+  _isRefreshing = true;
+  const icon = document.getElementById('refreshAllIcon');
+  if(icon) icon.classList.add('spinning');
+  Promise.resolve(refresh()).catch(err=>console.error('[Refresh] manual failed:',err)).finally(()=>{
+    _isRefreshing = false;  // guaranteed reset even if refresh() throws
+    setTimeout(()=>{ if(icon) icon.classList.remove('spinning'); }, 600);
+  });
+}
+(function wireManualRefresh(){
+  const ind = document.getElementById('syncIndicator');
+  if(!ind) return;
+  ind.addEventListener('click', triggerManualRefresh);
+  ind.addEventListener('keydown', e=>{
+    if(e.key==='Enter' || e.key===' '){ e.preventDefault(); triggerManualRefresh(); }
+  });
+})();
 
 refresh();
 setInterval(refresh,REFRESH_MS);
@@ -5615,50 +5781,50 @@ function animatedWaveSVG(waveM, color){
    Coordinates approximate, scaled for visual clarity (not geographic). */
 function renderAbcMap(islandsData){
   const el = document.getElementById('abcMap');
-  if(!el || !islandsData.length) return;
+  if(!el || !islandsData || !islandsData.length) return;
 
   /* Read theme colors so the sea matches the active theme */
   const cs = getComputedStyle(document.body);
   const seaTop = (cs.getPropertyValue('--bg2')||'#061420').trim();
   const seaBot = (cs.getPropertyValue('--bg3')||'#0a1e30').trim();
-  const seaLine= (cs.getPropertyValue('--cyan')||'#22d3ee').trim();
 
-  /* Canvas. Wider to give arrows more room. */
-  const W = 900, H = 400;
+  /* Larger canvas for bigger, more legible content */
+  const W = 1000, H = 560;
 
-  /* Real approximate positions scaled to canvas.
-     Geographic: Aruba ~12.50°N 70.01°W, Curaçao ~12.19°N 68.96°W, Bonaire ~12.13°N 68.27°W
-     We compress horizontally for visual clarity. */
+  /* Island positions scaled to canvas.
+     Aruba ~12.50N 70.01W, Curaçao ~12.19N 68.96W, Bonaire ~12.13N 68.27W */
   const POS = {
-    TNCA: { cx:148, cy:148, rx:30, ry:11, rot:-22, name:'Aruba',   flag:'🇦🇼' },
-    TNCC: { cx:430, cy:172, rx:42, ry:12, rot:-10, name:'Curaçao', flag:'🇨🇼' },
-    TNCB: { cx:700, cy:185, rx:16, ry:36, rot:  5, name:'Bonaire', flag:'🇧🇶' },
+    TNCA: { cx:165, cy:165, rx:40, ry:15, rot:-22, name:'Aruba',   flag:'\u{1F1E6}\u{1F1FC}' },
+    TNCC: { cx:480, cy:195, rx:56, ry:16, rot:-10, name:'Cura\u00e7ao', flag:'\u{1F1E8}\u{1F1FC}' },
+    TNCB: { cx:790, cy:205, rx:22, ry:48, rot:  5, name:'Bonaire', flag:'\u{1F1E7}\u{1F1F6}' },
   };
 
-  /* Color by wave height — Beaufort-aligned */
+  /* Wave-height colour — Beaufort-aligned */
   function seaCol(waveM){
-    if(waveM >= 3.0) return '#f87171'; // rough
-    if(waveM >= 2.0) return '#fbbf24'; // moderate-rough
-    if(waveM >= 1.0) return '#22d3ee'; // slight-moderate
-    if(waveM >= 0.5) return '#5ab8ff'; // slight
-    return '#93c5fd';                  // calm/glassy
+    if(waveM >= 3.0) return '#f87171';
+    if(waveM >= 2.0) return '#fbbf24';
+    if(waveM >= 1.0) return '#22d3ee';
+    if(waveM >= 0.5) return '#5ab8ff';
+    return '#93c5fd';
+  }
+  /* SST colour */
+  function sstCol(t){
+    if(t==null) return 'rgba(155,212,255,0.5)';
+    if(t>=29) return '#f87171';
+    if(t>=27) return '#fbbf24';
+    return '#22d3ee';
   }
 
-  /* Convert met direction (FROM) + distance to SVG x,y offset.
-     SVG: +x = right (East), +y = down (South).
-     Met "FROM North" = wind/waves coming from top → arrow points down.
-     So: SVG_dx = sin(deg)*dist, SVG_dy = -cos(deg)*dist for a "to" vector
-     meaning FROM deg arrives from: origin = cx + sin(deg)*dist, cy - cos(deg)*dist */
+  /* Met direction (FROM) → SVG offset */
   function fromOffset(deg, dist){
     const r = deg * Math.PI / 180;
     return { dx: Math.sin(r)*dist, dy: -Math.cos(r)*dist };
   }
 
-  /* Island shape: rotated ellipse as a path */
+  /* Rotated-ellipse island shape */
   function islandShape(p, col, glowCol){
     const cosR = Math.cos(p.rot*Math.PI/180);
     const sinR = Math.sin(p.rot*Math.PI/180);
-    /* 8-point approximation of rotated ellipse */
     const pts = [];
     for(let a=0;a<360;a+=30){
       const ar = a*Math.PI/180;
@@ -5667,250 +5833,245 @@ function renderAbcMap(islandsData){
       pts.push([p.cx + ex*cosR - ey*sinR, p.cy + ex*sinR + ey*cosR]);
     }
     const d = pts.map((pt,i)=>(i===0?`M ${pt[0].toFixed(1)},${pt[1].toFixed(1)}`:`L ${pt[0].toFixed(1)},${pt[1].toFixed(1)}`)).join(' ')+' Z';
-    return `<path d="${d}" fill="#1c3a52" stroke="${col}" stroke-width="2"
-      style="filter:drop-shadow(0 0 8px ${glowCol}99)"/>`;
+    return `<path d="${d}" fill="#1c3a52" stroke="${col}" stroke-width="2.5"
+      style="filter:drop-shadow(0 0 10px ${glowCol}99)"/>`;
   }
 
-  /* Depth gradient zones (Caribbean Sea) — subtle concentric bands */
   const depthZones = `
-    <ellipse cx="450" cy="${H*0.5}" rx="420" ry="120"
-      fill="none" stroke="rgba(34,211,238,0.04)" stroke-width="30"/>
-    <ellipse cx="450" cy="${H*0.5}" rx="320" ry="90"
-      fill="none" stroke="rgba(34,211,238,0.04)" stroke-width="25"/>
-    <ellipse cx="450" cy="${H*0.5}" rx="200" ry="60"
-      fill="none" stroke="rgba(34,211,238,0.035)" stroke-width="20"/>`;
+    <ellipse cx="500" cy="${H*0.45}" rx="470" ry="150"
+      fill="none" stroke="rgba(34,211,238,0.04)" stroke-width="34"/>
+    <ellipse cx="500" cy="${H*0.45}" rx="350" ry="110"
+      fill="none" stroke="rgba(34,211,238,0.04)" stroke-width="28"/>
+    <ellipse cx="500" cy="${H*0.45}" rx="220" ry="70"
+      fill="none" stroke="rgba(34,211,238,0.035)" stroke-width="22"/>`;
 
-  /* Compass rose — bottom right */
-  const compassX = W-50, compassY = H-50, cr = 28;
+  /* Compass rose — bottom right, bigger */
+  const compassX = W-58, compassY = H-120, cr = 36;
   const compass = `
     <g transform="translate(${compassX},${compassY})">
-      <circle cx="0" cy="0" r="${cr}" fill="rgba(0,0,0,0.45)" stroke="rgba(34,211,238,0.25)" stroke-width="1"/>
-      <circle cx="0" cy="0" r="${cr*0.55}" fill="none" stroke="rgba(34,211,238,0.12)" stroke-width="0.8"/>
+      <circle cx="0" cy="0" r="${cr}" fill="rgba(0,0,0,0.45)" stroke="rgba(34,211,238,0.25)" stroke-width="1.2"/>
+      <circle cx="0" cy="0" r="${cr*0.55}" fill="none" stroke="rgba(34,211,238,0.12)" stroke-width="1"/>
       ${[0,45,90,135,180,225,270,315].map(a=>{
         const r = a*Math.PI/180;
         const isCard = a%90===0;
         return `<line x1="${Math.sin(r)*cr*0.6}" y1="${-Math.cos(r)*cr*0.6}"
           x2="${Math.sin(r)*cr*0.9}" y2="${-Math.cos(r)*cr*0.9}"
-          stroke="rgba(34,211,238,${isCard?0.6:0.25})" stroke-width="${isCard?1.2:0.7}"/>`;
+          stroke="rgba(34,211,238,${isCard?0.6:0.25})" stroke-width="${isCard?1.5:0.9}"/>`;
       }).join('')}
-      <text y="-${cr*0.75}" text-anchor="middle" dominant-baseline="middle"
-        font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">N</text>
-      <text x="${cr*0.75}" text-anchor="middle" dominant-baseline="middle"
-        font-family="monospace" font-size="7" fill="rgba(155,212,255,0.7)">E</text>
-      <text y="${cr*0.75}" text-anchor="middle" dominant-baseline="middle"
-        font-family="monospace" font-size="7" fill="rgba(155,212,255,0.7)">S</text>
-      <text x="${-cr*0.75}" text-anchor="middle" dominant-baseline="middle"
-        font-family="monospace" font-size="7" fill="rgba(155,212,255,0.7)">W</text>
+      <text y="-${cr*0.72}" text-anchor="middle" dominant-baseline="middle"
+        font-family="monospace" font-size="13" font-weight="700" fill="#22d3ee">N</text>
+      <text x="${cr*0.72}" text-anchor="middle" dominant-baseline="middle"
+        font-family="monospace" font-size="11" fill="rgba(155,212,255,0.7)">E</text>
+      <text y="${cr*0.72}" text-anchor="middle" dominant-baseline="middle"
+        font-family="monospace" font-size="11" fill="rgba(155,212,255,0.7)">S</text>
+      <text x="-${cr*0.72}" text-anchor="middle" dominant-baseline="middle"
+        font-family="monospace" font-size="11" fill="rgba(155,212,255,0.7)">W</text>
     </g>`;
 
-  /* Venezuela coastline */
   const coast = `
-    <path d="M -10 ${H-30} Q 150 ${H-55} 300 ${H-48} T 600 ${H-44} T 910 ${H-40} L 910 ${H+5} L -10 ${H+5} Z"
+    <path d="M -10 ${H-34} Q 160 ${H-62} 330 ${H-54} T 660 ${H-50} T 1010 ${H-46} L 1010 ${H+5} L -10 ${H+5} Z"
       fill="#0d1f30" opacity="0.85"/>
     <text x="${W/2}" y="${H-12}" text-anchor="middle" font-family="monospace"
-      font-size="8" fill="rgba(155,212,255,0.28)" letter-spacing="4">VENEZUELA  COAST</text>`;
+      font-size="12" fill="rgba(155,212,255,0.3)" letter-spacing="6">VENEZUELA  COAST</text>`;
 
-  /* Build per-island SVG group */
   let defs = `
     <linearGradient id="abcSeaGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="${seaTop}"/>
       <stop offset="100%" stop-color="${seaBot}"/>
     </linearGradient>
-    <pattern id="wavePattern" width="60" height="24" patternUnits="userSpaceOnUse">
-      <path d="M 0 12 Q 15 6 30 12 T 60 12" stroke="rgba(34,211,238,0.055)"
-        fill="none" stroke-width="1"/>
+    <pattern id="wavePattern" width="70" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 0 14 Q 17 7 35 14 T 70 14" stroke="rgba(34,211,238,0.06)"
+        fill="none" stroke-width="1.2"/>
     </pattern>`;
 
-  /* Safe coordinate formatter — falls back to center if NaN */
   const safeCoord = (v, fallback) => (isFinite(v) ? v.toFixed(1) : fallback.toFixed(1));
 
-  let markers = '';
   let islandSVG = '';
-  let infoPanels = '';
 
   islandsData.forEach(d => {
-    const p   = POS[d.icao];
+    const p = POS[d.icao];
     if(!p) return;
     const col     = seaCol(d.waveM);
-    const waveCol = seaCol(d.waveM);
+    const waveCol = col;
 
-    /* Arrow IDs */
     const waveAId = `wvm-${d.icao}`;
     const swellAId= `swm-${d.icao}`;
     const windAId = `wdm-${d.icao}`;
 
     defs += `
       <marker id="${waveAId}" viewBox="0 0 10 10" refX="8" refY="5"
-        markerWidth="6" markerHeight="6" orient="auto">
+        markerWidth="7" markerHeight="7" orient="auto">
         <path d="M0,1 L9,5 L0,9 Z" fill="${waveCol}"/>
       </marker>
       <marker id="${swellAId}" viewBox="0 0 10 10" refX="8" refY="5"
-        markerWidth="5" markerHeight="5" orient="auto">
+        markerWidth="6" markerHeight="6" orient="auto">
         <path d="M0,1 L9,5 L0,9 Z" fill="rgba(90,184,255,0.85)"/>
       </marker>
       <marker id="${windAId}" viewBox="0 0 10 10" refX="8" refY="5"
-        markerWidth="5" markerHeight="5" orient="auto">
+        markerWidth="6" markerHeight="6" orient="auto">
         <path d="M0,1 L9,5 L0,9 Z" fill="rgba(251,191,36,0.85)"/>
       </marker>`;
 
-    /* Wave arrow — arrives FROM waveDir, so origin is upstream */
-    const wDist = 78;
+    const wDist = 95;
     const wOff  = fromOffset(d.waveDir, wDist);
     const wx1 = p.cx + wOff.dx, wy1 = p.cy + wOff.dy;
-    /* Endpoint: just outside island */
-    const wOff2 = fromOffset(d.waveDir, 36);
+    const wOff2 = fromOffset(d.waveDir, 44);
     const wx2 = p.cx + wOff2.dx, wy2 = p.cy + wOff2.dy;
 
-    /* Swell arrow — slightly offset to not overlap */
-    const sOff  = fromOffset(d.swellDir, wDist-10);
-    const sx1 = p.cx + sOff.dx + 6, sy1 = p.cy + sOff.dy + 4;
-    const sOff2 = fromOffset(d.swellDir, 38);
-    const sx2 = p.cx + sOff2.dx + 6, sy2 = p.cy + sOff2.dy + 4;
+    const sOff  = fromOffset(d.swellDir, wDist-12);
+    const sx1 = p.cx + sOff.dx + 7, sy1 = p.cy + sOff.dy + 5;
+    const sOff2 = fromOffset(d.swellDir, 46);
+    const sx2 = p.cx + sOff2.dx + 7, sy2 = p.cy + sOff2.dy + 5;
 
-    /* Wind arrow — shorter, dashed */
-    const wnOff  = fromOffset(d.windFromDeg, 55);
-    const wnx1 = p.cx + wnOff.dx - 8, wny1 = p.cy + wnOff.dy - 4;
-    const wnOff2 = fromOffset(d.windFromDeg, 34);
-    const wnx2 = p.cx + wnOff2.dx - 8, wny2 = p.cy + wnOff2.dy - 4;
+    const wnOff  = fromOffset(d.windFromDeg, 68);
+    const wnx1 = p.cx + wnOff.dx - 9, wny1 = p.cy + wnOff.dy - 5;
+    const wnOff2 = fromOffset(d.windFromDeg, 42);
+    const wnx2 = p.cx + wnOff2.dx - 9, wny2 = p.cy + wnOff2.dy - 5;
 
-    /* Wave height → stroke width (bigger waves = thicker arrow) */
-    const wStroke = Math.max(2, Math.min(5, 2 + d.waveM * 1.2));
+    const wStroke = Math.max(2.5, Math.min(6, 2.5 + d.waveM * 1.3));
 
     islandSVG += `
-      <!-- ${d.icao} waves -->
       <line x1="${safeCoord(wx1,p.cx)}" y1="${safeCoord(wy1,p.cy)}"
             x2="${safeCoord(wx2,p.cx)}" y2="${safeCoord(wy2,p.cy)}"
         stroke="${waveCol}" stroke-width="${wStroke}"
         marker-end="url(#${waveAId})" opacity="0.92"
-        style="filter:drop-shadow(0 0 5px ${waveCol}66)"/>
-      <!-- ${d.icao} swell -->
+        style="filter:drop-shadow(0 0 6px ${waveCol}66)"/>
       <line x1="${safeCoord(sx1,p.cx)}" y1="${safeCoord(sy1,p.cy)}"
             x2="${safeCoord(sx2,p.cx)}" y2="${safeCoord(sy2,p.cy)}"
-        stroke="rgba(90,184,255,0.75)" stroke-width="1.8"
-        marker-end="url(#${swellAId})" opacity="0.7" stroke-dasharray="5 3"/>
-      <!-- ${d.icao} wind -->
+        stroke="rgba(90,184,255,0.75)" stroke-width="2.2"
+        marker-end="url(#${swellAId})" opacity="0.7" stroke-dasharray="6 4"/>
       <line x1="${safeCoord(wnx1,p.cx)}" y1="${safeCoord(wny1,p.cy)}"
             x2="${safeCoord(wnx2,p.cx)}" y2="${safeCoord(wny2,p.cy)}"
-        stroke="rgba(251,191,36,0.8)" stroke-width="1.5"
-        marker-end="url(#${windAId})" opacity="0.8" stroke-dasharray="3 2"/>
+        stroke="rgba(251,191,36,0.8)" stroke-width="2"
+        marker-end="url(#${windAId})" opacity="0.8" stroke-dasharray="4 3"/>
 
-      <!-- Island shape -->
       ${islandShape(p, col, col)}
 
-      <!-- Island label -->
-      <text x="${p.cx}" y="${p.cy - p.ry - 16}"
+      <text x="${p.cx}" y="${p.cy - p.ry - 24}"
         text-anchor="middle" font-family="var(--display)"
-        font-size="12" font-weight="700" fill="#d4eeff">${p.name}</text>
+        font-size="18" font-weight="700" fill="#d4eeff"
+        style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.8))">${p.flag} ${p.name}</text>
 
-      <!-- Wave height inside island -->
-      <text x="${p.cx}" y="${p.cy + 3}"
+      <text x="${p.cx}" y="${p.cy + 5}"
         text-anchor="middle" font-family="monospace"
-        font-size="10" font-weight="700" fill="${col}">${(d.waveM??0).toFixed(1)}m</text>`;
+        font-size="15" font-weight="700" fill="${col}"
+        style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.9))">${(d.waveM??0).toFixed(1)}m</text>`;
 
-    /* Info panel per island — positioned below each island */
-    const panelX = p.cx - 68;
-    const panelY = p.cy + p.ry + 22;
+    /* Prominent SST badge floating beside each island */
+    const sstBadgeX = p.cx + p.rx + 16;
+    const sstBadgeY = p.cy - 16;
+    const sCol = sstCol(d.sstC);
+    islandSVG += `
+      <g transform="translate(${sstBadgeX},${sstBadgeY})">
+        <rect x="0" y="0" width="74" height="34" rx="8"
+          fill="rgba(6,16,28,0.9)" stroke="${sCol}" stroke-width="1.5"
+          style="filter:drop-shadow(0 0 8px ${sCol}55)"/>
+        <text x="9" y="14" font-family="monospace" font-size="8.5" font-weight="700"
+          fill="rgba(155,212,255,0.7)" letter-spacing="0.5">SEA TEMP</text>
+        <text x="9" y="28" font-family="var(--display),monospace" font-size="15" font-weight="700"
+          fill="${sCol}">${d.sstC!=null?d.sstC.toFixed(1)+'\u00b0':'\u2014'}</text>
+        <text x="${d.sstC!=null?60:50}" y="28" font-family="monospace" font-size="10"
+          fill="${sCol}" opacity="0.8">${d.sstC!=null?'C':''}</text>
+      </g>`;
+
+    /* Info panel per island — bigger and roomier */
+    const PW = 168, PH = 96;
+    let panelX = p.cx - PW/2;
+    let panelY = p.cy + p.ry + 30;
+    /* keep panel on-canvas horizontally */
+    panelX = Math.max(8, Math.min(W - PW - 8, panelX));
+
     const verdictColour = {v_good:'#4ade80',v_fair:'#fbbf24',v_caution:'#fb923c',v_bad:'#f87171'};
     const beachCol = verdictColour[d.vBeach?.cls] || '#22d3ee';
     const boatCol  = verdictColour[d.vBoat?.cls]  || '#22d3ee';
     const diveCol  = verdictColour[d.vDive?.cls]  || '#22d3ee';
 
     islandSVG += `
-      <!-- Info panel ${d.icao} -->
-      <rect x="${panelX}" y="${panelY}" width="136" height="82" rx="5"
-        fill="rgba(6,16,28,0.82)" stroke="rgba(34,211,238,0.2)" stroke-width="1"/>
+      <g transform="translate(${panelX},${panelY})">
+        <rect x="0" y="0" width="${PW}" height="${PH}" rx="7"
+          fill="rgba(6,16,28,0.85)" stroke="rgba(34,211,238,0.22)" stroke-width="1.2"/>
 
-      <text x="${panelX+6}" y="${panelY+13}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">WIND</text>
-      <text x="${panelX+70}" y="${panelY+13}" font-family="monospace" font-size="9" font-weight="700" fill="#fbbf24">${d.windKt}kt ${d.windCard}${d.gustKt > d.windKt+2 ? ' G'+d.gustKt : ''}</text>
+        <text x="9" y="18" font-family="monospace" font-size="10" fill="rgba(155,212,255,0.6)">WIND</text>
+        <text x="${PW-9}" y="18" text-anchor="end" font-family="monospace" font-size="12" font-weight="700" fill="#fbbf24">${d.windKt??'\u2014'}kt ${d.windCard||''}${d.gustKt > d.windKt+2 ? ' G'+d.gustKt : ''}</text>
 
-      <text x="${panelX+6}" y="${panelY+26}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">SWELL</text>
-      <text x="${panelX+70}" y="${panelY+26}" font-family="monospace" font-size="9" font-weight="700" fill="#5ab8ff">${(d.swellM??0).toFixed(1)}m ${(d.swellP??0).toFixed(0)}s</text>
+        <text x="9" y="36" font-family="monospace" font-size="10" fill="rgba(155,212,255,0.6)">SWELL</text>
+        <text x="${PW-9}" y="36" text-anchor="end" font-family="monospace" font-size="12" font-weight="700" fill="#5ab8ff">${(d.swellM??0).toFixed(1)}m \u00b7 ${(d.swellP??0).toFixed(0)}s</text>
 
-      <text x="${panelX+6}" y="${panelY+39}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">PERIOD</text>
-      <text x="${panelX+70}" y="${panelY+39}" font-family="monospace" font-size="9" font-weight="700" fill="${col}">${(d.wavePeriod??0).toFixed(0)}s · ${d.waveCard||"—"}</text>
+        <text x="9" y="54" font-family="monospace" font-size="10" fill="rgba(155,212,255,0.6)">PERIOD</text>
+        <text x="${PW-9}" y="54" text-anchor="end" font-family="monospace" font-size="12" font-weight="700" fill="${col}">${(d.wavePeriod??0).toFixed(0)}s \u00b7 ${d.waveCard||'\u2014'}</text>
 
-      <text x="${panelX+6}" y="${panelY+52}" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.6)">SEA °C</text>
-      <text x="${panelX+70}" y="${panelY+52}" font-family="monospace" font-size="9" font-weight="700"
-        fill="${d.sstC!=null?(d.sstC>=29?'#f87171':d.sstC>=27?'#fbbf24':'#22d3ee'):'rgba(155,212,255,0.5)'}">${d.sstC!=null?d.sstC.toFixed(1)+'°C':'—'}</text>
+        <line x1="9" y1="64" x2="${PW-9}" y2="64" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
 
-      <text x="${panelX+6}"  y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${beachCol}">🏖 ${d.vBeach?.label||'—'}</text>
-      <text x="${panelX+52}" y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${boatCol}">⛵ ${d.vBoat?.label||'—'}</text>
-      <text x="${panelX+98}" y="${panelY+68}" font-family="monospace" font-size="7.5" fill="${diveCol}">🤿 ${d.vDive?.label||'—'}</text>`;
+        <text x="12" y="85" font-family="monospace" font-size="11" font-weight="600" fill="${beachCol}">\u{1F3D6}${d.vBeach?.label||'\u2014'}</text>
+        <text x="66" y="85" font-family="monospace" font-size="11" font-weight="600" fill="${boatCol}">\u26F5${d.vBoat?.label||'\u2014'}</text>
+        <text x="120" y="85" font-family="monospace" font-size="11" font-weight="600" fill="${diveCol}">\u{1F93F}${d.vDive?.label||'\u2014'}</text>
+      </g>`;
   });
 
-  /* Legend */
+  /* Legend — top left, bigger */
   const legend = `
-    <g transform="translate(14, 14)">
-      <rect x="-4" y="-4" width="138" height="68" rx="4"
-        fill="rgba(6,14,24,0.78)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="0" y="9" font-family="monospace" font-size="8" font-weight="700"
-        fill="rgba(155,212,255,0.8)" letter-spacing="1">SEA STATE MAP</text>
+    <g transform="translate(16, 16)">
+      <rect x="-6" y="-6" width="176" height="86" rx="6"
+        fill="rgba(6,14,24,0.8)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+      <text x="0" y="10" font-family="monospace" font-size="11" font-weight="700"
+        fill="rgba(155,212,255,0.85)" letter-spacing="1">SEA STATE MAP</text>
 
-      <line x1="0" y1="24" x2="24" y2="24" stroke="#22d3ee" stroke-width="3" opacity="0.9"/>
-      <polygon points="24,21 30,24 24,27" fill="#22d3ee" opacity="0.9"/>
-      <text x="34" y="28" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.8)">Wave dir</text>
+      <line x1="0" y1="30" x2="30" y2="30" stroke="#22d3ee" stroke-width="3.5" opacity="0.9"/>
+      <polygon points="30,26 38,30 30,34" fill="#22d3ee" opacity="0.9"/>
+      <text x="44" y="34" font-family="monospace" font-size="11" fill="rgba(155,212,255,0.8)">Wave dir</text>
 
-      <line x1="0" y1="39" x2="24" y2="39" stroke="#5ab8ff" stroke-width="1.8"
-        stroke-dasharray="5 3" opacity="0.8"/>
-      <polygon points="24,36 29,39 24,42" fill="rgba(90,184,255,0.85)"/>
-      <text x="34" y="43" font-family="monospace" font-size="8" fill="rgba(155,212,255,0.7)">Swell dir</text>
+      <line x1="0" y1="48" x2="30" y2="48" stroke="#5ab8ff" stroke-width="2.2"
+        stroke-dasharray="6 4" opacity="0.8"/>
+      <polygon points="30,44 37,48 30,52" fill="rgba(90,184,255,0.85)"/>
+      <text x="44" y="52" font-family="monospace" font-size="11" fill="rgba(155,212,255,0.75)">Swell dir</text>
 
-      <line x1="0" y1="54" x2="24" y2="54" stroke="#fbbf24" stroke-width="1.5"
-        stroke-dasharray="3 2" opacity="0.8"/>
-      <polygon points="24,51 29,54 24,57" fill="rgba(251,191,36,0.85)"/>
-      <text x="34" y="58" font-family="monospace" font-size="8" fill="rgba(251,191,36,0.8)">Wind dir</text>
+      <line x1="0" y1="66" x2="30" y2="66" stroke="#fbbf24" stroke-width="2"
+        stroke-dasharray="4 3" opacity="0.8"/>
+      <polygon points="30,62 37,66 30,70" fill="rgba(251,191,36,0.85)"/>
+      <text x="44" y="70" font-family="monospace" font-size="11" fill="rgba(251,191,36,0.8)">Wind dir</text>
     </g>
 
     <!-- Wave height colour key -->
-    <g transform="translate(14, ${H-90})">
-      <rect x="-4" y="-4" width="172" height="48" rx="4"
-        fill="rgba(6,14,24,0.78)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="0" y="9" font-family="monospace" font-size="7" fill="rgba(155,212,255,0.6)" letter-spacing="1">WAVE HEIGHT</text>
-      ${[['#93c5fd','<0.5m Calm'],['#5ab8ff','0.5–1m Slight'],['#22d3ee','1–2m Mod'],['#fbbf24','2–3m Rough'],['#f87171','>3m Heavy']].map((c,i)=>`
-      <rect x="${i*34}" y="14" width="10" height="10" rx="2" fill="${c[0]}"/>
-      <text x="${i*34}" y="33" font-family="monospace" font-size="6.5" fill="${c[0]}" text-anchor="start">${c[1]}</text>`).join('')}
+    <g transform="translate(16, ${H-118})">
+      <rect x="-6" y="-6" width="210" height="58" rx="6"
+        fill="rgba(6,14,24,0.8)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+      <text x="0" y="9" font-family="monospace" font-size="9.5" fill="rgba(155,212,255,0.65)" letter-spacing="1">WAVE HEIGHT</text>
+      ${[['#93c5fd','&lt;0.5m'],['#5ab8ff','0.5-1m'],['#22d3ee','1-2m'],['#fbbf24','2-3m'],['#f87171','&gt;3m']].map((c,i)=>
+        `<rect x="${i*40}" y="18" width="13" height="13" rx="3" fill="${c[0]}"/>` +
+        `<text x="${i*40}" y="44" font-family="monospace" font-size="9" fill="${c[0]}" text-anchor="start">${c[1]}</text>`
+      ).join('')}
     </g>
 
     <!-- SST colour key -->
-    <g transform="translate(14, ${H-36})">
-      <rect x="-4" y="-4" width="172" height="28" rx="4"
-        fill="rgba(6,14,24,0.78)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
-      <text x="0" y="9" font-family="monospace" font-size="7" fill="rgba(155,212,255,0.6)" letter-spacing="1">SEA TEMP</text>
-      ${[['#22d3ee','<27°C'],['#fbbf24','27–29°C'],['#f87171','>29°C']].map((c,i)=>
-        `<rect x="${i*58}" y="14" width="10" height="10" rx="2" fill="${c[0]}"/>` +
-        `<text x="${i*58+13}" y="23" font-family="monospace" font-size="7" fill="${c[0]}">${c[1]}</text>`
+    <g transform="translate(16, ${H-50})">
+      <rect x="-6" y="-6" width="210" height="40" rx="6"
+        fill="rgba(6,14,24,0.8)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
+      <text x="0" y="9" font-family="monospace" font-size="9.5" fill="rgba(155,212,255,0.65)" letter-spacing="1">SEA TEMP</text>
+      ${[['#22d3ee','&lt;27\u00b0C'],['#fbbf24','27-29\u00b0C'],['#f87171','&gt;29\u00b0C']].map((c,i)=>
+        `<rect x="${i*70}" y="16" width="13" height="13" rx="3" fill="${c[0]}"/>` +
+        `<text x="${i*70+18}" y="27" font-family="monospace" font-size="10" fill="${c[0]}">${c[1]}</text>`
       ).join('')}
     </g>`;
 
   el.innerHTML = `
     <svg viewBox="0 0 ${W} ${H}"
-      style="width:100%;height:auto;max-height:420px;display:block"
+      style="width:100%;height:auto;max-height:600px;display:block"
       preserveAspectRatio="xMidYMid meet">
       <defs>${defs}</defs>
 
-      <!-- Sea background -->
       <rect width="${W}" height="${H}" fill="url(#abcSeaGrad)"/>
       <rect width="${W}" height="${H}" fill="url(#wavePattern)"/>
 
-      <!-- Depth zones -->
       ${depthZones}
 
-      <!-- Grid lines faint -->
-      ${[1,2,3,4,5,6,7,8].map(i=>`<line x1="${i*W/8}" y1="0" x2="${i*W/8}" y2="${H}"
+      ${[1,2,3,4,5,6,7,8,9].map(i=>`<line x1="${i*W/10}" y1="0" x2="${i*W/10}" y2="${H}"
         stroke="rgba(34,211,238,0.025)" stroke-width="0.5"/>`).join('')}
-      ${[1,2,3].map(i=>`<line x1="0" y1="${i*H/4}" x2="${W}" y2="${i*H/4}"
+      ${[1,2,3,4].map(i=>`<line x1="0" y1="${i*H/5}" x2="${W}" y2="${i*H/5}"
         stroke="rgba(34,211,238,0.025)" stroke-width="0.5"/>`).join('')}
 
-      <!-- Venezuela coast -->
       ${coast}
-
-      <!-- Arrows and islands -->
       ${islandSVG}
-
-      <!-- Compass -->
       ${compass}
-
-      <!-- Legend overlay -->
       ${legend}
     </svg>`;
 
