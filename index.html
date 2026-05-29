@@ -1341,13 +1341,7 @@ body.night .tab-btn.active{
 
 /* Subtle conic gradient halo on island cards */
 /* ── ISLAND CARDS (Weather tab) ── */
-#island-cards > div{
-  position:relative;
-  transition:background .3s;
-}
-#island-cards > div:hover{
-  background:linear-gradient(180deg,rgba(34,211,238,0.05),transparent) !important;
-}
+/* (old stacked-list hover rule removed — each island is now its own .panel widget) */
 
 /* Live data pulse on temperature value when it just updated */
 @keyframes valueFlash{
@@ -1473,24 +1467,39 @@ body.night .tab-btn.active{
 /* ──────────────────────────────────────────────
    ISLAND CARDS V2 — rich, animated, mobile-first
    ────────────────────────────────────────────── */
+/* ── SEPARATE ISLAND WIDGETS ──
+   Each island is its own panel laid out in a responsive grid:
+   3-up on wide screens, 2-up on medium, 1-up on mobile. */
+.island-widgets-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:14px;
+  align-items:start;
+}
+@media (max-width:1100px){
+  .island-widgets-grid{grid-template-columns:repeat(2, 1fr);}
+}
+@media (max-width:720px){
+  .island-widgets-grid{grid-template-columns:1fr;}
+}
 .island-card-v2{
-  border-bottom:1px solid var(--border);
   padding:16px 18px;
   display:flex;flex-direction:column;gap:14px;
   position:relative;
   overflow:hidden;
   animation:icCardIn .55s cubic-bezier(.4,0,.2,1) both;
-  transition:background .3s, box-shadow .3s;
+  transition:background .3s, box-shadow .3s, transform .3s;
 }
-.island-card-v2:last-child{border-bottom:none}
 .island-card-v2::before{
-  content:'';position:absolute;left:0;top:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.35),transparent);
+  content:'';position:absolute;left:0;top:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.45),transparent);
   opacity:0;transition:opacity .4s;
 }
 .island-card-v2:hover::before{opacity:1}
 .island-card-v2:hover{
-  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+  background:linear-gradient(180deg,rgba(34,211,238,0.05),transparent);
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(34,211,238,0.18);
 }
 .island-card-v2:nth-child(1){animation-delay:0s}
 .island-card-v2:nth-child(2){animation-delay:0.08s}
@@ -3062,10 +3071,8 @@ body.night .tab-btn.active{
 
   <div class="full">
     <div class="section-title">Current Conditions — ABC Islands <span class="data-badge loading" id="islandBadge">LOADING</span></div>
-    <div class="panel" style="overflow:visible">
-      <div id="island-cards">
-        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading island weather…</div>
-      </div>
+    <div id="island-cards" class="island-widgets-grid">
+      <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading island weather…</div>
     </div>
   </div>
 
@@ -3547,75 +3554,95 @@ document.querySelectorAll('.atc-player').forEach(card=>{
    TABS + KEYBOARD SHORTCUTS
 ════════════════════════════════ */
 function switchTab(name){
+  // ── STEP 1: visual switch — ALWAYS runs first, never blocked by side effects ──
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
   document.querySelectorAll('.tab-pane').forEach(p=>{
-    const isActive=p.id==='tab-'+name;
-    p.classList.toggle('active',isActive);
+    p.classList.toggle('active', p.id==='tab-'+name);
   });
-
-  // Track when each tab was last viewed (for stale-iframe detection).
   tabLastSeen[name]=Date.now();
 
-  // Lazy-load static iframes the first time their tab opens.
-  const lazy = {};
-  if(lazy[name]){
-    const [id,url]=lazy[name];
-    const f=document.getElementById(id);
-    if(f && !f.src) f.src=url;
-  }
-
-  // Flights tab: lazy-load whichever sub-frame is currently active
-  if(name==='flights'){
-    const active=document.querySelector('.flights-frame.active');
-    if(active && !active.src){
-      active.src = active.dataset.mode==='arrivals'
-        ? 'https://curacao-airport.com/flights/?type=arrivals'
-        : 'https://curacao-airport.com/flights/?type=departures';
-    }
-  }
-
-  // Lazy-init Windy iframes inside the tab being opened (data-src → src).
-  const pane=document.getElementById('tab-'+name);
-  if(pane){
-    pane.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
-      if(!f.src){
-        f.src=f.getAttribute('data-src');
-        f.removeAttribute('data-src');
+  // ── STEP 2: side effects — each isolated so one failure can't break the tab ──
+  try{
+    // Flights tab: lazy-load whichever sub-frame is currently active
+    if(name==='flights'){
+      const active=document.querySelector('.flights-frame.active');
+      if(active && !active.src){
+        active.src = active.dataset.mode==='arrivals'
+          ? 'https://curacao-airport.com/flights/?type=arrivals'
+          : 'https://curacao-airport.com/flights/?type=departures';
       }
-    });
-  }
+    }
 
-  // Lazy-init data tabs
-  if(name==='forecast' && !forecastLoaded) loadForecast();
-  if(name==='marine'   && !marineLoaded)   { loadMarine(); fetchTides(); }
+    // Lazy-init Windy iframes inside the tab being opened (data-src → src).
+    const pane=document.getElementById('tab-'+name);
+    if(pane){
+      pane.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
+        if(!f.src){
+          f.src=f.getAttribute('data-src');
+          f.removeAttribute('data-src');
+        }
+      });
+    }
+  }catch(err){ console.error('[Tabs] iframe init failed:', err); }
 
-  // Auto-refresh forecast/marine if data is >6 min stale when switching back to them
-  const STALE_RERENDER_MS = 6 * 60 * 1000;
-  if(name==='forecast' && forecastLoaded){
-    const age = Date.now() - (window._fcastLastRender||0);
-    if(age > STALE_RERENDER_MS){ loadForecast(); }
-  }
-  if(name==='marine' && marineLoaded){
-    const age = Date.now() - (window._marineLastRender||0);
-    if(age > STALE_RERENDER_MS){ marineLoaded=false; loadMarine(); }
-  }
+  // Lazy-init data tabs — each guarded independently
+  try{
+    if(name==='forecast' && !forecastLoaded) loadForecast();
+  }catch(err){ console.error('[Tabs] loadForecast failed:', err); }
+  try{
+    if(name==='marine' && !marineLoaded){ loadMarine(); fetchTides(); }
+  }catch(err){ console.error('[Tabs] loadMarine failed:', err); }
+
+  // Auto-refresh forecast/marine if data is >6 min stale when switching back
+  try{
+    const STALE_RERENDER_MS = 6 * 60 * 1000;
+    if(name==='forecast' && forecastLoaded){
+      const age = Date.now() - (window._fcastLastRender||0);
+      if(age > STALE_RERENDER_MS) loadForecast();
+    }
+    if(name==='marine' && marineLoaded){
+      const age = Date.now() - (window._marineLastRender||0);
+      if(age > STALE_RERENDER_MS){ marineLoaded=false; loadMarine(); }
+    }
+  }catch(err){ console.error('[Tabs] stale re-render failed:', err); }
 }
 
 const tabLastSeen={atc:Date.now()};
 let forecastLoaded=false, marineLoaded=false;
 
-document.querySelectorAll('.tab-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
+// Robust tab wiring via event delegation on the tab bar.
+// Delegation means it keeps working even if individual buttons are
+// re-rendered, and a click on a child <span class="tab-key"> still resolves
+// to the parent .tab-btn via closest(). Wrapped in a function so it can be
+// (re)invoked safely and never depends on later code having run.
+function wireTabs(){
+  const bar = document.querySelector('.tab-bar');
+  if(!bar || bar.dataset.wired==='1') return;
+  bar.dataset.wired='1';
+  bar.addEventListener('click', e=>{
+    const btn = e.target.closest('.tab-btn');
+    if(!btn || !bar.contains(btn)) return;
+    const tab = btn.dataset.tab;
+    if(!tab) return;
     btn.classList.add('activating');
     setTimeout(()=>btn.classList.remove('activating'), 600);
-    switchTab(btn.dataset.tab);
+    try{ switchTab(tab); }catch(err){ console.error('[Tabs] switchTab failed:', err); }
   });
-});
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-  const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights'};
-  if(map[e.key]) switchTab(map[e.key]);
-});
+}
+// Keyboard shortcuts 1–5
+function wireTabKeys(){
+  document.addEventListener('keydown', e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights'};
+    if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
+  });
+}
+// Wire immediately, and also on DOMContentLoaded as a belt-and-suspenders
+// guarantee in case the script somehow ran before the bar existed.
+wireTabs(); wireTabKeys();
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', ()=>{ wireTabs(); wireTabKeys(); });
+}
 
 // Flights sub-toggle (Departures ↔ Arrivals)
 document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
@@ -4219,7 +4246,7 @@ function renderIslandCards(){
     const ageWarn = ageMin !== null && ageMin > 90;
 
     html+=`
-      <div data-icao="${icao}" class="island-card-v2">
+      <div data-icao="${icao}" class="panel island-card-v2">
 
         <!-- HEADER -->
         <div class="ic-header">
