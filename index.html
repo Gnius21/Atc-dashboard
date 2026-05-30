@@ -2096,17 +2096,24 @@ body.night .tab-btn.active{
 
 /* ── 3-DAY FORECAST — animated cards ── */
 .fcast-island{
-  border-bottom:1px solid var(--border);
-  position:relative;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border-radius:var(--radius-lg);
   overflow:hidden;
+  box-shadow:var(--shadow-panel);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:transform .3s,box-shadow .3s;
 }
-.fcast-island:last-child{border-bottom:none}
 .fcast-island::before{
-  content:'';position:absolute;left:0;top:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.3),transparent);
+  content:'';position:absolute;left:0;top:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.45),transparent);
   opacity:0;transition:opacity .4s;
 }
 .fcast-island:hover::before{opacity:1}
+.fcast-island:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3),0 0 0 1px rgba(34,211,238,0.18);
+}
 
 .fcast-island-hdr{
   display:flex;align-items:center;gap:14px;
@@ -2404,13 +2411,32 @@ body.night .tab-btn.active{
   50%   {transform:translateX(3px);opacity:1}
 }
 
-.marine-island:last-child{border-bottom:none}
+.marine-island{
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:var(--shadow-panel);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:transform .3s,box-shadow .3s;
+}
+.marine-island:hover{
+  transform:translateY(-3px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.3),0 0 0 1px rgba(34,211,238,0.18);
+}
 .marine-island-hdr{
   display:flex;align-items:center;gap:14px;
   padding:14px 18px;
-  background:linear-gradient(180deg,rgba(34,211,238,0.04),transparent);
+  background:linear-gradient(180deg,rgba(34,211,238,0.06),transparent);
   border-bottom:1px solid var(--border);
+  position:relative;
 }
+.marine-island::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.45),transparent);
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.marine-island:hover::before{opacity:1}
 .marine-advice{
   margin-left:auto;
   display:inline-flex;align-items:center;gap:8px;
@@ -2741,12 +2767,16 @@ body.night .tab-btn.active{
 }
 .verdict.v-good   {border-left-color:#4ade80}
 .verdict.v-good   .v-label{color:#4ade80;text-shadow:0 0 8px rgba(74,222,128,0.4)}
+.verdict.v-good   .v-label::before{content:'✓ ';font-size:.72em;opacity:.9}
 .verdict.v-fair   {border-left-color:#fbbf24}
 .verdict.v-fair   .v-label{color:#fbbf24;text-shadow:0 0 8px rgba(251,191,36,0.4)}
+.verdict.v-fair   .v-label::before{content:'◐ ';font-size:.72em;opacity:.9}
 .verdict.v-caution{border-left-color:#fb923c}
 .verdict.v-caution .v-label{color:#fb923c;text-shadow:0 0 8px rgba(251,146,60,0.4)}
+.verdict.v-caution .v-label::before{content:'▲ ';font-size:.68em;opacity:.9}
 .verdict.v-bad    {border-left-color:#f87171;background:rgba(248,113,113,0.06)}
 .verdict.v-bad    .v-label{color:#f87171;text-shadow:0 0 10px rgba(248,113,113,0.5)}
+.verdict.v-bad    .v-label::before{content:'✕ ';font-size:.72em;opacity:.9}
 @media(max-width:900px){
   .verdicts-row{grid-template-columns:1fr;gap:6px;padding:10px 12px}
   .verdict{padding:8px 12px;gap:1px 10px}
@@ -3195,10 +3225,8 @@ body.night .tab-btn.active{
 
   <div class="full">
     <div class="section-title">4-Day Forecast — ABC Islands · Multi-Model Blend <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
-    <div class="panel" style="overflow:visible">
-      <div id="forecast-content">
-        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading 3-day forecast…</div>
-      </div>
+    <div id="forecast-content" class="island-widgets-grid">
+      <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading 3-day forecast…</div>
     </div>
   </div>
 </div>
@@ -3220,10 +3248,8 @@ body.night .tab-btn.active{
 
   <div class="full">
     <div class="section-title">Marine Conditions — ABC Islands <span class="data-badge loading" id="marineBadge">LOADING</span></div>
-    <div class="panel" style="overflow:visible">
-      <div id="marine-content">
-        <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading marine forecast…</div>
-      </div>
+    <div id="marine-content" class="island-widgets-grid">
+      <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading marine forecast…</div>
     </div>
   </div>
 
@@ -5493,7 +5519,7 @@ async function loadForecast(forceNewsUpdate=false){
       try{
 
       if(error && !wxapi && !models){
-        html += `<div class="fcast-island"><div class="fcast-island-hdr">
+        html += `<div class="fcast-island panel"><div class="fcast-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div><div class="fcast-name">${loc.name}</div></div></div>
           <div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">
@@ -5512,7 +5538,7 @@ async function loadForecast(forceNewsUpdate=false){
 
       const wxLen  = wxDays.length || 0;
       const modLen = models?.daily?.time?.length || 0;
-      if(!wxLen && !modLen){ html += `<div class="fcast-island"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${loc.flag} ${loc.name} — no forecast data available</div></div>`; return; }
+      if(!wxLen && !modLen){ html += `<div class="fcast-island panel"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${loc.flag} ${loc.name} — no forecast data available</div></div>`; return; }
       const nDays  = Math.min(4, Math.max(wxLen, modLen));
 
       const allHi=[], allLo=[];
@@ -5679,7 +5705,7 @@ async function loadForecast(forceNewsUpdate=false){
                        : modelCount>=2 ? `${modelCount}-model blend`
                        : modelCount===1 ? '1 model + WeatherAPI' : 'WeatherAPI only';
 
-      html += `<div class="fcast-island">
+      html += `<div class="fcast-island panel">
         <div class="fcast-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div style="flex:1;min-width:0">
@@ -5694,7 +5720,7 @@ async function loadForecast(forceNewsUpdate=false){
       </div>`;
       }catch(renderErr){
         console.error('[Forecast] render error for', loc?.icao, renderErr);
-        html += `<div class="fcast-island"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Render error: ${renderErr.message}</div></div>`;
+        html += `<div class="fcast-island panel"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Render error: ${renderErr.message}</div></div>`;
       }
     });
 
@@ -6011,7 +6037,7 @@ function renderAbcMap(islandsData){
   /* Legend — top left, bigger */
   const legend = `
     <g transform="translate(16, 16)">
-      <rect x="-6" y="-6" width="176" height="86" rx="6"
+      <rect x="-6" y="-6" width="176" height="106" rx="6"
         fill="rgba(6,14,24,0.8)" stroke="rgba(34,211,238,0.15)" stroke-width="1"/>
       <text x="0" y="10" font-family="monospace" font-size="11" font-weight="700"
         fill="rgba(155,212,255,0.85)" letter-spacing="1">SEA STATE MAP</text>
@@ -6029,6 +6055,11 @@ function renderAbcMap(islandsData){
         stroke-dasharray="4 3" opacity="0.8"/>
       <polygon points="30,62 37,66 30,70" fill="rgba(251,191,36,0.85)"/>
       <text x="44" y="70" font-family="monospace" font-size="11" fill="rgba(251,191,36,0.8)">Wind dir</text>
+
+      <line x1="0" y1="84" x2="30" y2="84" stroke="#f87171" stroke-width="2.5"
+        stroke-dasharray="9 5" opacity="0.88"/>
+      <circle cx="15" cy="84" r="5" fill="#f87171" opacity="0.92"/>
+      <text x="44" y="88" font-family="monospace" font-size="11" fill="rgba(248,113,113,0.88)">Storm track</text>
     </g>
 
     <!-- Wave height colour key -->
@@ -6076,6 +6107,9 @@ function renderAbcMap(islandsData){
     </svg>`;
 
   setBadge('abcMapBadge','LIVE');
+
+  // Overlay storm tracks onto fresh map render
+  if(_activeStorms && _activeStorms.length) renderStormTrack(_activeStorms);
 }
 
 async function loadMarine(){
@@ -6214,24 +6248,24 @@ async function loadMarine(){
       const vDive  = verdictDive (waveM, windKt, wmoForAdvice, wxCur.vis_km);
       const verdictsHtml = `
         <div class="verdicts-row">
-          <div class="verdict ${vBeach.cls}">
-            <div class="v-icon">🏖️</div>
+          <div class="verdict ${vBeach.cls}" role="img" aria-label="Beach: ${vBeach.label} — ${vBeach.text}">
+            <div class="v-icon" aria-hidden="true">🏖️</div>
             <div class="v-meta">
               <div class="v-name">Beach</div>
               <div class="v-label">${vBeach.label}</div>
             </div>
             <div class="v-text">${vBeach.text}</div>
           </div>
-          <div class="verdict ${vBoat.cls}">
-            <div class="v-icon">⛵</div>
+          <div class="verdict ${vBoat.cls}" role="img" aria-label="Boat: ${vBoat.label} — ${vBoat.text}">
+            <div class="v-icon" aria-hidden="true">⛵</div>
             <div class="v-meta">
               <div class="v-name">Boat</div>
               <div class="v-label">${vBoat.label}</div>
             </div>
             <div class="v-text">${vBoat.text}</div>
           </div>
-          <div class="verdict ${vDive.cls}">
-            <div class="v-icon">🤿</div>
+          <div class="verdict ${vDive.cls}" role="img" aria-label="Dive: ${vDive.label} — ${vDive.text}">
+            <div class="v-icon" aria-hidden="true">🤿</div>
             <div class="v-meta">
               <div class="v-name">Dive</div>
               <div class="v-label">${vDive.label}</div>
@@ -6253,7 +6287,7 @@ async function loadMarine(){
       // Wave color intensity
       const waveCol = waveM>=2.5?'#f87171':waveM>=1.5?'#fbbf24':waveM>=0.8?'#22d3ee':'#5ab8ff';
 
-      html+=`<div class="marine-island">
+      html+=`<div class="marine-island panel">
         <div class="marine-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div style="flex:1;min-width:0">
@@ -6370,6 +6404,169 @@ const ABC_CENTER = { lat:12.3, lon:-69.0 };
 let stormAlertActive = false;
 let lastAlertedStorms = new Set();
 
+/* ════════════════════════════════════════════════════════
+   STORM TRACK CONE — rendered onto the Sea State Map SVG
+   Coordinate system calibrated from 3 artistic island positions:
+     Aruba  12.50N 70.01W → cx=165   Curaçao 12.19N 68.96W → cx=480
+     Bonaire 12.13N 68.27W → cx=790   Canvas W=1000 H=560
+   Fit: x = LON_SCALE*lon + LON_OFF  /  y = LAT_SCALE*lat + LAT_OFF
+   NHC cone half-widths (km): T+0=20  T+24=65  T+48=110  T+72=175
+   Zero extra API calls — uses current pos + movement from CurrentStorms.json
+════════════════════════════════════════════════════════ */
+var _activeStorms = [];  // kept as var so tests can access it
+
+const LON_SCALE =  354.34, LON_OFF  = 24955.98;
+const LAT_SCALE = -104.40, LAT_OFF  =  1469.62;
+const MAP_LON_MIN = -82, MAP_LON_MAX = -58;
+const MAP_LAT_MIN =  4,  MAP_LAT_MAX = 28;
+
+function latLonToMapXY(lat, lon){
+  return { x: LON_SCALE*lon + LON_OFF, y: LAT_SCALE*lat + LAT_OFF };
+}
+
+// Project a lat/lon forward distKm at bearingDeg
+function projectLatLon(lat, lon, bearingDeg, distKm){
+  const R = 6371, d = distKm/R, b = bearingDeg*Math.PI/180;
+  const φ1 = lat*Math.PI/180, λ1 = lon*Math.PI/180;
+  const φ2 = Math.asin(Math.sin(φ1)*Math.cos(d) + Math.cos(φ1)*Math.sin(d)*Math.cos(b));
+  const λ2 = λ1 + Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(φ1), Math.cos(d)-Math.sin(φ1)*Math.sin(φ2));
+  return { lat: φ2*180/Math.PI, lon: λ2*180/Math.PI };
+}
+
+// Build SVG polygon for a cone: right edge forward then left edge back
+function buildConePoly(centers, halfWidthsKm, bearingDeg){
+  const right = centers.map((c,i)=>{ const p=projectLatLon(c.lat,c.lon,(bearingDeg+90)%360,halfWidthsKm[i]); return latLonToMapXY(p.lat,p.lon); });
+  const left  = centers.map((c,i)=>{ const p=projectLatLon(c.lat,c.lon,(bearingDeg+270)%360,halfWidthsKm[i]); return latLonToMapXY(p.lat,p.lon); });
+  return [...right,...[...left].reverse()].map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+}
+
+// Parse NHC movement string into { bearingDeg, speedKt }
+function parseMovement(movStr){
+  const s = String(movStr||'');
+  const speedMatch = s.match(/(\d+)\s*(?:kt|mph)/i);
+  const speedKt = speedMatch ? parseFloat(speedMatch[1]) * (s.toLowerCase().includes('mph')?0.869:1) : 0;
+  const bearMatch = s.match(/(\d{1,3})\s*°/);
+  if(bearMatch) return { bearingDeg: parseFloat(bearMatch[1]), speedKt };
+  const cardMap = {N:0,NNE:22.5,NE:45,ENE:67.5,E:90,ESE:112.5,SE:135,SSE:157.5,
+                   S:180,SSW:202.5,SW:225,WSW:247.5,W:270,WNW:292.5,NW:315,NNW:337.5};
+  const cardMatch = s.toUpperCase().match(/\b(NNE|NNW|ENE|ESE|SSE|SSW|WSW|WNW|NE|NW|SE|SW|N|E|S|W)\b/);
+  return { bearingDeg: cardMatch ? (cardMap[cardMatch[1]]??0) : 0, speedKt };
+}
+
+function renderStormTrack(storms){
+  const svgEl = document.querySelector('#abcMap svg');
+  if(!svgEl) return;
+  // Remove old overlays
+  svgEl.querySelectorAll('.storm-track-layer').forEach(el=>el.remove());
+  if(!storms || !storms.length) return;
+
+  storms.forEach((s, si)=>{
+    if(!isFinite(s.lat) || !isFinite(s.lon)) return;
+
+    const { bearingDeg, speedKt } = parseMovement(s.movement||s.movementDir||'');
+    const speedKmH = speedKt * 1.852;
+
+    // Forecast centers: T+0h, T+24h, T+48h, T+72h
+    const hours    = [0, 24, 48, 72];
+    const halfWidths = [20, 65, 110, 175]; // NHC mean track error km
+    const centers  = hours.map(h => speedKmH*h > 0
+      ? projectLatLon(s.lat, s.lon, bearingDeg, speedKmH*h)
+      : { lat:s.lat, lon:s.lon });
+
+    // Skip if entire track is off the map viewport
+    if(!centers.some(c => c.lat>=MAP_LAT_MIN-3 && c.lat<=MAP_LAT_MAX+3 &&
+                          c.lon>=MAP_LON_MIN-3 && c.lon<=MAP_LON_MAX+3)) return;
+
+    const pts = centers.map(c => latLonToMapXY(c.lat, c.lon));
+    const trackColor = si===0 ? '#f87171' : '#fb923c';
+    const coneColor  = si===0 ? 'rgba(248,113,113,' : 'rgba(251,146,60,';
+
+    // Intensity → category label
+    const windKt = parseInt(s.intensity)||0;
+    const cat = windKt>=137?'CAT-5':windKt>=113?'CAT-4':windKt>=96?'CAT-3':
+                windKt>=83?'CAT-2':windKt>=64?'CAT-1':
+                windKt>=34?(s.classification||'').toUpperCase().includes('DEP')?'TD':'TS':'';
+    const nameLabel = `⚡ ${s.name||'System'}${cat?' '+cat:''}`;
+
+    // Forecast dots (skip if off-canvas)
+    const dotsSVG = pts.slice(1).map((p,i)=>{
+      // Clamp to canvas (with generous margin) rather than skip
+      const cx = Math.max(-20, Math.min(1020, p.x));
+      const cy = Math.max(8,   Math.min(552,  p.y));
+      const offCanvas = p.x < -20 || p.x > 1020 || p.y < -20 || p.y > 552;
+      const r = 5+i, op = (0.88-i*0.15).toFixed(2);
+      return `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}"
+        fill="${trackColor}" opacity="${offCanvas ? Math.min(parseFloat(op),0.5).toFixed(2) : op}"
+        style="filter:drop-shadow(0 0 5px ${trackColor})"/>
+        <text x="${(Math.min(1010,cx+r+4)).toFixed(1)}" y="${(Math.max(12,cy-3)).toFixed(1)}"
+          font-family="monospace" font-size="10" fill="${trackColor}" opacity="${op}">+${hours[i+1]}h</text>`;
+    }).join('');
+
+    // Movement arrow from current pos
+    const arrowSVG = speedKt>0 ? (()=>{
+      const dx = Math.sin(bearingDeg*Math.PI/180)*44;
+      const dy = -Math.cos(bearingDeg*Math.PI/180)*44;
+      const ax = pts[0].x+dx, ay = pts[0].y+dy;
+      const markId = `stArrow${si}`;
+      return `
+        <defs>
+          <marker id="${markId}" viewBox="0 0 10 10" refX="8" refY="5"
+            markerWidth="5" markerHeight="5" orient="auto">
+            <path d="M0,1 L9,5 L0,9 Z" fill="${trackColor}"/>
+          </marker>
+        </defs>
+        <line x1="${pts[0].x.toFixed(1)}" y1="${pts[0].y.toFixed(1)}"
+          x2="${ax.toFixed(1)}" y2="${ay.toFixed(1)}"
+          stroke="${trackColor}" stroke-width="2.2" opacity="0.8"
+          marker-end="url(#${markId})"/>`;
+    })() : '';
+
+    // Name label box width
+    const boxW = nameLabel.length*7.2 + 12;
+
+    const trackSVG = `
+      <g class="storm-track-layer" role="img" aria-label="Storm: ${s.name||'System'}">
+        ${arrowSVG}
+        <!-- Uncertainty cone -->
+        <polygon points="${buildConePoly(centers, halfWidths, bearingDeg)}"
+          fill="${coneColor}0.10)" stroke="${coneColor}0.28)"
+          stroke-width="1" stroke-dasharray="5 3"/>
+        <!-- Track centerline -->
+        <polyline points="${pts.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')}"
+          fill="none" stroke="${trackColor}" stroke-width="2.5"
+          stroke-dasharray="9 5" opacity="0.9"
+          style="filter:drop-shadow(0 0 4px ${trackColor}77)"/>
+        ${dotsSVG}
+        <!-- Pulsing position ring -->
+        <circle cx="${pts[0].x.toFixed(1)}" cy="${pts[0].y.toFixed(1)}" r="13"
+          fill="none" stroke="${trackColor}" stroke-width="1.5" opacity="0.3">
+          <animate attributeName="r" values="13;22;13" dur="2.4s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0;0.3" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Current position dot -->
+        <circle cx="${pts[0].x.toFixed(1)}" cy="${pts[0].y.toFixed(1)}" r="8"
+          fill="${trackColor}" opacity="0.95"
+          style="filter:drop-shadow(0 0 8px ${trackColor})"/>
+        <!-- Name label — clamped to canvas -->
+        <rect x="${Math.max(4,Math.min(1000-boxW,pts[0].x+12)).toFixed(1)}" y="${Math.max(4,Math.min(540,pts[0].y-26)).toFixed(1)}"
+          width="${boxW.toFixed(0)}" height="19" rx="4"
+          fill="rgba(6,12,22,0.88)" stroke="${trackColor}" stroke-width="1.2"/>
+        <text x="${Math.max(10,Math.min(1004-boxW,pts[0].x+18)).toFixed(1)}" y="${Math.max(17,Math.min(553,pts[0].y-13)).toFixed(1)}"
+          font-family="monospace" font-size="10" font-weight="700"
+          fill="${trackColor}">${nameLabel}</text>
+      </g>`;
+
+    const g = document.createElementNS('http://www.w3.org/2000/svg','g');
+    g.innerHTML = trackSVG;
+    // Insert before last child (legend) so track sits under island labels
+    const children = svgEl.children;
+    const lastChild = children[children.length-1] || null;
+    svgEl.insertBefore(g, lastChild);
+  });
+}
+
+
+
 function haversineKm(a, b){
   const R = 6371;
   const dLat = (b.lat-a.lat) * Math.PI/180;
@@ -6410,6 +6607,10 @@ async function checkStormAlerts(){
       allActive.push(item);
       if(dist <= ALERT_RADIUS_KM) nearby.push(item);
     }
+
+    // Store for map overlay and render the track cone
+    _activeStorms = allActive;
+    renderStormTrack(_activeStorms);
 
     updateStormAlertUI(nearby);
     updateTropicsPill(allActive.length === 0 ? 'quiet' : nearby.length > 0 ? 'nearby' : 'distant', allActive.length, nearby.length);
