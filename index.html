@@ -9,7 +9,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<!-- Non-blocking font load: preload + onload swap eliminates render-blocking -->
+<link rel="preload" as="style"
+  href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+  onload="this.onload=null;this.rel='stylesheet'"/>
+<noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"/>
+</noscript>
 
 <style>
 :root{
@@ -339,6 +345,12 @@ body.theme-lavender .clock-time{color:var(--accent)}
 body.theme-lavender .night-btn,.theme-lavender .toggle-container{
   background:rgba(255,255,255,0.7);border-color:rgba(99,102,241,0.2);color:var(--accent);
 }
+.lock-label{
+  font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
+  color:var(--text-dim);line-height:1;margin-top:1px;
+  transition:color .2s;
+}
+.toggle-container:hover .lock-label{color:var(--accent-bright)}
 body.theme-lavender .fd-temp-hi{color:#7c3aed}
 body.theme-lavender .fd-temp-lo{color:#4338ca}
 body.theme-lavender .fd-day-name{color:var(--accent)}
@@ -1481,6 +1493,134 @@ body.night .tab-btn.active{
 }
 @media (max-width:720px){
   .island-widgets-grid{grid-template-columns:1fr;}
+}
+/* ── WORLD OVERVIEW CARDS ── */
+/* ── WORLD OVERVIEW CARDS — redesigned ── */
+.world-ovr-card{
+  display:grid;
+  grid-template-columns:72px 1fr;
+  grid-template-rows:auto;
+  align-items:start;
+  gap:0 14px;
+  padding:16px 18px;
+  cursor:default;position:relative;overflow:hidden;
+  transition:transform .25s,box-shadow .25s;
+}
+.world-ovr-card:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,0,0,0.35),0 0 0 1px rgba(34,211,238,0.18);
+}
+.world-ovr-card::before{
+  content:'';position:absolute;left:0;top:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,rgba(34,211,238,0.45),transparent);
+  opacity:0;transition:opacity .35s;
+}
+.world-ovr-card:hover::before{opacity:1}
+
+/* Left column — icon + flag stacked */
+.wov-left{
+  grid-column:1;grid-row:1/99;
+  display:flex;flex-direction:column;align-items:center;
+  gap:6px;padding-top:4px;
+}
+.wov-icon{width:62px;height:62px;flex-shrink:0;}
+.wov-flag{font-size:1.4rem;line-height:1;}
+
+/* Right column rows */
+.wov-header{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:6px;margin-bottom:2px;
+}
+.wov-name{
+  font-family:var(--display);font-size:.82rem;font-weight:700;
+  color:var(--text);letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.wov-sub{
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.07em;
+  color:var(--text-dim);white-space:nowrap;
+}
+.wov-localtime{
+  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  color:var(--accent-bright);letter-spacing:.05em;white-space:nowrap;
+  flex-shrink:0;
+}
+.wov-localtime.wov-night{color:#a78bfa;}  /* purple tint at night */
+
+.wov-temp-row{
+  display:flex;align-items:baseline;gap:8px;margin:4px 0 2px;
+}
+.wov-temp{
+  font-family:var(--display);font-size:1.7rem;font-weight:700;
+  line-height:1;
+  text-shadow:0 0 14px rgba(34,211,238,0.35);
+}
+.wov-feels{
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  padding-top:4px;
+}
+.wov-cond{
+  font-family:var(--mono);font-size:.54rem;letter-spacing:.04em;
+  color:var(--text-dim);line-height:1.3;margin-bottom:6px;
+}
+.wov-stats{
+  display:flex;gap:12px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+}
+.wov-stats span{white-space:nowrap;}
+.wov-icao{
+  font-family:var(--mono);font-size:.44rem;letter-spacing:.14em;
+  color:rgba(155,212,255,0.28);margin-top:6px;display:block;
+}
+.wov-daynight{
+  font-size:.7rem;line-height:1;opacity:.7;margin-top:2px;
+}
+
+/* Grid: 3-col on wide, 2-col medium, 1-col narrow */
+@media(max-width:1200px){
+  #world-ovr-grid{grid-template-columns:repeat(3,1fr)!important}
+}
+@media(max-width:820px){
+  #world-ovr-grid{grid-template-columns:repeat(2,1fr)!important}
+}
+@media(max-width:500px){
+  #world-ovr-grid{grid-template-columns:1fr!important}
+}
+
+/* ── LIVE AIRCRAFT TABLE ── */
+.acft-table{
+  width:100%;border-collapse:collapse;
+  font-family:var(--mono);font-size:.62rem;
+}
+.acft-table thead th{
+  text-align:left;padding:8px 10px;
+  font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-dim);font-weight:600;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--panel);
+}
+.acft-table tbody tr{
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:background .2s;
+}
+.acft-table tbody tr:hover{background:rgba(34,211,238,0.05)}
+.acft-table tbody tr:last-child{border-bottom:none}
+.acft-table td{padding:7px 10px;white-space:nowrap;vertical-align:middle}
+.acft-callsign{font-weight:700;color:var(--text);letter-spacing:.03em}
+.acft-flag{font-size:.85rem;margin-right:5px}
+.acft-alt{font-weight:600;color:var(--accent-bright)}
+.acft-trend-up{color:#4ade80}
+.acft-trend-down{color:#fb923c}
+.acft-trend-level{color:var(--text-dim)}
+.acft-dist{color:var(--text-dim);font-size:.55rem}
+.acft-spd{color:#5ab8ff}
+.acft-hdg{color:var(--text-dim);font-size:.58rem}
+.acft-ground{opacity:.5}
+.acft-ground .acft-alt{color:var(--text-dim)}
+@media(max-width:640px){
+  .acft-col-hide{display:none}
+  .acft-table{font-size:.56rem}
+  .acft-table td,.acft-table th{padding:6px 6px}
 }
 .island-card-v2{
   padding:16px 18px;
@@ -2896,9 +3036,10 @@ body.night .tab-btn.active{
       <span class="sync-refresh-icon" id="refreshAllIcon" aria-hidden="true">↻</span>
     </div>
     <div class="night-btn" id="themeBtn" title="Change theme" role="button" tabindex="0" aria-label="Change theme">🎨</div>
-    <div class="toggle-container" id="lockToggle">
+    <div class="toggle-container" id="lockToggle" title="Lock/unlock page scroll — useful on touchscreens to prevent accidental swipes while interacting with maps">
       <span class="lock-led" id="lockLed"></span>
       <span id="lockIcon">🔒</span>
+      <span class="lock-label" id="lockLabel">Scroll Lock</span>
     </div>
   </div>
 </header>
@@ -2991,6 +3132,7 @@ body.night .tab-btn.active{
   <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
   <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
   <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">5</span></div>
+  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">6</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -3090,10 +3232,23 @@ body.night .tab-btn.active{
     </div>
   </div>
 
+  <!-- Live aircraft data strip (callsign + altitude + speed) -->
+  <div class="full">
+    <div class="section-title">Nearby Aircraft — Live ADS-B
+      <span class="data-badge loading" id="acftBadge">LOADING</span>
+      <span id="acftCount" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span>
+    </div>
+    <div class="panel">
+      <div id="acft-list">
+        <div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Scanning airspace…</div>
+      </div>
+    </div>
+  </div>
+
   <div class="col-6">
     <div class="section-title">Windy — Cloud Cover</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds" loading="lazy"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -3101,7 +3256,7 @@ body.night .tab-btn.active{
   <div class="col-6">
     <div class="section-title">Windy — Precipitation Radar</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar" loading="lazy"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -3298,6 +3453,18 @@ body.night .tab-btn.active{
 </div>
 </div>
 
+<!-- ═══ TAB: WORLD ═══ -->
+<div class="tab-pane" id="tab-world" role="tabpanel" aria-labelledby="tabbtn-world">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">World Overview — Connecting Airports <span class="data-badge loading" id="worldOvrBadge">LOADING</span></div>
+    <div id="world-ovr-grid" class="island-widgets-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading…</div>
+    </div>
+  </div>
+</div>
+</div>
+
 <script>
 /* ════════════════════════════════
    CONFIG
@@ -3315,11 +3482,20 @@ const WX_REFRESH_MS = 15 * 60 * 1000;       // WeatherAPI + Open-Meteo — slowe
 let _lastWxFetch    = 0;
 
 const AIRPORTS = {
-  TNCA:{ label:"Queen Beatrix Int'l · Aruba 🇦🇼",  name:'Aruba',   flag:'🇦🇼', q:'iata:AUA', lat:12.501, lon:-70.015 },
-  TNCC:{ label:'Hato International · Curaçao 🇨🇼',  name:'Curaçao', flag:'🇨🇼', q:'iata:CUR', lat:12.189, lon:-68.960 },
-  TNCB:{ label:'Flamingo Airport · Bonaire 🇧🇶',    name:'Bonaire', flag:'🇧🇶', q:'iata:BON', lat:12.131, lon:-68.268 },
+  TNCA:{ label:"Queen Beatrix Int'l · Aruba 🇦🇼",        name:'Aruba',       flag:'🇦🇼', q:'iata:AUA', lat:12.501, lon:-70.015 },
+  TNCC:{ label:'Hato International · Curaçao 🇨🇼',        name:'Curaçao',     flag:'🇨🇼', q:'iata:CUR', lat:12.189, lon:-68.960 },
+  TNCB:{ label:'Flamingo Airport · Bonaire 🇧🇶',          name:'Bonaire',     flag:'🇧🇶', q:'iata:BON', lat:12.131, lon:-68.268 },
 };
 const ICAOS = ['TNCA','TNCC','TNCB'];
+
+/* World overview airports — fetched separately, shown as visual cards */
+const WORLD_OVR = [
+  { icao:'EHAM', name:'Amsterdam',  sub:'Schiphol',         flag:'🇳🇱', q:'iata:AMS', lat:52.308, lon:  4.764 },
+  { icao:'KMIA', name:'Miami',      sub:'Miami Intl',       flag:'🇺🇸', q:'iata:MIA', lat:25.796, lon:-80.287 },
+  { icao:'KLGA', name:'New York',   sub:'LaGuardia',        flag:'🇺🇸', q:'iata:LGA', lat:40.777, lon:-73.873 },
+  { icao:'TNCE', name:'St Eustatius',sub:'F.D. Roosevelt',  flag:'🇳🇱', q:'iata:EUX', lat:17.497, lon:-62.979 },
+  { icao:'TBPB', name:'Barbados',   sub:'Grantley Adams',   flag:'🇧🇧', q:'iata:BGI', lat:13.075, lon:-59.491 },
+];
 
 /* ════════════════════════════════
    SHARED DATA STORE
@@ -3423,6 +3599,8 @@ const lockLed   =document.getElementById('lockLed');
 const lockIcon  =document.getElementById('lockIcon');
 function setLock(locked){
   document.body.dataset.locked=locked;
+  const lbl = document.getElementById('lockLabel');
+  if(lbl) lbl.textContent = locked ? 'Scroll Lock' : 'Scroll Free';
   document.querySelectorAll('.overlay-blocker').forEach(el=>{ el.style.display=locked?'block':'none'; });
   lockIcon.textContent=locked?'🔒':'🔓';
   locked?lockLed.classList.remove('unlocked'):lockLed.classList.add('unlocked');
@@ -3654,6 +3832,11 @@ function switchTab(name){
   });
   tabLastSeen[name]=Date.now();
 
+  // Live aircraft poll only runs while the ATC tab is visible (saves API calls)
+  try{
+    if(name==='atc') startAircraftPoll(); else stopAircraftPoll();
+  }catch(err){ console.warn('[Aircraft] poll toggle:', err); }
+
   // ── STEP 2: side effects — each isolated so one failure can't break the tab ──
   try{
     // Flights tab: lazy-load whichever sub-frame is currently active
@@ -3753,7 +3936,7 @@ function wireTabs(){
 function wireTabKeys(){
   document.addEventListener('keydown', e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights'};
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights','6':'world'};
     if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
   });
 }
@@ -3907,6 +4090,12 @@ async function fetchTides(){
         </div>
 
         <div class="tide-note">Tidal range at Curaçao is very small (~0.3 m). Times are local (AST, UTC-4).</div>
+        <div class="tide-note" style="margin-top:4px;opacity:.6">
+          ℹ Aruba &amp; Bonaire: no NOAA tide station available —
+          <a href="https://tidesandcurrents.noaa.gov/noaatidepredictions.html?id=9761115"
+             target="_blank" style="color:var(--cyan);text-decoration:none">NOAA ↗</a>
+          only covers Willemstad (TNCC).
+        </div>
       </div>`;
     setBadge('tideBadge','LIVE');
   }catch(err){
@@ -4707,6 +4896,318 @@ function parseKNMIData(text){
   }
 }
 
+
+/* ════════════════════════════════
+   WORLD OVERVIEW — 5 connecting airports
+   One WeatherAPI call per airport, runs in parallel with the main refresh.
+   Renders animated weather icon + temp + conditions + wind.
+════════════════════════════════ */
+const _worldOvrStore = {};   // icao → WeatherAPI response
+
+async function fetchWorldOvr(){
+  setBadge('worldOvrBadge','LOADING','loading');
+  try{
+    await Promise.allSettled(WORLD_OVR.map(async ap=>{
+      try{
+        const url = PROXY_BASE
+          ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=1&aqi=no&alerts=no`
+          : `https://api.weatherapi.com/v1/current.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&aqi=no`;
+        const r = await fetch(url,{cache:'no-store'});
+        if(!r.ok) throw new Error('HTTP '+r.status);
+        _worldOvrStore[ap.icao] = await r.json();
+      }catch(e){ console.warn('[WorldOvr]',ap.icao,e.message); }
+    }));
+    renderWorldOvr();
+    setBadge('worldOvrBadge','LIVE');
+  }catch(e){
+    console.error('[WorldOvr]',e.message);
+    setBadge('worldOvrBadge','ERROR','error');
+  }
+}
+
+function worldNightIcon(wmo){
+  // Swap sun-based icons for moon/star equivalents at night
+  // WMO 0=clear, 1=mainly clear, 2=partly cloudy
+  if(wmo===0||wmo===1){
+    return `<svg class="wx-svg" viewBox="0 0 80 80">
+      <path d="M46 22 Q30 28 30 44 Q30 62 48 66 Q28 66 20 50 Q12 34 26 22 Q34 16 46 22Z"
+        fill="#a78bfa" class="wx-cloud-float"/>
+      <circle cx="58" cy="18" r="3" fill="#e9d5ff" opacity="0.8"/>
+      <circle cx="66" cy="32" r="2" fill="#e9d5ff" opacity="0.6"/>
+      <circle cx="52" cy="36" r="1.5" fill="#e9d5ff" opacity="0.5"/>
+    </svg>`;
+  }
+  if(wmo===2){
+    return `<svg class="wx-svg" viewBox="0 0 80 80">
+      <path d="M30 20 Q20 24 20 34 Q20 46 32 48 Q18 48 12 38 Q6 28 16 20 Q22 15 30 20Z"
+        fill="#a78bfa" opacity="0.85"/>
+      <g class="wx-cloud-drift">
+        <ellipse cx="50" cy="50" rx="20" ry="10" fill="var(--wx-cloud)"/>
+        <ellipse cx="40" cy="48" rx="11" ry="8" fill="var(--wx-cloud)"/>
+        <ellipse cx="60" cy="48" rx="11" ry="8" fill="var(--wx-cloud)"/>
+      </g>
+    </svg>`;
+  }
+  return null; // other conditions look fine at night (rain, cloud, fog etc)
+}
+
+function renderWorldOvr(){
+  const grid = document.getElementById('world-ovr-grid');
+  if(!grid) return;
+
+  const cards = WORLD_OVR.map(ap=>{
+    const d   = _worldOvrStore[ap.icao];
+    const cur = d?.current;
+    const loc = d?.location;
+
+    if(!cur){
+      return `<div class="panel world-ovr-card" aria-label="${ap.name}: no data">
+        <div class="wov-left">
+          <div class="wov-icon" style="opacity:.25">${animatedWeatherSVG(3)}</div>
+          <div class="wov-flag">${ap.flag}</div>
+        </div>
+        <div>
+          <div class="wov-header">
+            <div>
+              <div class="wov-name">${ap.name}</div>
+              <div class="wov-sub">${ap.sub}</div>
+            </div>
+            <div class="wov-localtime">—:——</div>
+          </div>
+          <div class="wov-temp-row"><div class="wov-temp" style="color:var(--text-dim)">—°</div></div>
+          <div class="wov-cond" style="opacity:.4">No data</div>
+          <span class="wov-icao">${ap.icao}</span>
+        </div>
+      </div>`;
+    }
+
+    // ── Condition + icon (day/night aware) ──
+    const condCode = cur.condition?.code || 1000;
+    const condText = cur.condition?.text || '';
+    const wmo      = mapWeatherApiToWMO(condCode, condText);
+    const isNight  = cur.is_day === 0;
+    const nightSVG = isNight ? worldNightIcon(wmo) : null;
+    const icon     = nightSVG || animatedWeatherSVG(wmo);
+
+    // ── Local time from WeatherAPI location object ──
+    // Format: "2024-05-30 14:35"  →  "14:35"
+    const localtime  = loc?.localtime || '';
+    const timeParts  = localtime.split(' ');
+    const timeStr    = timeParts[1] || '—:——';
+    // Format: show hours:minutes + day/night indicator
+    const [hStr='0'] = timeStr.split(':');
+    const hr = parseInt(hStr);
+    const periodIcon = isNight ? '🌙' : hr<6||hr>=20?'🌙':'☀';
+    const isDawnDusk  = !isNight && (hr<7||hr>=18);
+
+    // ── Temperature ──
+    const tempC  = cur.temp_c  != null ? Math.round(cur.temp_c)  : null;
+    const feelsC = cur.feelslike_c != null ? Math.round(cur.feelslike_c) : null;
+    const tempDisplay = tempC != null ? `${tempC}°` : '—°';
+    const tempCol = tempC != null
+      ? tempC>=33?'#f87171':tempC>=27?'#fbbf24':tempC<15?'#93c5fd':'#22d3ee'
+      : 'var(--text-dim)';
+
+    // ── Wind ──
+    const windKt  = cur.wind_kph != null ? Math.round(cur.wind_kph * 0.539957) : null;
+    const windDir = cur.wind_dir || '';
+    const gustKt  = cur.gust_kph != null ? Math.round(cur.gust_kph * 0.539957) : null;
+    const windStr = windKt != null
+      ? `${windKt}kt ${windDir}${gustKt&&gustKt>windKt+2?' G'+gustKt:''}`
+      : null;
+
+    // ── Other ──
+    const humid   = cur.humidity != null ? `${cur.humidity}%` : null;
+    const visKm   = cur.vis_km   != null ? `${cur.vis_km.toFixed(0)}km vis` : null;
+
+    const statsItems = [windStr, humid, visKm].filter(Boolean);
+
+    const feelsStr = (feelsC != null && feelsC !== tempC)
+      ? `Feels ${feelsC}°` : '';
+
+    const timeCls = isNight ? 'wov-localtime wov-night' : 'wov-localtime';
+
+    return `<div class="panel world-ovr-card"
+        role="img"
+        aria-label="${ap.name}: ${condText}, ${tempDisplay}C, local time ${timeStr}${windStr?', wind '+windStr:''}">
+      <div class="wov-left">
+        <div class="wov-icon">${icon}</div>
+        <div class="wov-flag">${ap.flag}</div>
+        <div class="wov-daynight">${periodIcon}</div>
+      </div>
+      <div>
+        <div class="wov-header">
+          <div style="min-width:0;overflow:hidden">
+            <div class="wov-name">${ap.name}</div>
+            <div class="wov-sub">${ap.sub}</div>
+          </div>
+          <div class="${timeCls}">${timeStr}</div>
+        </div>
+        <div class="wov-temp-row">
+          <div class="wov-temp" style="color:${tempCol}">${tempDisplay}</div>
+          ${feelsStr?`<div class="wov-feels">${feelsStr}</div>`:''}
+        </div>
+        <div class="wov-cond">${condText}</div>
+        ${statsItems.length?`<div class="wov-stats">${statsItems.map(s=>`<span>${s}</span>`).join('')}</div>`:''}
+        <span class="wov-icao">${ap.icao}</span>
+      </div>
+    </div>`;
+  });
+
+  grid.innerHTML = cards.join('');
+}
+
+
+/* ════════════════════════════════
+   LIVE AIRCRAFT — airplanes.live ADS-B API
+   Public, no key. Returns all aircraft within {radius} nm of a point.
+   Endpoint: https://api.airplanes.live/v2/point/{lat}/{lon}/{radius}
+   Refreshes every 15s independently of the main weather cycle.
+════════════════════════════════ */
+const ACFT_CENTER = { lat: 12.19, lon: -68.96 };   // Curaçao (TNCC)
+const ACFT_RADIUS = 250;                            // nautical miles
+let _acftTimer = null;
+
+// Origin-country flag from the first chars of the registration/hex isn't reliable,
+// so we map by callsign airline prefix where known, else show a generic plane.
+const AIRLINE_FLAG = {
+  KLM:'🇳🇱', KL:'🇳🇱', SLM:'🇸🇷', PY:'🇸🇷', CMP:'🇵🇦', CM:'🇵🇦',
+  AAL:'🇺🇸', AA:'🇺🇸', UAL:'🇺🇸', UA:'🇺🇸', DAL:'🇺🇸', DL:'🇺🇸', JBU:'🇺🇸', B6:'🇺🇸',
+  AVA:'🇨🇴', AV:'🇨🇴', ARU:'🇦🇼', TUI:'🇳🇱', WIA:'🇦🇼', DWI:'🇨🇼', INSEL:'🇨🇼',
+  ELY:'🇮🇱', VLO:'🇨🇴', LAN:'🇨🇱', TAM:'🇧🇷', AZU:'🇧🇷', GLO:'🇧🇷',
+  CND:'🇨🇦', WJA:'🇨🇦', ACA:'🇨🇦', AC:'🇨🇦', BWA:'🇹🇹', LRC:'🇨🇷',
+  COA:'🇵🇦', RPB:'🇨🇴', ARE:'🇩🇴', SKU:'🇨🇴', VOI:'🇲🇽', AMX:'🇲🇽',
+};
+function acftFlag(callsign){
+  if(!callsign) return '✈️';
+  const cs = callsign.trim().toUpperCase();
+  // try 3-letter then 2-letter ICAO/IATA prefix
+  for(const len of [3,2]){
+    const pfx = cs.slice(0,len);
+    if(AIRLINE_FLAG[pfx]) return AIRLINE_FLAG[pfx];
+  }
+  return '✈️';
+}
+
+// Great-circle distance in nautical miles
+function acftDistNm(lat, lon){
+  const R = 3440.065;
+  const dLat = (lat-ACFT_CENTER.lat)*Math.PI/180;
+  const dLon = (lon-ACFT_CENTER.lon)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 +
+    Math.cos(ACFT_CENTER.lat*Math.PI/180)*Math.cos(lat*Math.PI/180)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+
+function fmtAlt(alt){
+  if(alt==null || alt==='ground') return alt==='ground' ? 'GND' : '—';
+  const n = +alt;
+  if(!isFinite(n)) return '—';
+  if(n >= 18000) return 'FL'+Math.round(n/100);   // flight level above transition
+  return Math.round(n/100)*100 + 'ft';
+}
+
+async function fetchAircraft(){
+  const badge = document.getElementById('acftBadge');
+  const listEl = document.getElementById('acft-list');
+  if(!listEl) return;
+  try{
+    const url = `https://api.airplanes.live/v2/point/${ACFT_CENTER.lat}/${ACFT_CENTER.lon}/${ACFT_RADIUS}`;
+    const r = await fetch(url, {cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    const list = data.ac || data.aircraft || [];
+    renderAircraft(list);
+    setBadge('acftBadge','LIVE');
+  }catch(e){
+    console.warn('[Aircraft]', e.message);
+    setBadge('acftBadge','ERROR','error');
+    if(listEl && !listEl.querySelector('.acft-table')){
+      listEl.innerHTML = `<div style="padding:18px;font-family:var(--mono);font-size:.58rem;color:#f87171;text-align:center">
+        Aircraft feed unavailable (${e.message}). <a href="https://globe.airplanes.live/" target="_blank" style="color:var(--cyan)">Open live map ↗</a></div>`;
+    }
+  }
+}
+
+function renderAircraft(list){
+  const listEl = document.getElementById('acft-list');
+  const countEl = document.getElementById('acftCount');
+  if(!listEl) return;
+
+  // Normalise + compute distance, filter airborne with valid position
+  const rows = list.map(a=>{
+    const lat = a.lat, lon = a.lon;
+    const callsign = (a.flight || a.r || a.hex || '').trim();
+    const altRaw = a.alt_baro != null ? a.alt_baro : a.alt_geom;
+    const onGround = altRaw === 'ground';
+    const dist = (lat!=null && lon!=null) ? acftDistNm(lat, lon) : 9999;
+    return {
+      callsign: callsign || '——',
+      flag: acftFlag(callsign),
+      alt: altRaw,
+      onGround,
+      gs: a.gs != null ? Math.round(a.gs) : null,            // ground speed kt
+      track: a.track != null ? Math.round(a.track) : null,   // heading
+      vert: a.baro_rate != null ? a.baro_rate : (a.geom_rate != null ? a.geom_rate : null),
+      dist,
+      hex: a.hex,
+    };
+  }).filter(a => a.callsign !== '——' && isFinite(a.dist))
+    .sort((a,b)=> a.dist - b.dist)
+    .slice(0, 12);
+
+  if(countEl) countEl.textContent = list.length ? `${list.length} in range · nearest 12` : '';
+
+  if(!rows.length){
+    listEl.innerHTML = `<div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">No aircraft currently in range</div>`;
+    return;
+  }
+
+  const trendIcon = v => {
+    if(v == null || Math.abs(v) < 100) return '<span class="acft-trend-level">→ level</span>';
+    return v > 0
+      ? '<span class="acft-trend-up">↑ climb</span>'
+      : '<span class="acft-trend-down">↓ descend</span>';
+  };
+  const cardinal = deg => {
+    if(deg == null) return '';
+    const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+    return dirs[Math.round(deg/45)%8];
+  };
+
+  const body = rows.map(a=>`
+    <tr class="${a.onGround?'acft-ground':''}">
+      <td><span class="acft-flag">${a.flag}</span><span class="acft-callsign">${a.callsign}</span></td>
+      <td class="acft-alt">${fmtAlt(a.alt)}</td>
+      <td class="acft-col-hide acft-spd">${a.gs!=null?a.gs+'kt':'—'}</td>
+      <td class="acft-col-hide acft-hdg">${a.track!=null?a.track+'° '+cardinal(a.track):'—'}</td>
+      <td>${a.onGround?'<span class="acft-trend-level">on ground</span>':trendIcon(a.vert)}</td>
+      <td class="acft-dist">${Math.round(a.dist)} nm</td>
+    </tr>`).join('');
+
+  listEl.innerHTML = `
+    <div style="max-height:340px;overflow-y:auto">
+      <table class="acft-table">
+        <thead><tr>
+          <th>Callsign</th><th>Alt</th>
+          <th class="acft-col-hide">Speed</th><th class="acft-col-hide">Heading</th>
+          <th>Trend</th><th>Dist</th>
+        </tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>`;
+}
+
+// Start/stop the 15-second aircraft poll when the ATC tab is visible
+function startAircraftPoll(){
+  if(_acftTimer) return;
+  fetchAircraft();
+  _acftTimer = setInterval(fetchAircraft, 15000);
+}
+function stopAircraftPoll(){
+  if(_acftTimer){ clearInterval(_acftTimer); _acftTimer = null; }
+}
+
 /* ════════════════════════════════
    MAIN REFRESH CYCLE
 ════════════════════════════════ */
@@ -4748,7 +5249,8 @@ async function refresh(){
   if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
     await Promise.all([
       ...ICAOS.map(fetchWeatherAPI),
-      fetchKNMI(),   // KNMI 10-min station obs — runs in parallel
+      fetchKNMI(),        // KNMI 10-min station obs
+      fetchWorldOvr(),    // World overview: EHAM KMIA KLGA TNCE TBPB
     ]);
     _lastWxFetch = Date.now();
   }
@@ -4851,6 +5353,15 @@ function triggerManualRefresh(){
   });
 })();
 
+// Eager first fetch for world overview (before first 5-min cycle)
+fetchWorldOvr();
+startAircraftPoll();   // ATC tab is active by default
+// Pause aircraft polling when the browser tab is hidden
+document.addEventListener('visibilitychange', ()=>{
+  const atcActive = document.getElementById('tab-atc')?.classList.contains('active');
+  if(document.hidden) stopAircraftPoll();
+  else if(atcActive) startAircraftPoll();
+});
 refresh();
 setInterval(refresh,REFRESH_MS);
 
