@@ -3787,7 +3787,7 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
    ADSB POSITION MEMORY
    ADS-B Exchange encodes view state in its URL (?lat=&lon=&zoom=).
    Since we can't cross-origin-read the iframe's live URL, we use a
-   postMessage listener (airplanes.live sends viewChanged events) and
+   postMessage listener (adsbexchange.com sends viewChanged events) and
    fall back to a manual "Save Position" button.
 
    Strategy:
@@ -3801,25 +3801,31 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
   const frame    = document.getElementById('adsbFrame');
   const saveBtn  = document.getElementById('adsbSaveBtn');
   const BASE_URL = 'https://globe.adsbexchange.com/';
-  const DEFAULT  = `${BASE_URL}?lat=12.25&lon=-69.0&zoom=8&hideSidebar&hideButtons`;
+  const DEFAULT  = `${BASE_URL}?lat=12.189&lon=-68.960&zoom=9`;
 
-  let trackedUrl = localStorage.getItem(LS_KEY) || DEFAULT;
+  let saved = localStorage.getItem(LS_KEY);
+  // Discard any saved URL from the old airplanes.live provider
+  if(saved && !saved.includes('adsbexchange.com')){
+    localStorage.removeItem(LS_KEY);
+    saved = null;
+  }
+  let trackedUrl = saved || DEFAULT;
 
   // Restore saved position on load
   if(trackedUrl !== frame.src){
     frame.src = trackedUrl;
   }
 
-  // Listen for position updates from airplanes.live via postMessage
+  // Listen for position updates from ADS-B Exchange via postMessage
   window.addEventListener('message', e=>{
-    if(!e.origin.includes('adsbexchange.com') && !e.origin.includes('airplanes.live')) return;
+    if(!e.origin.includes('adsbexchange.com')) return;
     const d = e.data;
     if(d && (d.type==='mapView' || d.type==='viewChanged' || d.lat!=null)){
       const lat  = parseFloat(d.lat  ?? d.center?.[1]);
       const lon  = parseFloat(d.lon  ?? d.center?.[0]);
       const zoom = parseFloat(d.zoom ?? d.z ?? 9);
       if(!isNaN(lat) && !isNaN(lon)){
-        trackedUrl = `${BASE_URL}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&zoom=${zoom.toFixed(1)}&hideSidebar&hideButtons`;
+        trackedUrl = `${BASE_URL}?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&zoom=${zoom.toFixed(1)}`;
         localStorage.setItem(LS_KEY, trackedUrl);
         if(saveBtn) saveBtn.title = `Saved: lat ${lat.toFixed(2)}, lon ${lon.toFixed(2)}, zoom ${zoom.toFixed(1)}`;
       }
@@ -3835,7 +3841,7 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
         const lat   = url.searchParams.get('lat')  || '12.2';
         const lon   = url.searchParams.get('lon')  || '-68.5';
         const zoom  = url.searchParams.get('zoom') || '9';
-        const saved = `${BASE_URL}?lat=${lat}&lon=${lon}&zoom=${zoom}&hideSidebar&hideButtons`;
+        const saved = `${BASE_URL}?lat=${lat}&lon=${lon}&zoom=${zoom}`;
         localStorage.setItem(LS_KEY, saved);
         trackedUrl = saved;
         saveBtn.textContent = '✅ Saved';
@@ -3863,7 +3869,7 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
   // Also intercept the iframe's load event to update trackedUrl
   frame.addEventListener('load', ()=>{
     try{
-      if(frame.src && frame.src.includes('airplanes.live') && frame.src !== 'about:blank'){
+      if(frame.src && frame.src.includes('adsbexchange.com') && frame.src !== 'about:blank'){
         trackedUrl = frame.src;
         localStorage.setItem(LS_KEY, trackedUrl);
       }
