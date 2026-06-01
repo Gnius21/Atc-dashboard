@@ -1782,6 +1782,30 @@ body.night .tab-btn.active{
 }
 
 
+
+/* ── WINDY CLICK-TO-LOAD PLACEHOLDERS ── */
+.windy-lazy-box{display:flex;align-items:center;justify-content:center}
+.windy-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;padding:28px;text-align:center;
+}
+.windy-placeholder-icon{font-size:2.8rem;line-height:1;opacity:.5}
+.windy-placeholder-label{
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-dim);
+}
+.windy-load-btn{
+  font-family:var(--mono);font-size:.58rem;font-weight:700;
+  padding:8px 20px;border-radius:6px;cursor:pointer;
+  border:1px solid rgba(34,211,238,0.45);
+  background:rgba(34,211,238,0.08);color:var(--accent-bright);
+  letter-spacing:.06em;transition:all .2s;
+}
+.windy-load-btn:hover{
+  background:rgba(34,211,238,0.18);
+  border-color:var(--accent-bright);
+  box-shadow:0 0 12px rgba(34,211,238,0.2);
+}
 /* ── ADS-B CONTROL BAR ── */
 .adsb-controls{
   display:flex;align-items:center;gap:16px;flex-wrap:wrap;
@@ -3398,7 +3422,7 @@ body.night .tab-btn.active{
       <iframe
         id="adsbFrame"
         class="windy-iframe"
-        src="https://globe.adsbexchange.com/?lat=12.189&lon=-68.960&zoom=9"
+        src="https://globe.adsbexchange.com/?lat=12.35&lon=-69.50&zoom=8"
         data-no-stale="1"
         allow="fullscreen"
         referrerpolicy="no-referrer-when-downgrade"
@@ -3415,17 +3439,23 @@ body.night .tab-btn.active{
 
   <div class="col-6">
     <div class="section-title">Windy — Cloud Cover</div>
-    <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds" loading="lazy"></iframe>
-      <div class="overlay-blocker"></div>
+    <div class="radar-box windy-lazy-box" data-windy-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds">
+      <div class="windy-placeholder">
+        <div class="windy-placeholder-icon">🌥</div>
+        <div class="windy-placeholder-label">Cloud Cover</div>
+        <button class="windy-load-btn" onclick="loadWindyBox(this)">Load Map</button>
+      </div>
     </div>
   </div>
 
   <div class="col-6">
     <div class="section-title">Windy — Precipitation Radar</div>
-    <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar" loading="lazy"></iframe>
-      <div class="overlay-blocker"></div>
+    <div class="radar-box windy-lazy-box" data-windy-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar">
+      <div class="windy-placeholder">
+        <div class="windy-placeholder-icon">🌧</div>
+        <div class="windy-placeholder-label">Precipitation Radar</div>
+        <button class="windy-load-btn" onclick="loadWindyBox(this)">Load Map</button>
+      </div>
     </div>
   </div>
 
@@ -3801,7 +3831,7 @@ lockToggle.onclick=()=>{ setLock(document.body.dataset.locked!=='true'); };
   const frame    = document.getElementById('adsbFrame');
   const saveBtn  = document.getElementById('adsbSaveBtn');
   const BASE_URL = 'https://globe.adsbexchange.com/';
-  const DEFAULT  = `${BASE_URL}?lat=12.189&lon=-68.960&zoom=9`;
+  const DEFAULT  = `${BASE_URL}?lat=12.35&lon=-69.50&zoom=8`;
 
   let saved = localStorage.getItem(LS_KEY);
   // Discard any saved URL from the old airplanes.live provider
@@ -5650,6 +5680,23 @@ function renderDashboard(){
     ${forecastCard}
     ${hourlyPanel}
   </div>`;
+}
+
+
+// Load a Windy iframe on demand (click-to-load pattern)
+function loadWindyBox(btn){
+  const box = btn.closest('.windy-lazy-box');
+  if(!box) return;
+  const windySrc = box.dataset.windySrc;
+  if(!windySrc) return;
+  // Replace placeholder with the real iframe
+  box.classList.remove('windy-lazy-box');
+  box.innerHTML = `<iframe class="windy-iframe"
+    src="${windySrc}"
+    allow="fullscreen"
+    referrerpolicy="no-referrer-when-downgrade"
+    style="width:100%;height:100%;border:none;display:block"
+  ></iframe><div class="overlay-blocker"></div>`;
 }
 
 /* ════════════════════════════════
