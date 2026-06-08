@@ -4,7 +4,14 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <meta name="theme-color" content="#05080f"/>
-<title>ATC &amp; WEATHER DASHBOARD — Curaçao</title>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="RWC Caribbean"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<link rel="icon" type="image/png" href="favicon.png"/>
+<title>RWC Caribbean — ATC &amp; Weather</title>
 
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -345,6 +352,66 @@ body.theme-lavender .clock-time{color:var(--accent)}
 body.theme-lavender .night-btn,.theme-lavender .toggle-container{
   background:rgba(255,255,255,0.7);border-color:rgba(99,102,241,0.2);color:var(--accent);
 }
+
+/* ── GLASS theme — deep purple/indigo, frosted glass ── */
+body.theme-glass{
+  --accent:#c084fc;--accent-bright:#e0baff;--accent-dim:#7c3aed;
+  --accent-glow:rgba(192,132,252,0.14);
+  --cyan:#a78bfa;--cyan-glow:rgba(167,139,250,0.22);
+  --green:#34d399;--amber:#fbbf24;--red:#ff6b9d;
+  --bg:#130826;--bg2:#1a0a3c;--bg3:#0d1a4a;
+  --panel:rgba(255,255,255,0.06);--panel-hi:rgba(255,255,255,0.10);
+  --border:rgba(180,130,255,0.18);--border-hi:rgba(210,170,255,0.38);--border-bright:rgba(192,132,252,0.55);
+  --text:#f0eaff;--text-dim:#9878cc;--muted:#5c4a8a;
+}
+body.theme-glass{background:linear-gradient(135deg,#130826 0%,#0d1a4a 55%,#0a2040 100%)!important;}
+body.theme-glass::before{
+  background:
+    radial-gradient(ellipse 900px 700px at 15% 5%,rgba(124,58,237,0.22) 0%,transparent 60%),
+    radial-gradient(ellipse 700px 600px at 85% 85%,rgba(59,130,246,0.14) 0%,transparent 55%)!important;
+}
+body.theme-glass header{background:rgba(30,10,70,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(200,160,255,0.12);}
+body.theme-glass .tab-bar{background:rgba(20,6,50,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-glass .tab-btn{color:rgba(200,170,255,0.6);}
+body.theme-glass .tab-btn.active{background:linear-gradient(180deg,rgba(124,58,237,0.82),rgba(79,30,180,0.88));border-color:rgba(180,130,255,0.55);box-shadow:0 5px 18px rgba(124,58,237,0.4),inset 0 1px 0 rgba(220,195,255,0.2);color:#fff;}
+body.theme-glass .tab-btn:hover:not(.active){background:rgba(130,80,255,0.12);color:#d0b0ff;}
+body.theme-glass .panel{background:rgba(255,255,255,0.055);border-color:rgba(200,160,255,0.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+body.theme-glass .wx-bar{background:rgba(20,6,50,0.7);border-bottom-color:rgba(180,130,255,0.14);}
+body.theme-glass .section-title{color:var(--accent);}
+body.theme-glass .data-badge{border-color:rgba(192,132,252,0.35);}
+body.theme-glass .clock-block{background:rgba(30,10,70,0.55);border-color:rgba(180,130,255,0.2);}
+body.theme-glass .night-btn,body.theme-glass .toggle-container{background:rgba(30,10,70,0.55);border-color:rgba(180,130,255,0.25);color:var(--accent);}
+
+/* ── NEON theme — dark purple, vivid cyan/neon ── */
+body.theme-neon{
+  --accent:#00e5ff;--accent-bright:#80f0ff;--accent-dim:#7c3aed;
+  --accent-glow:rgba(0,229,255,0.12);
+  --cyan:#00e5ff;--cyan-glow:rgba(0,229,255,0.25);
+  --green:#00e676;--amber:#ffea00;--red:#ff4488;
+  --bg:#080318;--bg2:#1a0050;--bg3:#0a0820;
+  --panel:rgba(50,12,110,0.55);--panel-hi:rgba(76,0,200,0.25);
+  --border:rgba(90,40,200,0.28);--border-hi:rgba(120,70,255,0.45);--border-bright:rgba(0,229,255,0.45);
+  --text:#e8e0ff;--text-dim:#6850a8;--muted:#3a2068;
+}
+body.theme-neon{background:#080318!important;}
+body.theme-neon::before{
+  background:
+    radial-gradient(ellipse 1000px 700px at 10% 0%,rgba(76,0,180,0.38) 0%,transparent 60%),
+    radial-gradient(ellipse 800px 600px at 92% 95%,rgba(0,140,255,0.16) 0%,transparent 55%),
+    radial-gradient(ellipse 500px 400px at 50% 50%,rgba(120,0,200,0.08) 0%,transparent 50%)!important;
+}
+body.theme-neon header{background:rgba(10,3,28,0.85);border-bottom-color:rgba(90,40,200,0.3);}
+body.theme-neon .tab-bar{background:rgba(8,2,22,0.9);}
+body.theme-neon .tab-btn{color:rgba(160,130,255,0.55);}
+body.theme-neon .tab-btn.active{background:linear-gradient(180deg,rgba(76,0,200,0.88),rgba(50,0,140,0.94));border-color:rgba(0,229,255,0.4);box-shadow:0 5px 18px rgba(76,0,200,0.5),0 0 22px rgba(0,229,255,0.12),inset 0 1px 0 rgba(180,120,255,0.2);color:#e0e0ff;}
+body.theme-neon .tab-btn:hover:not(.active){background:rgba(76,0,200,0.15);color:#b0a0ff;}
+body.theme-neon .panel{background:linear-gradient(135deg,rgba(50,12,110,0.55),rgba(18,4,48,0.78));border-color:rgba(90,40,200,0.28);}
+body.theme-neon .wx-bar{background:rgba(10,3,28,0.9);border-bottom-color:rgba(90,40,200,0.3);}
+body.theme-neon .section-title{color:var(--accent);}
+body.theme-neon .data-badge{border-color:rgba(0,229,255,0.3);}
+body.theme-neon .clock-block{background:rgba(20,5,50,0.7);border-color:rgba(90,40,200,0.3);}
+body.theme-neon .night-btn,body.theme-neon .toggle-container{background:rgba(10,3,28,0.75);border-color:rgba(90,40,200,0.35);color:var(--accent);}
+
 .lock-label{
   font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
   color:var(--text-dim);line-height:1;margin-top:1px;
@@ -720,6 +787,16 @@ body.night .tab-bar::before{
 }
 body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 
+/* ── ATC sub-nav buttons ── */
+.atc-subbtn{
+  font-family:var(--mono);font-size:.62rem;font-weight:700;letter-spacing:.12em;
+  text-transform:uppercase;padding:8px 18px;border-radius:20px;cursor:pointer;
+  border:1px solid var(--bdr);background:rgba(255,255,255,.03);color:var(--text-dim);
+  transition:all .18s;white-space:nowrap;
+}
+.atc-subbtn:hover{border-color:var(--bdrb);color:var(--cyan);}
+.atc-subbtn.active{background:var(--accd);border-color:var(--bdrb);color:var(--acc);}
+
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
@@ -743,6 +820,15 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   display:grid;grid-template-columns:repeat(12,1fr);
   gap:14px;padding:16px 20px 36px;
   max-width:1800px;margin:0 auto;
+}
+/* Zero-padding variant for iframe-only panes (Monitor, RWC) */
+.layout--frame{
+  padding:8px 10px 8px;
+  gap:0;
+}
+.layout--frame .rwc-frame-wrap{
+  height:calc(100vh - 140px);
+  min-height:480px;
 }
 /* iOS safe area support */
 @supports(padding-bottom: env(safe-area-inset-bottom)){
@@ -1177,8 +1263,8 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .rwc-frame-wrap{
   position:relative;
   width:100%;
-  height:calc(100vh - 220px);
-  min-height:680px;
+  height:calc(100vh - 170px);
+  min-height:500px;
   border:1px solid var(--border-hi);
   border-radius:var(--radius-lg);
   overflow:hidden;
@@ -1196,7 +1282,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
     linear-gradient(225deg,var(--cyan) 0%,transparent 14px) top right   /14px 14px no-repeat,
     linear-gradient(315deg,var(--cyan) 0%,transparent 14px) bottom right/14px 14px no-repeat,
     linear-gradient( 45deg,var(--cyan) 0%,transparent 14px) bottom left /14px 14px no-repeat;
-  opacity:.3;pointer-events:none;z-index:5;
+  opacity:.3;pointer-events:none;z-index:1;
   filter:drop-shadow(0 0 4px var(--cyan));
 }
 .rwc-frame{
@@ -1204,6 +1290,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   width:100%;height:100%;
   border:0;
   background:#04060b;
+  z-index:2;
 }
 
 /* ── ACTIVE TAB — multi-layer effect ── */
@@ -1274,6 +1361,7 @@ body.night .tab-btn.active{
 
 @media(max-width:600px){
   .rwc-frame-wrap{height:calc(100vh - 180px);min-height:540px;}
+  .layout--frame .rwc-frame-wrap{height:calc(100vh - 130px);min-height:400px;}
 }
 
 /* ── SMOOTH CONTENT UPDATES ── */
@@ -1491,16 +1579,13 @@ body.night .tab-btn.active{
    3-up on wide screens, 2-up on medium, 1-up on mobile. */
 .island-widgets-grid{
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
+  /* auto-fit: fills available width — no orphan gaps when zooming or resizing.
+     min(100%, 340px) collapses to 1-col on very narrow screens naturally. */
+  grid-template-columns:repeat(auto-fit, minmax(min(100%, 340px), 1fr));
   gap:14px;
   align-items:start;
 }
-@media (max-width:1100px){
-  .island-widgets-grid{grid-template-columns:repeat(2, 1fr);}
-}
-@media (max-width:720px){
-  .island-widgets-grid{grid-template-columns:1fr;}
-}
+/* auto-fit naturally expands last lone item to fill the row */
 /* ── WORLD OVERVIEW CARDS ── */
 
 /* ══════════════════════════════════════════════
@@ -1661,6 +1746,7 @@ body.night .tab-btn.active{
 /* temp bar */
 .dash-fcast-bar-wrap{width:60px;position:relative;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;align-self:center;}
 .dash-fcast-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,#818cf8,#f472b6);}
+.dash-fcast-precip{width:36px;display:flex;align-items:center;flex-shrink:0;}
 
 /* hourly + stats panel */
 .dash-hourly-panel{padding:22px 24px;display:flex;flex-direction:column;gap:16px;}
@@ -1696,6 +1782,7 @@ body.night .tab-btn.active{
 .dash-stat-lbl{font-size:.46rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:4px;}
 .dash-stat-val{font-size:.85rem;font-weight:700;color:#fff;}
 .dash-stat-val span{font-size:.5rem;font-weight:400;color:rgba(255,255,255,0.35);margin-left:2px;}
+
 
 /* ── WORLD OVERVIEW CARDS — redesigned ── */
 .world-ovr-card{
@@ -1783,29 +1870,6 @@ body.night .tab-btn.active{
 
 
 
-/* ── WINDY CLICK-TO-LOAD PLACEHOLDERS ── */
-.windy-lazy-box{display:flex;align-items:center;justify-content:center}
-.windy-placeholder{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;padding:28px;text-align:center;
-}
-.windy-placeholder-icon{font-size:2.8rem;line-height:1;opacity:.5}
-.windy-placeholder-label{
-  font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--text-dim);
-}
-.windy-load-btn{
-  font-family:var(--mono);font-size:.58rem;font-weight:700;
-  padding:8px 20px;border-radius:6px;cursor:pointer;
-  border:1px solid rgba(34,211,238,0.45);
-  background:rgba(34,211,238,0.08);color:var(--accent-bright);
-  letter-spacing:.06em;transition:all .2s;
-}
-.windy-load-btn:hover{
-  background:rgba(34,211,238,0.18);
-  border-color:var(--accent-bright);
-  box-shadow:0 0 12px rgba(34,211,238,0.2);
-}
 /* ── ADS-B CONTROL BAR ── */
 .adsb-controls{
   display:flex;align-items:center;gap:16px;flex-wrap:wrap;
@@ -2888,6 +2952,48 @@ body.night .tab-btn.active{
 @keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 /* ── #1: Offline banner ── */
+
+/* ── PWA BANNERS ─────────────────────────────────────── */
+#pwaInstallBanner,#pwaUpdateBanner{
+  position:sticky;top:0;z-index:9998;
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  font-family:var(--mono);font-size:.6rem;font-weight:600;
+  letter-spacing:.05em;
+}
+#pwaInstallBanner{
+  background:linear-gradient(135deg,#1e1b4b,#312e81);
+  border-bottom:1px solid rgba(129,140,248,0.3);
+  color:#c7d2fe;
+  animation:offlineSlide .35s cubic-bezier(.4,0,.2,1);
+}
+#pwaUpdateBanner{
+  background:linear-gradient(135deg,#064e3b,#065f46);
+  border-bottom:1px solid rgba(52,211,153,0.3);
+  color:#6ee7b7;
+  animation:offlineSlide .35s cubic-bezier(.4,0,.2,1);
+}
+.pwa-banner-icon{font-size:1.1rem;flex-shrink:0}
+#pwaInstallText{flex:1}
+.pwa-banner-btn{
+  font-family:var(--mono);font-size:.58rem;font-weight:700;
+  padding:5px 14px;border-radius:5px;cursor:pointer;
+  border:1px solid currentColor;background:rgba(255,255,255,0.12);
+  color:inherit;letter-spacing:.06em;white-space:nowrap;
+  transition:background .2s;flex-shrink:0;
+}
+.pwa-banner-btn:hover{background:rgba(255,255,255,0.22)}
+.pwa-banner-dismiss{
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,0.45);font-size:1rem;padding:4px 6px;
+  flex-shrink:0;transition:color .2s;
+}
+.pwa-banner-dismiss:hover{color:rgba(255,255,255,0.85)}
+@media(max-width:480px){
+  #pwaInstallBanner,#pwaUpdateBanner{font-size:.52rem;padding:8px 10px;gap:8px}
+  .pwa-banner-btn{padding:4px 10px}
+}
+
 #offlineBanner{
   position:sticky;top:0;z-index:9999;
   display:flex;align-items:center;justify-content:center;gap:10px;
@@ -3156,9 +3262,9 @@ body.night .tab-btn.active{
    Breakpoints: 1200px  1000px  820px  600px  400px
 ═══════════════════════════════════════ */
 
-/* ── Wide desktop: 5-col for world overview ── */
+/* ── Wide desktop: world overview prefers 5 cards/row ── */
 @media(min-width:1200px){
-  #world-ovr-grid{grid-template-columns:repeat(5,1fr)!important}
+  #world-ovr-grid{grid-template-columns:repeat(auto-fit, minmax(min(100%,220px),1fr))!important}
   .layout{gap:18px;padding:20px 24px 40px}
 }
 
@@ -3197,7 +3303,6 @@ body.night .tab-btn.active{
   .radar-box{height:260px}
   .adsb-box{height:340px!important}
   /* Windy placeholder */
-  .windy-lazy-box{min-height:180px}
   /* METAR */
   .metar-decoded{grid-template-columns:repeat(2,1fr)}
   /* Tab bar — horizontal scroll on small screens (7+ tabs) */
@@ -3221,7 +3326,7 @@ body.night .tab-btn.active{
   .wx-bar-name,.wx-bar-wind,.wx-bar-cat{display:none}
   .wx-bar-temp{font-size:.95rem}
   /* Island widgets: 1-col */
-  .island-widgets-grid{grid-template-columns:1fr!important}
+  /* island-widgets-grid handled by auto-fit/minmax above */
   #world-ovr-grid{grid-template-columns:1fr!important}
   /* Dashboard */
   .dash-hero-row{grid-template-columns:1fr}
@@ -3302,6 +3407,20 @@ body.night .tab-btn.active{
   </div>
 </header>
 
+<!-- PWA install banner (iOS: shown after a few seconds; Android: shown on beforeinstallprompt) -->
+<div id="pwaInstallBanner" role="complementary" aria-label="Install app" style="display:none">
+  <span class="pwa-banner-icon">📲</span>
+  <span id="pwaInstallText">Add RWC Caribbean to your home screen for quick access</span>
+  <button id="pwaInstallBtn" class="pwa-banner-btn">Install</button>
+  <button id="pwaInstallDismiss" class="pwa-banner-dismiss" aria-label="Dismiss">✕</button>
+</div>
+
+<!-- SW update available banner -->
+<div id="pwaUpdateBanner" role="alert" aria-live="polite" style="display:none">
+  <span>🔄 New version available</span>
+  <button id="pwaUpdateBtn" class="pwa-banner-btn">Update now</button>
+</div>
+
 <!-- #1: Offline / connection banner (hidden by default) -->
 <div id="offlineBanner" role="alert" aria-live="assertive" style="display:none">
   <span class="offline-icon" aria-hidden="true">⚠</span>
@@ -3349,6 +3468,22 @@ body.night .tab-btn.active{
         <span class="theme-opt-sub">Light · Clean Minimal</span>
       </button>
 
+      <button class="theme-opt" data-theme="glass" title="Glass — deep purple/indigo frosted glass">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#1a0a3c,#0d1a4a);border-color:rgba(192,132,252,0.6)">
+          <span style="font-size:1rem">🔮</span>
+        </div>
+        <span class="theme-opt-name">Glass</span>
+        <span class="theme-opt-sub">Purple · Frosted Glass</span>
+      </button>
+
+      <button class="theme-opt" data-theme="neon" title="Neon — dark purple with vivid cyan neon">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#080318,#1a0050);border-color:rgba(0,229,255,0.6)">
+          <span style="font-size:1rem">⚡</span>
+        </div>
+        <span class="theme-opt-name">Neon</span>
+        <span class="theme-opt-sub">Cyan · Neon Purple</span>
+      </button>
+
     </div>
     <button class="theme-picker-close" id="themePickerClose">✕</button>
   </div>
@@ -3390,9 +3525,7 @@ body.night .tab-btn.active{
   <div class="tab-btn"        data-tab="weather"  role="tab" id="tabbtn-weather"  aria-controls="tab-weather"  aria-selected="false" tabindex="-1">🌤 Weather <span class="tab-key" aria-hidden="true">2</span></div>
   <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
   <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
-  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">5</span></div>
-  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">6</span></div>
-  <div class="tab-btn"        data-tab="dash"     role="tab" id="tabbtn-dash"     aria-controls="tab-dash"     aria-selected="false" tabindex="-1">📊 Dashboard <span class="tab-key" aria-hidden="true">7</span></div>
+  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">5</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -3400,6 +3533,15 @@ body.night .tab-btn.active{
 <div class="layout">
 
   <div class="full">
+
+    <!-- ATC Sub-nav -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button class="atc-subbtn active" data-atcsub="audio" onclick="switchAtcSub('audio',this)">📡 ATC AUDIO</button>
+      <button class="atc-subbtn"        data-atcsub="flights" onclick="switchAtcSub('flights',this)">✈ FLIGHTS</button>
+    </div>
+
+    <!-- ATC AUDIO sub-view -->
+    <div id="atc-sub-audio">
     <div class="section-title">Live ATC — Curaçao · Aruba · Bonaire</div>
     <div class="panel">
       <div class="atc-players">
@@ -3501,23 +3643,17 @@ body.night .tab-btn.active{
 
   <div class="col-6">
     <div class="section-title">Windy — Cloud Cover</div>
-    <div class="radar-box windy-lazy-box" data-windy-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds">
-      <div class="windy-placeholder">
-        <div class="windy-placeholder-icon">🌥</div>
-        <div class="windy-placeholder-label">Cloud Cover</div>
-        <button class="windy-load-btn" onclick="loadWindyBox(this)">Load Map</button>
-      </div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+      <div class="overlay-blocker"></div>
     </div>
   </div>
 
   <div class="col-6">
     <div class="section-title">Windy — Precipitation Radar</div>
-    <div class="radar-box windy-lazy-box" data-windy-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar">
-      <div class="windy-placeholder">
-        <div class="windy-placeholder-icon">🌧</div>
-        <div class="windy-placeholder-label">Precipitation Radar</div>
-        <button class="windy-load-btn" onclick="loadWindyBox(this)">Load Map</button>
-      </div>
+    <div class="radar-box">
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+      <div class="overlay-blocker"></div>
     </div>
   </div>
 
@@ -3567,6 +3703,27 @@ body.night .tab-btn.active{
       </div>
     </div>
   </div>
+
+</div>
+
+    <!-- FLIGHTS sub-view (hidden by default) -->
+    <div id="atc-sub-flights" style="display:none;">
+<div class="layout">
+  <div class="full">
+    <div class="section-title">Flights — Curaçao International (TNCC)
+      <div class="flights-toggle">
+        <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
+        <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
+      </div>
+      <a href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Open in new tab ↗</a>
+    </div>
+    <div class="rwc-frame-wrap">
+      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
+    </div>
+  </div>
+</div>
+    </div><!-- /atc-sub-flights -->
 
 </div>
 </div>
@@ -3695,30 +3852,14 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: FLIGHTS (Dep + Arr toggle) ═══ -->
-<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights">
-<div class="layout">
-  <div class="full">
-    <div class="section-title">Flights — Curaçao International (TNCC)
-      <div class="flights-toggle">
-        <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
-        <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
-      </div>
-      <a href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Open in new tab ↗</a>
-    </div>
-    <div class="rwc-frame-wrap">
-      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
-    </div>
-  </div>
-</div>
-</div>
+
 
 <!-- ═══ TAB: WORLD ═══ -->
 <div class="tab-pane" id="tab-world" role="tabpanel" aria-labelledby="tabbtn-world">
 <div class="layout">
   <div class="full">
     <div class="section-title">World Overview — Connecting Airports <span class="data-badge loading" id="worldOvrBadge">LOADING</span></div>
-    <div id="world-ovr-grid" class="island-widgets-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div id="world-ovr-grid" class="island-widgets-grid">
       <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading…</div>
     </div>
   </div>
@@ -3726,12 +3867,6 @@ body.night .tab-btn.active{
 </div>
 
 <!-- ═══ TAB: DASHBOARD ═══ -->
-<div class="tab-pane" id="tab-dash" role="tabpanel" aria-labelledby="tabbtn-dash">
-  <div id="dash-root">
-    <div style="padding:40px;text-align:center;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">Loading dashboard…</div>
-  </div>
-</div>
-
 <script>
 /* ════════════════════════════════
    CONFIG
@@ -3804,12 +3939,12 @@ updateClocks();
    Five themes: dark (default), night, purple, navy, lavender.
    Persisted in localStorage so choice survives page reload.
 ════════════════════════════════ */
-const THEMES = ['dark','night','purple','navy','lavender'];
+const THEMES = ['dark','night','purple','navy','lavender','glass','neon'];
 const THEME_CLASSES = THEMES.filter(t=>t!=='dark').map(t=>'theme-'+t).concat(['night']);
 
 function applyTheme(theme){
   // Remove all theme classes first
-  document.body.classList.remove('night','theme-purple','theme-navy','theme-lavender','theme-dark');
+  document.body.classList.remove('night','theme-purple','theme-navy','theme-lavender','theme-dark','theme-glass','theme-neon');
   if(theme==='night')     document.body.classList.add('night');
   else if(theme!=='dark') document.body.classList.add(`theme-${theme}`);
   localStorage.setItem('atc_theme',''+theme);
@@ -3818,12 +3953,12 @@ function applyTheme(theme){
     btn.classList.toggle('active', btn.dataset.theme===theme);
   });
   // Update theme-btn emoji
-  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸'};
+  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'🔮',neon:'⚡'};
   const themeBtn=document.getElementById('themeBtn');
   if(themeBtn) themeBtn.textContent=icons[theme]||'🎨';
 
   // Update browser theme-color meta (status bar tint)
-  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7'};
+  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7',glass:'#130826',neon:'#080318'};
   const metaTheme=document.querySelector('meta[name="theme-color"]');
   if(metaTheme) metaTheme.content = metaColors[theme]||'#05080f';
 
@@ -4110,14 +4245,9 @@ function switchTab(name){
   // ── STEP 2: side effects — each isolated so one failure can't break the tab ──
   try{
     // Flights tab: lazy-load whichever sub-frame is currently active
-    if(name==='flights'){
-      const active=document.querySelector('.flights-frame.active');
-      if(active && !active.src){
-        active.src = active.dataset.mode==='arrivals'
-          ? 'https://curacao-airport.com/flights/?type=arrivals'
-          : 'https://curacao-airport.com/flights/?type=departures';
-      }
-    }
+
+
+    // Flights is now a sub-tab inside ATC; lazy-load handled by switchAtcSub.
 
     // Lazy-init Windy iframes inside the tab being opened (data-src → src).
     const pane=document.getElementById('tab-'+name);
@@ -4135,9 +4265,7 @@ function switchTab(name){
   try{
     if(name==='forecast' && !forecastLoaded) loadForecast();
   }catch(err){ console.error('[Tabs] loadForecast failed:', err); }
-  try{
-    if(name==='dash') renderDashboard();
-  }catch(err){ console.error('[Tabs] renderDashboard failed:', err); }
+  // (Dashboard/KNMI tabs removed)
   try{
     if(name==='marine' && !marineLoaded){ loadMarine(); fetchTides(); }
   }catch(err){ console.error('[Tabs] loadMarine failed:', err); }
@@ -4209,16 +4337,26 @@ function wireTabs(){
 function wireTabKeys(){
   document.addEventListener('keydown', e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
-    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights','6':'world','7':'dash'};
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'world'};
     if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
   });
 }
 // Wire immediately, and also on DOMContentLoaded as a belt-and-suspenders
 // guarantee in case the script somehow ran before the bar existed.
 wireTabs(); wireTabKeys();
-if(document.readyState==='loading'){
-  document.addEventListener('DOMContentLoaded', ()=>{ wireTabs(); wireTabKeys(); });
-}
+
+// ATC is the default active tab — switchTab never fires for it on load,
+// so initialise its Windy iframes (data-src → src) right away.
+(function initActivePaneIframes(){
+  const active = document.querySelector('.tab-pane.active');
+  if(!active) return;
+  active.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
+    if(!f.src){
+      f.src = f.getAttribute('data-src');
+      f.removeAttribute('data-src');
+    }
+  });
+})();
 
 // Flights sub-toggle (Departures ↔ Arrivals)
 document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
@@ -5068,109 +5206,6 @@ async function fetchWeatherAPI(icao){
 
 
 /* ════════════════════════════════
-   KNMI — Royal Netherlands Meteorological Institute
-   Dataset: Actuele10mindataKNMIstations (10-min AWS observations)
-   Auth: Bearer JWT via KNMI_KEY
-   Stations: 599=Curaçao Hato, may include Aruba/Bonaire
-   Adds ground-truth obs to supplement METAR data.
-════════════════════════════════ */
-async function fetchKNMI(){
-  try{
-    // Step 1: get list of available files (sorted desc — latest first)
-    const listUrl = 'https://api.dataplatform.knmi.nl/open/v1/datasets/Actuele10mindataKNMIstations/versions/2/files' +
-      '?maxKeys=5&orderBy=lastModified&sorting=desc';
-    const listRes = await fetch(listUrl, {
-      headers:{ 'Authorization': `Bearer ${KNMI_KEY}` },
-      cache:'no-store'
-    });
-    if(!listRes.ok){ console.warn('[KNMI] list HTTP', listRes.status); return; }
-    const listData = await listRes.json();
-    const files = listData.files || [];
-    if(!files.length){ console.warn('[KNMI] no files returned'); return; }
-
-    // Step 2: get presigned download URL for the latest file
-    const latest = files[0].filename;
-    const urlRes = await fetch(
-      `https://api.dataplatform.knmi.nl/open/v1/datasets/Actuele10mindataKNMIstations/versions/2/files/${encodeURIComponent(latest)}/url`,
-      { headers:{ 'Authorization': `Bearer ${KNMI_KEY}` }, cache:'no-store' }
-    );
-    if(!urlRes.ok){ console.warn('[KNMI] url HTTP', urlRes.status); return; }
-    const { temporaryDownloadUrl } = await urlRes.json();
-    if(!temporaryDownloadUrl){ console.warn('[KNMI] no download URL'); return; }
-
-    // Step 3: download and parse the CSV/text data file
-    const dataRes = await fetch(temporaryDownloadUrl, {cache:'no-store'});
-    if(!dataRes.ok){ console.warn('[KNMI] data HTTP', dataRes.status); return; }
-    const text = await dataRes.text();
-    parseKNMIData(text);
-  }catch(e){
-    console.warn('[KNMI] fetch failed:', e.message);
-  }
-}
-
-function parseKNMIData(text){
-  // KNMI 10-min format: fixed-width or CSV with header row starting with #
-  // Key columns: STN, YYYYMMDD, HH, MM, DD, FF, FX, T, T10N, TD, SQ, R, P0, U, WW, IX
-  //   DD = wind direction (degrees), FF = wind speed (0.1 m/s)
-  //   T = temperature (0.1 °C), P0 = sea-level pressure (0.1 hPa), U = relative humidity (%)
-  //   FX = max gust in last 10min (0.1 m/s)
-  const lines = text.split('\n');
-  let headers = null;
-  const STATION_ICAO = { '599':'TNCC', '586':'TNCA', '592':'TNCB' };
-
-  for(const raw of lines){
-    const line = raw.trim();
-    if(!line) continue;
-    // Header line starts with # STN or STN
-    if(line.startsWith('#') || line.startsWith('STN')){
-      const h = line.replace(/^#+\s*/,'');
-      headers = h.split(',').map(s=>s.trim());
-      continue;
-    }
-    if(!headers) continue;
-    const cols = line.split(',').map(s=>s.trim());
-    if(cols.length < 4) continue;
-
-    const row = {};
-    headers.forEach((h,i)=>{ if(cols[i]!==undefined) row[h]=cols[i]; });
-
-    const stn = row['STN'] || row['# STN'] || row['#STN'] || '';
-    const icao = STATION_ICAO[stn];
-    if(!icao) continue;
-
-    // Parse values — KNMI uses sentinel 9999/99999 for missing
-    const safeNum = (v, scale=1) => {
-      const n = parseFloat(v);
-      return (!isNaN(n) && Math.abs(n) < 9990) ? n * scale : null;
-    };
-
-    const obs = {
-      source:   'KNMI',
-      stn,
-      time:     `${row['YYYYMMDD']||''}T${(row['HH']||'').padStart(2,'0')}:${(row['MM']||'').padStart(2,'0')}Z`,
-      windDir:  safeNum(row['DD']),           // degrees
-      windMs:   safeNum(row['FF'],  0.1),     // m/s (raw is 0.1 m/s)
-      gustMs:   safeNum(row['FX'],  0.1),     // m/s
-      windKt:   safeNum(row['FF'])  != null ? Math.round(safeNum(row['FF'],0.1) * 1.94384) : null,
-      gustKt:   safeNum(row['FX']) != null ? Math.round(safeNum(row['FX'],0.1) * 1.94384) : null,
-      tempC:    safeNum(row['T'],   0.1),     // °C
-      dewC:     safeNum(row['TD'],  0.1),     // °C
-      rhPct:    safeNum(row['U']),            // %
-      slpHpa:   safeNum(row['P0'],  0.1),     // hPa
-    };
-
-    // Only store if we got at least temp or wind
-    if(obs.tempC !== null || obs.windKt !== null){
-      store.knmi[icao] = obs;
-    }
-  }
-  if(Object.keys(store.knmi).length){
-    console.info('[KNMI] parsed observations for:', Object.keys(store.knmi).join(', '));
-  }
-}
-
-
-/* ════════════════════════════════
    WORLD OVERVIEW — 5 connecting airports
    One WeatherAPI call per airport, runs in parallel with the main refresh.
    Renders animated weather icon + temp + conditions + wind.
@@ -5293,7 +5328,8 @@ function renderWorldOvr(){
     const humid   = cur.humidity != null ? `${cur.humidity}%` : null;
     const visKm   = cur.vis_km   != null ? `${cur.vis_km.toFixed(0)}km vis` : null;
 
-    const statsItems = [windStr, humid, visKm].filter(Boolean);
+    const uvWorld  = cur.uv != null ? `UV ${cur.uv.toFixed(0)}` : null;
+    const statsItems = [windStr, humid, visKm, uvWorld].filter(Boolean);
 
     const feelsStr = (feelsC != null && feelsC !== tempC)
       ? `Feels ${feelsC}°` : '';
@@ -5436,330 +5472,137 @@ async function toggleRadar(){
   if(btn) btn.addEventListener('click', toggleRadar);
 })();
 
-/* ════════════════════════════════
-   DASHBOARD TAB — renderDashboard()
-   Pulls from store.api (WeatherAPI) which is already fetched
-   by the main refresh cycle. Uses TNCC as primary; falls back
-   to whichever ABC island has data.
-════════════════════════════════ */
-function renderDashboard(){
-  const root = document.getElementById('dash-root');
-  if(!root) return;
+/* ═══════════════════════════════════════════════════════
+   PWA — Service Worker + Install Prompt + Update Banner
+   + Fresh data guarantee on every open
+═══════════════════════════════════════════════════════ */
 
-  // Pick best available island data
-  const primary = ['TNCC','TNCA','TNCB'].find(i=>store.api[i]?.current) || 'TNCC';
-  const d   = store.api[primary];
-  const cur = d?.current;
-  const ap  = AIRPORTS[primary];
+// ── Service Worker registration ────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('[SW] Registered, scope:', reg.scope);
 
-  if(!cur){
-    root.innerHTML = `<div style="padding:60px;text-align:center;font-family:var(--mono);font-size:.65rem;color:rgba(255,255,255,0.3)">
-      No weather data yet — switch to the Weather tab first to load data, then return here.
-    </div>`;
-    return;
+      // Watch for new SW version
+      reg.addEventListener('updatefound', () => {
+        const nw = reg.installing;
+        nw.addEventListener('statechange', () => {
+          if(nw.state === 'installed' && navigator.serviceWorker.controller){
+            showPWAUpdateBanner();
+          }
+        });
+      });
+    }).catch(err => console.warn('[SW] Registration failed:', err));
+
+    // Listen for SW_UPDATE message from the service worker
+    navigator.serviceWorker.addEventListener('message', e => {
+      if(e.data?.type === 'SW_UPDATE') showPWAUpdateBanner();
+    });
+  });
+}
+
+// ── Install prompt (Android / Chrome) ─────────────────
+let _pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _pwaPrompt = e;
+  // Show banner after 8s (user has had time to explore the app)
+  setTimeout(showPWAInstallBanner, 8000);
+});
+window.addEventListener('appinstalled', () => {
+  hidePWAInstallBanner();
+  _pwaPrompt = null;
+});
+
+// ── iOS install hint ───────────────────────────────────
+// iOS Safari doesn't fire beforeinstallprompt; detect and show manual instructions
+function isIOS(){
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+}
+function isInStandaloneMode(){
+  return window.matchMedia('(display-mode:standalone)').matches || window.navigator.standalone;
+}
+if(isIOS() && !isInStandaloneMode()){
+  // Show iOS hint after 10s if not yet installed
+  setTimeout(() => {
+    const b = document.getElementById('pwaInstallBanner');
+    const t = document.getElementById('pwaInstallText');
+    const btn = document.getElementById('pwaInstallBtn');
+    if(!b || !t || !btn) return;
+    if(localStorage.getItem('pwa_dismissed')) return;
+    t.innerHTML = 'Tap <strong style="color:#818cf8">Share ↑</strong> then <strong style="color:#818cf8">Add to Home Screen</strong> for quick access';
+    btn.style.display = 'none';  // No programmatic prompt on iOS
+    b.style.display = 'flex';
+  }, 10000);
+}
+
+function showPWAInstallBanner(){
+  const b = document.getElementById('pwaInstallBanner');
+  if(!b || localStorage.getItem('pwa_dismissed')) return;
+  b.style.display = 'flex';
+}
+function hidePWAInstallBanner(){
+  const b = document.getElementById('pwaInstallBanner');
+  if(b) b.style.display = 'none';
+}
+function showPWAUpdateBanner(){
+  const b = document.getElementById('pwaUpdateBanner');
+  if(b) b.style.display = 'flex';
+}
+
+// Wire install button
+(function wirePWAButtons(){
+  const installBtn = document.getElementById('pwaInstallBtn');
+  if(installBtn) installBtn.addEventListener('click', async () => {
+    if(_pwaPrompt){
+      _pwaPrompt.prompt();
+      const { outcome } = await _pwaPrompt.userChoice;
+      if(outcome === 'accepted') hidePWAInstallBanner();
+      _pwaPrompt = null;
+    }
+  });
+
+  const dismissBtn = document.getElementById('pwaInstallDismiss');
+  if(dismissBtn) dismissBtn.addEventListener('click', () => {
+    hidePWAInstallBanner();
+    localStorage.setItem('pwa_dismissed', '1');
+  });
+
+  const updateBtn = document.getElementById('pwaUpdateBtn');
+  if(updateBtn) updateBtn.addEventListener('click', () => {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if(reg?.waiting){
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    });
+    window.location.reload();
+  });
+})();
+
+// ── Fresh data on every open ───────────────────────────
+// When the app becomes visible (opened from home screen or tab switch),
+// trigger a full refresh so data is never stale.
+document.addEventListener('visibilitychange', () => {
+  if(!document.hidden){
+    // Only refresh if last refresh was >2 minutes ago (avoid double-fetch on tab switch)
+    const age = Date.now() - (_lastSuccessfulRefresh || 0);
+    if(age > 2 * 60 * 1000){
+      try{ refresh(); }catch(_){}
+    }
   }
+});
 
-  const today   = d?.forecast?.forecastday?.[0];
-  const astro   = today?.astro || {};
-  const fdays   = d?.forecast?.forecastday || [];
-  const hours   = today?.hour || [];
+// ── Open to correct tab from URL param ────────────────
+// Supports ?tab=weather etc. (used by PWA shortcuts in manifest)
+(function applyUrlTab(){
+  try{
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if(tab && ['atc','weather','forecast','marine','world'].includes(tab)){
+      setTimeout(()=>{ try{ switchTab(tab); }catch(_){} }, 100);
+    }
+  }catch(_){}
+})();
 
-  // Helpers
-  const tempCol = t => t>=33?'#f87171':t>=27?'#fbbf24':t<15?'#93c5fd':'#c4b5fd';
-  const windKt  = v => Math.round(v * 0.539957);
-  const uvColor = u => u>=8?'#f87171':u>=6?'#fb923c':u>=3?'#fbbf24':'#4ade80';
-  const wmo     = (code,text) => typeof mapWeatherApiToWMO==='function' ? mapWeatherApiToWMO(code,text) : 0;
-  const icon    = (code,text,small=false) => {
-    const svg = typeof animatedWeatherSVG==='function' ? animatedWeatherSVG(wmo(code,text)) : '';
-    return `<div style="width:${small?'32':'80'}px;height:${small?'32':'80'}px">${svg}</div>`;
-  };
-
-  // Local time from WeatherAPI
-  const localtime = d?.location?.localtime || '';
-  const timeStr   = localtime.split(' ')[1] || '--:--';
-  const dateParts = localtime.split(' ')[0] || '';
-  const dateObj   = dateParts ? new Date(dateParts+'T12:00:00') : new Date();
-  const dateStr   = dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
-
-  // ── HERO MAIN CARD ─────────────────────────────────────
-  const condCode = cur.condition?.code || 1000;
-  const condText = cur.condition?.text || '';
-  const isNight  = cur.is_day === 0;
-  const tempC    = Math.round(cur.temp_c);
-  const col      = tempCol(tempC);
-
-  const heroCard = `
-  <div class="dash-card dash-main">
-    <div class="dash-main-top">
-      <div>
-        <div class="dash-temp-block">
-          <div class="dash-temp-val" style="color:${col};text-shadow:0 0 40px ${col}55">${tempC}</div>
-          <div class="dash-temp-unit">°C</div>
-        </div>
-        <div class="dash-cond">${condText}</div>
-      </div>
-      <div class="dash-main-icon">${icon(condCode, condText)}</div>
-    </div>
-    <div class="dash-meta">
-      <span>📍 ${ap?.label || primary}</span>
-      <span>🕐 ${timeStr} AST</span>
-      <span>📅 ${dateStr}</span>
-      ${cur.precip_mm>0?`<span>🌧 ${cur.precip_mm.toFixed(1)} mm</span>`:''}
-      <span style="margin-left:auto;color:rgba(255,255,255,0.25);font-size:.46rem">${isNight?'Night':'Day'} · ${primary}</span>
-    </div>
-  </div>`;
-
-  // ── WIND MINI CHART (SVG sine approximation from hourly data) ──
-  const windHours = hours.slice(0,12).map(h=>windKt(h.wind_kph||0));
-  const wMax = Math.max(...windHours, 1);
-  const windPts = windHours.map((v,i)=>{
-    const x = (i/(windHours.length-1||1))*140;
-    const y = 26 - (v/wMax)*22;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  const windSvg = windHours.length > 1 ? `
-    <svg class="dash-wind-svg" viewBox="0 0 140 28" preserveAspectRatio="none">
-      <defs><linearGradient id="wg" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#818cf8" stop-opacity=".6"/>
-        <stop offset="100%" stop-color="#c084fc" stop-opacity=".9"/>
-      </linearGradient></defs>
-      <polyline points="${windPts}" fill="none" stroke="url(#wg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      ${windHours.map((v,i)=>{
-        if(i%3!==0) return '';
-        const x=(i/(windHours.length-1||1))*140;
-        const y=26-(v/wMax)*22;
-        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="#818cf8" opacity=".7"/>`;
-      }).join('')}
-    </svg>` : '';
-
-  // ── UV ARC ──
-  const uv = cur.uv ?? today?.day?.uv ?? 0;
-  const uvPct = Math.min(uv/11, 1);
-  const uvAngle = uvPct * 180 - 90; // -90 to 90 degrees
-  const uvCol = uvColor(uv);
-  const uvX = 28 + Math.cos(uvAngle*Math.PI/180)*20;
-  const uvY = 28 - Math.sin(uvAngle*Math.PI/180)*20;
-  const uvLabel = uv>=8?'Very High':uv>=6?'High':uv>=3?'Moderate':'Low';
-  // Arc path (semicircle)
-  const arcPath = `M 8,28 A 20,20 0 0,1 48,28`;
-  const uvFillAngle = uvPct * 180;
-  const uvEndX = 28 + Math.cos((uvFillAngle-90)*Math.PI/180)*20;
-  const uvEndY = 28 - Math.sin((uvFillAngle-90)*Math.PI/180)*20;
-  const uvArcPath = `M 8,28 A 20,20 0 ${uvPct>0.5?1:0},1 ${uvEndX.toFixed(1)},${uvEndY.toFixed(1)}`;
-
-  // ── SUNRISE / SUNSET ──
-  const srStr = astro.sunrise || '06:00 AM';
-  const ssStr = astro.sunset  || '06:30 PM';
-  // Parse to 0-24h for position calc
-  const parseTime = s => {
-    if(!s) return 12;
-    const [time,ampm] = s.split(' ');
-    let [h,m] = time.split(':').map(Number);
-    if(ampm==='PM' && h!==12) h+=12;
-    if(ampm==='AM' && h===12) h=0;
-    return h + m/60;
-  };
-  const srH = parseTime(srStr), ssH = parseTime(ssStr);
-  const nowH = parseInt(timeStr.split(':')[0]||'12') + parseInt(timeStr.split(':')[1]||'0')/60;
-  const daySpan = ssH - srH;
-  const sunPct  = Math.max(0, Math.min(1, (nowH - srH) / daySpan));
-  // SVG: arc from left to right, sun at current position
-  const sunX = 20 + sunPct * 160;
-  const sunY = 40 - Math.sin(sunPct * Math.PI) * 32;
-
-  const sunArcSvg = `
-    <svg class="dash-sun-arc" viewBox="0 0 200 48" preserveAspectRatio="none">
-      <path d="M 20,42 Q 100,2 180,42" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
-      <path d="M 20,42 Q 100,2 180,42" fill="none" stroke="rgba(251,191,36,0.4)" stroke-width="1.5"
-        stroke-dasharray="160" stroke-dashoffset="${(1-sunPct)*160}"/>
-      <circle cx="${sunX.toFixed(1)}" cy="${sunY.toFixed(1)}" r="5"
-        fill="${isNight?'#e2e8f0':'#fbbf24'}"
-        style="filter:drop-shadow(0 0 6px ${isNight?'#e2e8f0':'#fbbf24'})"/>
-    </svg>`;
-
-  // ── HIGHLIGHT CELLS ──
-  const hlCells = [
-    {
-      lbl: 'Wind Status',
-      val: windKt(cur.wind_kph||0), unit: 'kt',
-      sub: `${cur.wind_dir || ''} · Gust ${windKt(cur.gust_kph||0)}kt`,
-      extra: windSvg,
-    },
-    {
-      lbl: 'UV Index',
-      val: uv.toFixed(1), unit: '',
-      sub: uvLabel,
-      extra: `<svg class="dash-uv-arc" viewBox="0 0 56 30">
-        <path d="M 8,28 A 20,20 0 0,1 48,28" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="4" stroke-linecap="round"/>
-        <path d="${uvArcPath}" fill="none" stroke="${uvCol}" stroke-width="4" stroke-linecap="round" style="filter:drop-shadow(0 0 4px ${uvCol})"/>
-        <text x="28" y="27" text-anchor="middle" font-family="monospace" font-size="9" fill="${uvCol}">${uv.toFixed(0)}</text>
-      </svg>`,
-    },
-    {
-      lbl: 'Sunrise & Sunset',
-      val: '',
-      sub: '',
-      extra: `${sunArcSvg}
-      <div class="dash-sun-times"><span>🌅 ${srStr}</span><span>${ssStr} 🌇</span></div>`,
-    },
-    {
-      lbl: 'Humidity',
-      val: cur.humidity ?? '—', unit: '%',
-      sub: cur.dewpoint_c!=null ? `Dew point ${Math.round(cur.dewpoint_c)}°C` : '',
-      extra: '',
-    },
-    {
-      lbl: 'Visibility',
-      val: cur.vis_km!=null?cur.vis_km.toFixed(0):'—', unit: 'km',
-      sub: cur.vis_km!=null && cur.vis_km < 5 ? 'Reduced visibility' : cur.vis_km!=null && cur.vis_km < 10 ? 'Moderate visibility' : 'Good visibility',
-      extra: '',
-    },
-    {
-      lbl: 'Feels Like',
-      val: cur.feelslike_c!=null?Math.round(cur.feelslike_c):'—', unit: '°C',
-      sub: cur.feelslike_c!=null && Math.abs(cur.feelslike_c-cur.temp_c)>2
-        ? `${cur.feelslike_c>cur.temp_c?'Humidity makes':'Wind makes'} it feel ${cur.feelslike_c>cur.temp_c?'hotter':'cooler'}`
-        : 'Similar to actual',
-      extra: '',
-    },
-  ];
-
-  const highlightsCard = `
-  <div class="dash-card dash-highlights">
-    <div class="dash-section-title">Today's Highlights</div>
-    <div class="dash-hl-grid">
-      ${hlCells.map(c=>`
-      <div class="dash-hl-cell">
-        <div class="dash-hl-lbl">${c.lbl}</div>
-        ${c.val!==''?`<div class="dash-hl-val">${c.val}<span class="dash-hl-unit">${c.unit}</span></div>`:''}
-        ${c.extra||''}
-        ${c.sub?`<div class="dash-hl-sub">${c.sub}</div>`:''}
-      </div>`).join('')}
-    </div>
-  </div>`;
-
-  // ── 7-DAY FORECAST ──────────────────────────────────────
-  const tempRange = fdays.map(d=>d.day).filter(Boolean);
-  const allHi = tempRange.map(d=>d.maxtemp_c||30);
-  const allLo = tempRange.map(d=>d.mintemp_c||20);
-  const minT  = Math.min(...allLo);
-  const maxT  = Math.max(...allHi);
-  const span  = Math.max(1, maxT - minT);
-
-  const fcastRows = fdays.slice(0,7).map((fd, i) => {
-    const day = fd?.day;
-    if(!day) return '';
-    const dt     = new Date(fd.date+'T12:00:00');
-    const dayName = i===0 ? 'Today' : i===1 ? 'Tomorrow' : dt.toLocaleDateString('en-US',{weekday:'short'});
-    const dateLabel = dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    const hi = Math.round(day.maxtemp_c||0), lo = Math.round(day.mintemp_c||0);
-    const rain = day.daily_chance_of_rain||0;
-    const cCode = day.condition?.code||1000, cText = day.condition?.text||'';
-    const barLeft  = ((lo-minT)/span*100).toFixed(0);
-    const barWidth = ((hi-lo)/span*100).toFixed(0);
-    return `
-    <div class="dash-fcast-row">
-      <div class="dash-fcast-icon">${icon(cCode,cText,true)}</div>
-      <div class="dash-fcast-day">${dayName}</div>
-      <div class="dash-fcast-date">${dateLabel}</div>
-      <div class="dash-fcast-cond">${cText}</div>
-      ${rain>=20?`<div class="dash-fcast-rain">💧${rain}%</div>`:'<div class="dash-fcast-rain"></div>'}
-      <div class="dash-fcast-bar-wrap">
-        <div class="dash-fcast-bar" style="margin-left:${barLeft}%;width:${barWidth}%"></div>
-      </div>
-      <div class="dash-fcast-temps">
-        <span class="dash-fcast-hi">${hi}°</span>
-        <span class="dash-fcast-lo">${lo}°</span>
-      </div>
-    </div>`;
-  }).join('');
-
-  const forecastCard = `
-  <div class="dash-card dash-forecast">
-    <div class="dash-section-title">7-Day Forecast</div>
-    ${fcastRows || '<div style="padding:20px;font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,0.3);text-align:center">Load forecast tab to populate data</div>'}
-  </div>`;
-
-  // ── HOURLY STRIP + STAT TILES ───────────────────────────
-  const now = Date.now();
-  const hourlyItems = hours.filter(h=>{
-    const ms = new Date((h.time||'').replace(' ','T')).getTime();
-    return isFinite(ms) && ms >= now - 1800000;
-  }).slice(0,12);
-
-  const hourlyCells = hourlyItems.map(h=>{
-    const ms  = new Date((h.time||'').replace(' ','T')).getTime();
-    const isNow = isFinite(ms) && Math.abs(ms-now)<3600000;
-    const hr  = new Date((h.time||'').replace(' ','T')).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
-    const tmp = Math.round(h.temp_c||0);
-    const rain= h.chance_of_rain||0;
-    return `<div class="dash-h-cell${isNow?' now':''}">
-      <div style="font-size:.5rem">${hr}</div>
-      <div class="dash-h-icon">${icon(h.condition?.code||1000,h.condition?.text||'',true)}</div>
-      <div class="dash-h-temp">${tmp}°</div>
-      ${rain>=20?`<div class="dash-h-rain">💧${rain}%</div>`:''}
-    </div>`;
-  }).join('');
-
-  const pressure = cur.pressure_mb!=null ? `${Math.round(cur.pressure_mb)} hPa` : '—';
-  const cloud    = cur.cloud!=null ? `${cur.cloud}%` : '—';
-  const precip   = cur.precip_mm!=null ? `${cur.precip_mm.toFixed(1)} mm` : '—';
-  const windDir  = cur.wind_dir || '—';
-  const windDeg  = cur.wind_degree!=null ? `${cur.wind_degree}°` : '';
-  const metar    = store.metar[primary];
-  const cat      = metar?.flight_category || '—';
-  const catCol   = {VFR:'#4ade80',MVFR:'#60a5fa',IFR:'#f87171',LIFR:'#e879f9'}[cat]||'rgba(255,255,255,0.3)';
-
-  const stats = [
-    {lbl:'Pressure', val:pressure, raw:''},
-    {lbl:'Cloud Cover', val:cloud, raw:''},
-    {lbl:'Precipitation', val:precip, raw:''},
-    {lbl:'Wind Direction', val:`${windDeg} ${windDir}`, raw:''},
-    {lbl:'Dew Point', val:cur.dewpoint_c!=null?Math.round(cur.dewpoint_c)+'°C':'—', raw:''},
-    {lbl:'Flight Cat', val:`<span style="color:${catCol};font-weight:700">${cat}</span>`, raw:'html'},
-  ];
-
-  const hourlyPanel = `
-  <div class="dash-card dash-hourly-panel">
-    <div class="dash-section-title">Hourly Forecast</div>
-    ${hourlyCells ? `<div class="dash-hourly-row">${hourlyCells}</div>` : '<div style="font-family:var(--mono);font-size:.55rem;color:rgba(255,255,255,0.3);padding:12px 0">Load forecast tab for hourly data</div>'}
-    <div class="dash-section-title" style="margin-top:4px;margin-bottom:10px">More Details</div>
-    <div class="dash-stat-row">
-      ${stats.map(s=>`<div class="dash-stat">
-        <div class="dash-stat-lbl">${s.lbl}</div>
-        <div class="dash-stat-val">${s.raw==='html'?s.val:s.val}</div>
-      </div>`).join('')}
-    </div>
-  </div>`;
-
-  // ── ASSEMBLE ────────────────────────────────────────────
-  root.innerHTML = `
-  <div class="dash-hero-row">
-    ${heroCard}
-    ${highlightsCard}
-  </div>
-  <div class="dash-bottom-row">
-    ${forecastCard}
-    ${hourlyPanel}
-  </div>`;
-}
-
-
-// Load a Windy iframe on demand (click-to-load pattern)
-function loadWindyBox(btn){
-  const box = btn.closest('.windy-lazy-box');
-  if(!box) return;
-  const windySrc = box.dataset.windySrc;
-  if(!windySrc) return;
-  // Replace placeholder with the real iframe
-  box.classList.remove('windy-lazy-box');
-  box.innerHTML = `<iframe class="windy-iframe"
-    src="${windySrc}"
-    allow="fullscreen"
-    referrerpolicy="no-referrer-when-downgrade"
-    style="width:100%;height:100%;border:none;display:block"
-  ></iframe><div class="overlay-blocker"></div>`;
-}
 
 /* ════════════════════════════════
    MAIN REFRESH CYCLE
@@ -5802,7 +5645,6 @@ async function refresh(){
   if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
     await Promise.all([
       ...ICAOS.map(fetchWeatherAPI),
-      fetchKNMI(),        // KNMI 10-min station obs
       fetchWorldOvr(),    // World overview: EHAM KMIA KLGA TNCE TBPB
     ]);
     _lastWxFetch = Date.now();
@@ -5828,11 +5670,8 @@ async function refresh(){
     loadForecast();
   }
 
-  // Re-render dashboard if it's the active tab
-  try{
-    const dashPane = document.getElementById('tab-dash');
-    if(dashPane && dashPane.classList.contains('active')) renderDashboard();
-  }catch(_){}
+
+
 
   // Flash temperature values briefly to show they updated
   document.querySelectorAll('#island-cards [data-temp]').forEach(el=>{
@@ -5910,10 +5749,29 @@ function triggerManualRefresh(){
   ind.addEventListener('keydown', e=>{
     if(e.key==='Enter' || e.key===' '){ e.preventDefault(); triggerManualRefresh(); }
   });
+
+  // ── ATC sub-tab switcher (Audio ↔ Flights) ──
+  window.switchAtcSub = function(name, btn){
+    document.querySelectorAll('.atc-subbtn').forEach(b => b.classList.remove('active'));
+    if(btn) btn.classList.add('active');
+    const audio   = document.getElementById('atc-sub-audio');
+    const flights = document.getElementById('atc-sub-flights');
+    if(audio)   audio.style.display   = name === 'audio'   ? '' : 'none';
+    if(flights) flights.style.display = name === 'flights' ? '' : 'none';
+    // Lazy-load flights iframe on first open
+    if(name === 'flights'){
+      const active = document.querySelector('#atc-sub-flights .flights-frame.active');
+      if(active && !active.src){
+        active.src = active.dataset.mode==='arrivals'
+          ? 'https://curacao-airport.com/flights/?type=arrivals'
+          : 'https://curacao-airport.com/flights/?type=departures';
+      }
+    }
+  };
+
 })();
 
-// Eager first fetch for world overview (before first 5-min cycle)
-fetchWorldOvr();
+// refresh() calls fetchWorldOvr() internally — no double-call needed
 refresh();
 setInterval(refresh,REFRESH_MS);
 
@@ -7265,6 +7123,23 @@ async function loadMarine(){
       const gustKt = wxCur.gust_kph ? Math.round(wxCur.gust_kph*0.539957) : 0;
       const wxWindDir  = wxCur.wind_degree;
       const wxWindCard = wxWindDir!==undefined ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8] : '';
+
+      // ── Wind: METAR primary → SYNOP → WeatherAPI fallback ──
+      let _windKt = null, _gustKt = null, _windDeg = null;
+      // METAR
+      if(metar?.wind?.speed_kts != null){
+        _windKt  = metar.wind.speed_kts;
+        _gustKt  = metar.wind.gust_kts ?? null;
+        _windDeg = metar.wind.degrees  ?? null;
+      }
+      // SYNOP (CheckWX metar object may have synop data via metar.raw parse)
+      if(_windKt == null && metar?.raw){
+        const _wm = metar.raw.match(/\b(\d{3})(\d{2})(?:G(\d{2}))?KT\b/);
+        if(_wm){ _windDeg=parseInt(_wm[1]); _windKt=parseInt(_wm[2]); _gustKt=_wm[3]?parseInt(_wm[3]):null; }
+      }
+      // WeatherAPI fallback
+      if(_windKt == null){ _windKt=windKt; _gustKt=gustKt; _windDeg=wxWindDir??null; }
+      const _windCard = _windDeg!=null ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((_windDeg%360)/45)%8] : wxWindCard;
       const wmoForAdvice = mapWeatherApiToWMO(wcCode, wxCur?.condition?.text||'');
 
       const cloud=getCloudHeight(metar);
@@ -7272,7 +7147,7 @@ async function loadMarine(){
       const visMtr = metar?.visibility?.meters;
       const visStr = visMtr!==undefined ? (visMtr>=9999?'>10 km':(visMtr/1000).toFixed(1)+' km') : '—';
 
-      const advice=getBeachAdvice(waveM, windKt, gustKt, wmoForAdvice);
+      const advice=getBeachAdvice(waveM, _windKt??windKt, _gustKt??gustKt, wmoForAdvice);
 
       // Sea surface temperature — blended from ECMWF + GFS marine models
       const sstC = m.sea_surface_temperature ?? null;
@@ -7292,23 +7167,23 @@ async function loadMarine(){
         swellDir:  sd,
         swellCard: sdir,
         swellP,
-        windKt,
-        gustKt,
-        windFromDeg: wxWindDir ?? 0,
-        windCard:    wxWindCard,
+        windKt:      _windKt ?? windKt,
+        gustKt:      _gustKt ?? gustKt,
+        windFromDeg: _windDeg ?? wxWindDir ?? 0,
+        windCard:    _windCard,
         tempC:     wxCur.temp_c,
         sstC,
         condText:  wxCur?.condition?.text || '',
         vis:       wxCur.vis_km,
-        vBeach:    verdictBeach(waveM, windKt, wmoForAdvice),
-        vBoat:     verdictBoat(waveM, windKt, gustKt, wmoForAdvice),
-        vDive:     verdictDive(waveM, windKt, wmoForAdvice, wxCur.vis_km),
+        vBeach:    verdictBeach(waveM, _windKt??windKt, wmoForAdvice),
+        vBoat:     verdictBoat(waveM, _windKt??windKt, _gustKt??gustKt, wmoForAdvice),
+        vDive:     verdictDive(waveM, _windKt??windKt, wmoForAdvice, wxCur.vis_km),
       });
 
       // Verdicts
-      const vBeach = verdictBeach(waveM, windKt, wmoForAdvice);
-      const vBoat  = verdictBoat (waveM, windKt, gustKt, wmoForAdvice);
-      const vDive  = verdictDive (waveM, windKt, wmoForAdvice, wxCur.vis_km);
+      const vBeach = verdictBeach(waveM, _windKt??windKt, wmoForAdvice);
+      const vBoat  = verdictBoat (waveM, _windKt??windKt, _gustKt??gustKt, wmoForAdvice);
+      const vDive  = verdictDive (waveM, _windKt??windKt, wmoForAdvice, wxCur.vis_km);
       const verdictsHtml = `
         <div class="verdicts-row">
           <div class="verdict ${vBeach.cls}" role="img" aria-label="Beach: ${vBeach.label} — ${vBeach.text}">
@@ -7340,12 +7215,12 @@ async function loadMarine(){
       // Wave/swell visualization sizing (clamped)
       const waveBarPct  = Math.min(100, (waveM  / 4) * 100);
       const swellBarPct = Math.min(100, (swellM / 4) * 100);
-      const windBarPct  = Math.min(100, (windKt / 35) * 100);
+      const windBarPct  = Math.min(100, ((_windKt??windKt) / 35) * 100);
 
       // Direction arrows point downwind/down-swell (where waves go)
       const wdTo = (wd + 180) % 360;
       const sdTo = (sd + 180) % 360;
-      const windToDeg = (wxWindDir!==undefined ? wxWindDir + 180 : 0) % 360;
+      const windToDeg = (_windDeg!=null ? _windDeg + 180 : wxWindDir!==undefined ? wxWindDir + 180 : 0) % 360;
 
       // Wave color intensity
       const waveCol = waveM>=2.5?'#f87171':waveM>=1.5?'#fbbf24':waveM>=0.8?'#22d3ee':'#5ab8ff';
@@ -7390,7 +7265,7 @@ async function loadMarine(){
             <div class="marine-bar-info">
               <div class="marine-bar-row1"><span class="marine-bar-lbl">Wind</span><span class="marine-bar-val">${windKt} kt · G${gustKt}</span></div>
               <div class="marine-bar-track"><div class="marine-bar-fill animated" style="width:${windBarPct}%;background:linear-gradient(90deg,#22d3ee,${gustKt>=22?'#fbbf24':'#22d3ee'},${gustKt>=28?'#f87171':'#22d3ee'})"></div></div>
-              <div class="marine-bar-sub">${wxWindCard||'—'} · From ${wxWindDir!==undefined?pad(wxWindDir)+'°':'—'}</div>
+              <div class="marine-bar-sub">${_windCard||wxWindCard||'—'} · From ${_windDeg!=null?pad(_windDeg)+'°':wxWindDir!==undefined?pad(wxWindDir)+'°':'—'}</div>
             </div>
           </div>
         </div>
@@ -7417,9 +7292,9 @@ async function loadMarine(){
           </div>
           <div class="marine-summary-row">
             <span class="lbl">Boat</span>${
-              (windKt<15 && waveM<1.0) ? 'Excellent for small craft. Light winds, gentle seas.' :
-              (windKt<22 && waveM<1.5) ? 'Acceptable for small craft, expect moderate chop. Reef sails.' :
-              (windKt<28 && waveM<2.5) ? 'Small craft advisory. Experienced sailors only.' :
+              ((_windKt??windKt)<15 && waveM<1.0) ? 'Excellent for small craft. Light winds, gentle seas.' :
+              ((_windKt??windKt)<22 && waveM<1.5) ? 'Acceptable for small craft, expect moderate chop. Reef sails.' :
+              ((_windKt??windKt)<28 && waveM<2.5) ? 'Small craft advisory. Experienced sailors only.' :
                                          'Small craft warning — remain in port.'
             }
           </div>
