@@ -1600,7 +1600,9 @@ body.night .tab-btn.active{
   grid-column:1 / -1;
   order:-1;
 }
-@media(max-width:760px){
+/* Aruba + Bonaire stay side by side at all widths;
+   stack only on very small phones where two cards can't fit. */
+@media(max-width:480px){
   #island-cards, #forecast-content, #marine-content{grid-template-columns:1fr}
 }
 /* ── WORLD OVERVIEW CARDS ── */
