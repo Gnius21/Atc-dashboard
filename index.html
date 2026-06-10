@@ -1587,6 +1587,22 @@ body.night .tab-btn.active{
   align-items:start;
 }
 /* auto-fit naturally expands last lone item to fill the row */
+
+/* ── CURAÇAO FEATURED LAYOUT (Weather / Forecast / Marine tabs) ──
+   Curaçao (TNCC) sits on top spanning both columns; Aruba and Bonaire
+   share the row below — 3 cards fit without an orphan tile. */
+#island-cards, #forecast-content, #marine-content{
+  grid-template-columns:repeat(2, minmax(0,1fr));
+}
+#island-cards > [data-icao="TNCC"],
+#forecast-content > [data-icao="TNCC"],
+#marine-content > [data-icao="TNCC"]{
+  grid-column:1 / -1;
+  order:-1;
+}
+@media(max-width:760px){
+  #island-cards, #forecast-content, #marine-content{grid-template-columns:1fr}
+}
 /* ── WORLD OVERVIEW CARDS ── */
 
 /* ══════════════════════════════════════════════
@@ -6409,7 +6425,7 @@ async function loadForecast(forceNewsUpdate=false){
       try{
 
       if(error && !wxapi && !models){
-        html += `<div class="fcast-island panel"><div class="fcast-island-hdr">
+        html += `<div class="fcast-island panel" data-icao="${loc.icao}"><div class="fcast-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div><div class="fcast-name">${loc.name}</div></div></div>
           <div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">
@@ -6428,7 +6444,7 @@ async function loadForecast(forceNewsUpdate=false){
 
       const wxLen  = wxDays.length || 0;
       const modLen = models?.daily?.time?.length || 0;
-      if(!wxLen && !modLen){ html += `<div class="fcast-island panel"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${loc.flag} ${loc.name} — no forecast data available</div></div>`; return; }
+      if(!wxLen && !modLen){ html += `<div class="fcast-island panel" data-icao="${loc.icao}"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${loc.flag} ${loc.name} — no forecast data available</div></div>`; return; }
       const nDays  = Math.min(4, Math.max(wxLen, modLen));
 
       const allHi=[], allLo=[];
@@ -6598,7 +6614,7 @@ async function loadForecast(forceNewsUpdate=false){
                        : modelCount>=2 ? `${modelCount}-model blend`
                        : modelCount===1 ? '1 model + WeatherAPI' : 'WeatherAPI only';
 
-      html += `<div class="fcast-island panel">
+      html += `<div class="fcast-island panel" data-icao="${loc.icao}">
         <div class="fcast-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div style="flex:1;min-width:0">
@@ -6613,7 +6629,7 @@ async function loadForecast(forceNewsUpdate=false){
       </div>`;
       }catch(renderErr){
         console.error('[Forecast] render error for', loc?.icao, renderErr);
-        html += `<div class="fcast-island panel"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Render error: ${renderErr.message}</div></div>`;
+        html += `<div class="fcast-island panel" data-icao="${loc?.icao||''}"><div style="padding:18px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Render error: ${renderErr.message}</div></div>`;
       }
     });
 
@@ -7198,7 +7214,7 @@ async function loadMarine(){
       // Wave color intensity
       const waveCol = waveM>=2.5?'#f87171':waveM>=1.5?'#fbbf24':waveM>=0.8?'#22d3ee':'#5ab8ff';
 
-      html+=`<div class="marine-island panel">
+      html+=`<div class="marine-island panel" data-icao="${loc.icao}">
         <div class="marine-island-hdr">
           <span class="fcast-flag">${loc.flag}</span>
           <div style="flex:1;min-width:0">
