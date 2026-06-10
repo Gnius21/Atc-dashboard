@@ -6155,7 +6155,8 @@ function buildForecastSummary(days, loc){
   const windMaxes  = safeDays.map(d=>Math.round((d.day.maxwind_kph||0)*0.539957));
   const condTexts  = safeDays.map(d=>(d.day.condition?.text||'').toLowerCase());
   const stormDays  = condTexts.filter(t=>t.includes('thunder')||t.includes('storm')).length;
-  const showerDays = condTexts.filter(t=>t.includes('rain')||t.includes('shower')||t.includes('drizzle')).length;
+  // Count a day as a shower day only when rain wording is backed by ≥40% chance
+  const showerDays = safeDays.filter((d,i)=>rainProbs[i]>=40 && (condTexts[i].includes('rain')||condTexts[i].includes('shower')||condTexts[i].includes('drizzle'))).length;
   const wetDays    = rainProbs.filter(p=>p>=50).length;
   const peakGust   = safeDays.length ? Math.max(...safeDays.map((d,i)=>{
     const hrs = d.hour||[];
@@ -6166,7 +6167,7 @@ function buildForecastSummary(days, loc){
 
   // Today line
   const windStr  = windKt<3 ? 'calm winds' : gustKt>windKt+4 ? `${windKt}–${gustKt} kt gusts` : `${windKt} kt winds`;
-  const rainStr  = rainPct>=70 ? `${rainPct}% rain chance` : rainPct>=30 ? `${rainPct}% chance of showers` : '';
+  const rainStr  = rainPct>=70 ? `${rainPct}% rain chance` : rainPct>=40 ? `${rainPct}% chance of showers` : '';
   const humNote  = hum > 82 ? ', humid' : hum < 55 ? ', dry' : '';
   const uvNote   = uv >= 8 ? ` · UV extreme (${(uv||0).toFixed(0)})` : uv >= 6 ? ` · UV high (${(uv||0).toFixed(0)})` : '';
   const visNote  = vis != null && vis < 5 ? ` · reduced vis ${vis.toFixed ? vis.toFixed(1) : vis} km` : '';
@@ -6220,13 +6221,14 @@ function buildHourlyStrip(day0, icao, day1){
       ? t.toLocaleDateString('en-US',{weekday:'short',timeZone:'America/Curacao'})
       : `${String(hr).padStart(2,'0')}`;
     const tempC  = Math.round(h.temp_c);
-    const wmoC   = mapWeatherApiToWMO(h.condition?.code, h.condition?.text||'');
     const rain   = h.chance_of_rain||0;
+    let wmoC     = mapWeatherApiToWMO(h.condition?.code, h.condition?.text||'');
+    if(rain < 40 && wmoC >= 51 && wmoC <= 82) wmoC = 2; // rain icon only at ≥40% chance
     const precip = h.precip_mm||0;
     const windKt = Math.round((h.wind_kph||0)*0.539957);
     const gustKt = Math.round((h.gust_kph||h.wind_kph||0)*0.539957);
     const dewC   = h.dewpoint_c !== undefined ? Math.round(h.dewpoint_c) : null;
-    const rainH  = Math.round(((precip??0)/maxPrecip)*28);
+    const rainH  = rain>=40 ? Math.round(((precip??0)/maxPrecip)*28) : 0; // rain bar only at ≥40% chance
     const windH  = Math.round((windKt/maxWind)*20);
     const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.25)';
     const windCol= gustKt>=25?'#f87171':gustKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
@@ -6242,7 +6244,7 @@ function buildHourlyStrip(day0, icao, day1){
         <div class="hourly-bar-wind" style="height:${Math.max(2,windH)}px;background:${windCol}" title="${windKt} kt"></div>
         ${gustBar}
       </div>
-      <div class="hourly-rain">${rain?rain+'%':''}</div>
+      <div class="hourly-rain">${rain>=40?rain+'%':''}</div>
       <div class="hourly-wind" style="color:${windCol}">${windKt}${gustKt>windKt+3?'<span style="opacity:.6;font-size:.42rem"> G'+gustKt+'</span>':''}</div>
     </div>`;
   }).join('');
@@ -6476,7 +6478,8 @@ async function loadForecast(forceNewsUpdate=false){
         const sunset = wxDay?.astro?.sunset    || '—';
 
         const cond   = wxDay?.day?.condition || {code:1003, text: rainPct>60?'Showers':'Partly cloudy'};
-        const wmoC   = mapWeatherApiToWMO(cond.code, cond.text);
+        let wmoC     = mapWeatherApiToWMO(cond.code, cond.text);
+        if(rainPct < 40 && wmoC >= 51 && wmoC <= 82) wmoC = 2; // rain icon only at ≥40% chance
         const uvC    = uvCol(uv); const uvL = uvLbl(uv);
         const windCard=['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
         const rainCol= rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
@@ -6485,15 +6488,17 @@ async function loadForecast(forceNewsUpdate=false){
         const hiFrac = Math.min(100,((tempHi-tMin)/tSpan)*100);
         const conf   = confidenceLevel(tempHiB.spread, tempHiB.n);
 
+        // Rain wording only when chance ≥40%; thunderstorms always shown (safety)
         const t = cond.text.toLowerCase();
+        const wantRain = rainPct >= 40;
         const pType = t.includes('thunder')||t.includes('storm') ? '⛈ Thunderstorm'
-          : t.includes('heavy rain') ? '🌧 Heavy rain'
-          : t.includes('drizzle')    ? '🌦 Drizzle'
-          : t.includes('rain')||t.includes('shower') ? '🌧 Rain/showers'
+          : wantRain && t.includes('heavy rain') ? '🌧 Heavy rain'
+          : wantRain && t.includes('drizzle')    ? '🌦 Drizzle'
+          : wantRain && (t.includes('rain')||t.includes('shower')) ? '🌧 Rain/showers'
           : rainPct>=60              ? '🌦 Likely rain'
-          : rainPct>=30              ? '🌂 Possible rain'
+          : rainPct>=40              ? '🌂 Possible rain'
           : t.includes('overcast')   ? '☁️ Overcast'
-          : t.includes('cloud')||t.includes('partly') ? '⛅ Partly cloudy'
+          : t.includes('cloud')||t.includes('partly')||t.includes('rain')||t.includes('shower')||t.includes('drizzle') ? '⛅ Partly cloudy'
           :                            '☀️ Sunny / Clear';
 
         dayCards += `<div class="fcast-day" style="--day-delay:${i*0.08}s">
@@ -6527,8 +6532,8 @@ async function loadForecast(forceNewsUpdate=false){
               <span class="fd-bar-hi">${tempHi}°</span>
             </div>
 
-            <!-- Rain probability -->
-            <div class="fd-data-row">
+            <!-- Rain probability — shown only when chance ≥40% -->
+            ${rainPct>=40?`<div class="fd-data-row">
               <span class="fd-data-icon">💧</span>
               <span class="fd-data-label">Rain</span>
               <div class="fd-mini-bar">
@@ -6536,7 +6541,7 @@ async function loadForecast(forceNewsUpdate=false){
               </div>
               <span class="fd-data-val" style="color:${rainCol}">${rainPct}%</span>
               <span class="fd-data-sub">${rainMm}mm</span>
-            </div>
+            </div>`:''}
 
             <!-- Wind -->
             <div class="fd-data-row">
