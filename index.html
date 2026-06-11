@@ -1919,13 +1919,12 @@ body.night .tab-btn.active{
   border-color:rgba(99,102,241,0.6);
   color:#a78bfa;
 }
-/* Radar tiles */
+/* Radar tiles — size set inline (tiles are upscaled past RainViewer's
+   max zoom 7); smooth scaling looks better than pixelated for radar */
 .radar-tile{
   position:absolute;
-  width:256px;height:256px;
   opacity:.55;
   pointer-events:none;
-  image-rendering:pixelated;
 }
 
 /* ── HEADER ── */
@@ -5456,20 +5455,31 @@ function renderRadarTiles(){
   const W = box.width||overlay.offsetWidth, H = box.height||overlay.offsetHeight;
   if(!W||!H){ overlay.innerHTML=''; return; }
 
-  const z = Math.round(_mapView.zoom);
+  // RainViewer's free tier only serves radar tiles up to zoom 7
+  // (512px tiles, Universal Blue palette, past data, PNG) — deeper
+  // requests return a "Zoom Level Not Supported" placeholder image.
+  // So we clamp to z=7 and scale the tiles up to match the map zoom.
+  const RADAR_MAX_Z = 7;
+  const z = Math.max(1, Math.min(RADAR_MAX_Z, Math.round(_mapView.zoom)));
+  // On-screen size of one tile: the map world is 256·2^zoom px wide and a
+  // z-level tile covers 1/2^z of it (exact for fractional zooms as well).
+  const tilePx = 256 * Math.pow(2, _mapView.zoom - z);
+  const n = Math.pow(2, z);
+
   // Which tile does the map centre fall on?
   const ct = latLonToTile(_mapView.lat, _mapView.lon, z);
-  // How many tiles fit in the box (+2 margin on each side)
-  const tilesX = Math.ceil(W/256)+3, tilesY = Math.ceil(H/256)+3;
+  // How many tiles fit in the box (+1 margin on each side)
+  const spanX = Math.ceil(W/tilePx/2)+1, spanY = Math.ceil(H/tilePx/2)+1;
 
   let html='';
-  for(let dx=-Math.floor(tilesX/2)-1; dx<=Math.floor(tilesX/2)+1; dx++){
-    for(let dy=-Math.floor(tilesY/2)-1; dy<=Math.floor(tilesY/2)+1; dy++){
+  for(let dx=-spanX; dx<=spanX; dx++){
+    for(let dy=-spanY; dy<=spanY; dy++){
       const tx = ct.x+dx, ty = ct.y+dy;
-      if(ty<0 || ty>=Math.pow(2,z)) continue;
+      if(ty<0 || ty>=n) continue;
+      const txw = ((tx % n) + n) % n; // wrap X for the tile URL
       const {px,py} = tileToPixel(tx,ty,z,_mapView,W,H);
-      const url=`https://tilecache.rainviewer.com${_radarTimestamp}/256/${z}/${tx}/${ty}/4/1_1.png`;
-      html+=`<img class="radar-tile" src="${url}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px" loading="lazy" onerror="this.style.display='none'">`;
+      const url=`https://tilecache.rainviewer.com${_radarTimestamp}/512/${z}/${txw}/${ty}/2/1_1.png`;
+      html+=`<img class="radar-tile" src="${url}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px;width:${tilePx.toFixed(1)}px;height:${tilePx.toFixed(1)}px" loading="lazy" onerror="this.style.display='none'">`;
     }
   }
   overlay.innerHTML = html;
