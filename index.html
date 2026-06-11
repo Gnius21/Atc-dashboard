@@ -1928,6 +1928,36 @@ body.night .tab-btn.active{
 }
 .sat-tile{opacity:.5}
 
+/* ── WORLD AIRPORT DETAIL MODAL ── */
+.world-ovr-card{cursor:pointer}
+.world-ovr-card:hover{border-color:var(--border-bright)}
+.world-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(2,4,10,0.72);backdrop-filter:blur(4px);padding:16px}
+.world-modal-inner{position:relative;width:min(640px,100%);max-height:88vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--border-hi);border-radius:var(--radius-lg);box-shadow:var(--shadow-panel);padding:18px 18px 14px}
+.world-modal-close{position:absolute;top:10px;right:10px;background:none;border:1px solid var(--border-hi);border-radius:6px;color:var(--text-dim);font-size:.8rem;padding:4px 9px;cursor:pointer;z-index:1}
+.world-modal-close:hover{color:var(--accent-bright);border-color:var(--border-bright)}
+.wm-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.wm-flag{font-size:1.8rem}
+.wm-name{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text)}
+.wm-sub{font-family:var(--mono);font-size:.55rem;color:var(--text-dim);letter-spacing:.08em}
+.wm-section{margin-top:13px}
+.wm-section-title{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
+.wm-raw{font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);background:rgba(90,184,255,0.05);border:1px solid var(--border);border-radius:6px;padding:8px 10px;line-height:1.5;word-break:break-word}
+.wm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.wm-cell{border:1px solid var(--border);border-radius:6px;padding:7px 9px;background:rgba(255,255,255,0.02)}
+.wm-cell-lbl{font-family:var(--mono);font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.wm-cell-val{font-family:var(--display);font-size:.8rem;font-weight:600;color:var(--accent-bright);line-height:1.25}
+.wm-note{font-family:var(--mono);font-size:.48rem;color:var(--text-dim);margin-top:5px}
+.wm-fc-row{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.6rem;color:var(--text)}
+.wm-fc-row:last-child{border-bottom:none}
+.wm-fc-day{width:78px;font-weight:600;flex-shrink:0}
+.wm-fc-icon{width:26px;height:26px;flex-shrink:0}
+.wm-fc-temps{width:78px;flex-shrink:0}
+.wm-fc-hi{color:var(--accent-bright);font-weight:700}
+.wm-fc-lo{color:var(--text-dim)}
+.wm-fc-rain{width:50px;flex-shrink:0;color:#22d3ee}
+.wm-fc-wind{width:64px;flex-shrink:0;color:#fbbf24}
+.wm-fc-cond{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim)}
+
 /* ── HEADER ── */
 .ic-header{
   display:grid;
@@ -3499,6 +3529,14 @@ body.night .tab-btn.active{
 
     </div>
     <button class="theme-picker-close" id="themePickerClose">✕</button>
+  </div>
+</div>
+
+<!-- WORLD AIRPORT DETAIL MODAL -->
+<div id="worldModal" class="world-modal" style="display:none" role="dialog" aria-modal="true" aria-label="Airport details">
+  <div class="world-modal-inner">
+    <button class="world-modal-close" id="worldModalClose" aria-label="Close">✕</button>
+    <div id="worldModalBody"></div>
   </div>
 </div>
 
@@ -5307,7 +5345,7 @@ function renderWorldOvr(){
     const loc = d?.location;
 
     if(!cur){
-      return `<div class="panel world-ovr-card" aria-label="${ap.name}: no data">
+      return `<div class="panel world-ovr-card" data-icao="${ap.icao}" tabindex="0" aria-label="${ap.name}: no data — click for details">
         <div class="wov-left">
           <div class="wov-icon" style="opacity:.25">${animatedWeatherSVG(3)}</div>
           <div class="wov-flag">${ap.flag}</div>
@@ -5374,9 +5412,9 @@ function renderWorldOvr(){
 
     const timeCls = isNight ? 'wov-localtime wov-night' : 'wov-localtime';
 
-    return `<div class="panel world-ovr-card"
-        role="img"
-        aria-label="${ap.name}: ${condText}, ${tempDisplay}C, local time ${timeStr}${windStr?', wind '+windStr:''}">
+    return `<div class="panel world-ovr-card" data-icao="${ap.icao}" tabindex="0"
+        role="button"
+        aria-label="${ap.name}: ${condText}, ${tempDisplay}C, local time ${timeStr}${windStr?', wind '+windStr:''} — click for METAR and forecast">
       <div class="wov-left">
         <div class="wov-icon">${icon}</div>
         <div class="wov-flag">${ap.flag}</div>
@@ -5403,6 +5441,167 @@ function renderWorldOvr(){
 
   grid.innerHTML = cards.join('');
 }
+
+/* ── World card detail modal: live METAR + current weather + 3-day forecast ──
+   Data is fetched on click (one CheckWX + one WeatherAPI call) and cached
+   for 10 minutes per airport. */
+const _worldDetailCache = {}; // icao → {ts, metar, fc}
+
+function wmCell(lbl, val){
+  return `<div class="wm-cell"><div class="wm-cell-lbl">${lbl}</div><div class="wm-cell-val">${val}</div></div>`;
+}
+
+async function openWorldModal(icao){
+  const ap    = WORLD_OVR.find(a=>a.icao===icao);
+  const modal = document.getElementById('worldModal');
+  const body  = document.getElementById('worldModalBody');
+  if(!ap || !modal || !body) return;
+
+  const hdr = `
+    <div class="wm-hdr">
+      <span class="wm-flag">${ap.flag}</span>
+      <div><div class="wm-name">${ap.name}</div><div class="wm-sub">${ap.sub} · ${ap.icao}</div></div>
+    </div>`;
+  modal.style.display='flex';
+  modal.dataset.icao = icao;
+  body.innerHTML = hdr + `<div style="font-family:var(--mono);font-size:.6rem;color:var(--text-dim);padding:14px 2px">Loading live data…</div>`;
+
+  let c = _worldDetailCache[icao];
+  if(!c || Date.now()-c.ts > 10*60*1000){
+    const metarUrl  = PROXY_BASE ? `${PROXY_BASE}/metar/${icao}` : `https://api.checkwx.com/metar/${icao}/decoded`;
+    const metarOpts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
+    const fcUrl = PROXY_BASE
+      ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=3&aqi=no&alerts=no`
+      : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&days=3&aqi=no&alerts=no`;
+    const [mR, fR] = await Promise.allSettled([
+      fetch(metarUrl, metarOpts).then(r=>{ if(!r.ok) throw new Error('METAR '+r.status); return r.json(); }),
+      fetch(fcUrl, {cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('Forecast '+r.status); return r.json(); }),
+    ]);
+    c = {
+      ts:    Date.now(),
+      metar: mR.status==='fulfilled' ? (mR.value.data?.[0]||null) : null,
+      fc:    fR.status==='fulfilled' ? fR.value : null,
+    };
+    _worldDetailCache[icao] = c;
+  }
+  // User may have closed or opened another airport while we were fetching
+  if(modal.style.display==='none' || modal.dataset.icao!==icao) return;
+
+  // ── LIVE METAR ──
+  const m = c.metar;
+  let metarHtml;
+  if(m){
+    const cat  = m.flight_category||'—';
+    const wind = m.wind||{};
+    const windStr = wind.speed_kts!=null
+      ? `${wind.degrees!=null?pad(wind.degrees)+'° ':''}${wind.speed_kts} kt${wind.gust_kts?' G'+wind.gust_kts:''}`
+      : (wind.direction==='VRB'?'VRB':'—');
+    metarHtml = `
+      <div class="wm-raw">${m.raw_text||'—'}</div>
+      <div class="wm-grid" style="margin-top:8px">
+        ${wmCell('Category', `<span style="color:${catCol(cat)}">${cat}</span>`)}
+        ${wmCell('Wind', windStr)}
+        ${wmCell('Temp / Dew', `${m.temperature?.celsius??'—'}° / ${m.dewpoint?.celsius??'—'}°`)}
+        ${wmCell('QNH', m.barometer?.hpa!=null?m.barometer.hpa+' hPa':'—')}
+        ${wmCell('Visibility', m.visibility?.meters!=null?(m.visibility.meters>=9999?'&gt;10 km':(m.visibility.meters/1000).toFixed(1)+' km'):'—')}
+        ${wmCell('Clouds', (m.clouds||[]).map(cl=>`${cl.code} ${cl.base_feet_agl}ft`).join(' · ')||'CAVOK')}
+      </div>
+      <div class="wm-note">CheckWX · Observed ${m.observed?fmtUTC(m.observed):'—'}</div>`;
+  }else{
+    metarHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">METAR unavailable for ${icao}.</div>`;
+  }
+
+  // ── CURRENT WEATHER DETAILS ──
+  const cur = c.fc?.current || _worldOvrStore[icao]?.current;
+  let curHtml;
+  if(cur){
+    const wKt = cur.wind_kph!=null ? Math.round(cur.wind_kph*0.539957) : null;
+    const gKt = cur.gust_kph!=null ? Math.round(cur.gust_kph*0.539957) : null;
+    const wmo = mapWeatherApiToWMO(cur.condition?.code, cur.condition?.text||'');
+    const localtime = c.fc?.location?.localtime?.split(' ')[1] || '';
+    curHtml = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="display:inline-block;width:40px;height:40px;flex-shrink:0">${animatedWeatherSVG(wmo)}</span>
+        <span style="font-family:var(--display);font-size:.85rem;color:var(--text)">${cur.condition?.text||'—'}</span>
+        ${localtime?`<span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">Local ${localtime}</span>`:''}
+      </div>
+      <div class="wm-grid">
+        ${wmCell('Temp', cur.temp_c!=null?Math.round(cur.temp_c)+'°C':'—')}
+        ${wmCell('Feels', cur.feelslike_c!=null?Math.round(cur.feelslike_c)+'°C':'—')}
+        ${wmCell('Wind', wKt!=null?`${wKt} kt ${cur.wind_dir||''}${gKt&&gKt>wKt+2?' G'+gKt:''}`:'—')}
+        ${wmCell('Humidity', cur.humidity!=null?cur.humidity+'%':'—')}
+        ${wmCell('Cloud', cur.cloud!=null?cur.cloud+'%':'—')}
+        ${wmCell('Visibility', cur.vis_km!=null?cur.vis_km+' km':'—')}
+        ${wmCell('UV', cur.uv!=null?`<span style="color:${uvCol(cur.uv)}">${cur.uv.toFixed(0)} ${uvLbl(cur.uv)}</span>`:'—')}
+        ${wmCell('Pressure', cur.pressure_mb!=null?cur.pressure_mb+' mb':'—')}
+      </div>`;
+  }else{
+    curHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">Weather details unavailable.</div>`;
+  }
+
+  // ── 3-DAY FORECAST ──
+  const days = c.fc?.forecast?.forecastday || [];
+  let fcHtml;
+  if(days.length){
+    fcHtml = days.map((d,i)=>{
+      const dt   = d.date ? new Date(d.date+'T12:00:00') : null;
+      const name = i===0?'Today':i===1?'Tomorrow':(dt?dt.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}):'—');
+      const day  = d.day||{};
+      const wmo  = mapWeatherApiToWMO(day.condition?.code, day.condition?.text||'');
+      const rain = day.daily_chance_of_rain||0;
+      const wKt  = Math.round((day.maxwind_kph||0)*0.539957);
+      return `<div class="wm-fc-row">
+        <span class="wm-fc-day">${name}</span>
+        <span class="wm-fc-icon">${animatedWeatherSVG(rain<40 && wmo>=51 && wmo<=82 ? 2 : wmo)}</span>
+        <span class="wm-fc-temps"><span class="wm-fc-hi">${Math.round(day.maxtemp_c??0)}°</span> / <span class="wm-fc-lo">${Math.round(day.mintemp_c??0)}°</span></span>
+        <span class="wm-fc-rain">${rain>=40?'💧'+rain+'%':''}</span>
+        <span class="wm-fc-wind">💨 ${wKt}kt</span>
+        <span class="wm-fc-cond">${day.condition?.text||''}</span>
+      </div>`;
+    }).join('');
+  }else{
+    fcHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">Forecast unavailable.</div>`;
+  }
+
+  body.innerHTML = hdr + `
+    <div class="wm-section">
+      <div class="wm-section-title">📡 Live METAR</div>
+      ${metarHtml}
+    </div>
+    <div class="wm-section">
+      <div class="wm-section-title">🌤 Current Conditions</div>
+      ${curHtml}
+    </div>
+    <div class="wm-section">
+      <div class="wm-section-title">📅 3-Day Forecast</div>
+      ${fcHtml}
+    </div>`;
+}
+
+// Wire the modal: card clicks (delegated — cards re-render every refresh),
+// Enter key on focused card, close button, backdrop click, Escape.
+(function wireWorldModal(){
+  const modal = document.getElementById('worldModal');
+  const close = document.getElementById('worldModalClose');
+  const grid  = document.getElementById('world-ovr-grid');
+  const hide  = ()=>{ if(modal) modal.style.display='none'; };
+  if(close) close.addEventListener('click', hide);
+  if(modal) modal.addEventListener('click', e=>{ if(e.target===modal) hide(); });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape' && modal && modal.style.display!=='none') hide();
+  });
+  if(grid){
+    grid.addEventListener('click', e=>{
+      const card = e.target.closest('.world-ovr-card');
+      if(card?.dataset.icao) openWorldModal(card.dataset.icao).catch(err=>console.warn('[WorldModal]', err.message));
+    });
+    grid.addEventListener('keydown', e=>{
+      if(e.key!=='Enter' && e.key!==' ') return;
+      const card = e.target.closest('.world-ovr-card');
+      if(card?.dataset.icao){ e.preventDefault(); openWorldModal(card.dataset.icao).catch(err=>console.warn('[WorldModal]', err.message)); }
+    });
+  }
+})();
 
 
 
@@ -7162,6 +7361,10 @@ async function loadMarine(){
       // ── Atmospheric data from WeatherAPI (unified source) ──
       const wxCur = wxApi?.current || {};
       const wcCode = wxCur?.condition?.code;
+      // Wind sources: Curaçao uses Bonaire's wind (Hato's reading is not
+      // representative of open-water conditions around Curaçao).
+      const windMetar = loc.icao==='TNCC' ? (store.metar['TNCB'] || metar) : metar;
+      const windWx    = loc.icao==='TNCC' ? (store.api['TNCB']?.current || wxCur) : wxCur;
       const waveM   = m.wave_height ?? 0;
       const waveFt  = (waveM*3.281).toFixed(1);
       const swellM  = m.swell_wave_height ?? 0;
@@ -7173,22 +7376,22 @@ async function loadMarine(){
       const sd=m.swell_wave_direction ?? 0;
       const sdir=['N','NE','E','SE','S','SW','W','NW'][Math.round((sd%360)/45)%8];
 
-      const windKt = wxCur.wind_kph ? Math.round(wxCur.wind_kph*0.539957) : 0;
-      const gustKt = wxCur.gust_kph ? Math.round(wxCur.gust_kph*0.539957) : 0;
-      const wxWindDir  = wxCur.wind_degree;
+      const windKt = windWx.wind_kph ? Math.round(windWx.wind_kph*0.539957) : 0;
+      const gustKt = windWx.gust_kph ? Math.round(windWx.gust_kph*0.539957) : 0;
+      const wxWindDir  = windWx.wind_degree;
       const wxWindCard = wxWindDir!==undefined ? ['N','NE','E','SE','S','SW','W','NW'][Math.round((wxWindDir%360)/45)%8] : '';
 
       // ── Wind: METAR primary → SYNOP → WeatherAPI fallback ──
       let _windKt = null, _gustKt = null, _windDeg = null;
       // METAR
-      if(metar?.wind?.speed_kts != null){
-        _windKt  = metar.wind.speed_kts;
-        _gustKt  = metar.wind.gust_kts ?? null;
-        _windDeg = metar.wind.degrees  ?? null;
+      if(windMetar?.wind?.speed_kts != null){
+        _windKt  = windMetar.wind.speed_kts;
+        _gustKt  = windMetar.wind.gust_kts ?? null;
+        _windDeg = windMetar.wind.degrees  ?? null;
       }
       // SYNOP (CheckWX metar object may have synop data via metar.raw parse)
-      if(_windKt == null && metar?.raw){
-        const _wm = metar.raw.match(/\b(\d{3})(\d{2})(?:G(\d{2}))?KT\b/);
+      if(_windKt == null && windMetar?.raw){
+        const _wm = windMetar.raw.match(/\b(\d{3})(\d{2})(?:G(\d{2}))?KT\b/);
         if(_wm){ _windDeg=parseInt(_wm[1]); _windKt=parseInt(_wm[2]); _gustKt=_wm[3]?parseInt(_wm[3]):null; }
       }
       // WeatherAPI fallback
