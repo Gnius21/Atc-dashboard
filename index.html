@@ -1919,13 +1919,14 @@ body.night .tab-btn.active{
   border-color:rgba(99,102,241,0.6);
   color:#a78bfa;
 }
-/* Radar tiles — size set inline (tiles are upscaled past RainViewer's
-   max zoom 7); smooth scaling looks better than pixelated for radar */
-.radar-tile{
+/* Radar/satellite tiles — size set inline (tiles are upscaled past the
+   sources' max zoom 7); smooth scaling looks better than pixelated */
+.radar-tile,.sat-tile{
   position:absolute;
   opacity:.55;
   pointer-events:none;
 }
+.sat-tile{opacity:.5}
 
 /* ── HEADER ── */
 .ic-header{
@@ -3632,6 +3633,7 @@ body.night .tab-btn.active{
       <button id="adsbSaveBtn" class="btn btn-small" style="margin-left:10px;font-size:.52rem;padding:3px 10px" title="Save current map view — it will be restored on next page load">📍 Save Position</button>
       <span style="margin-left:auto"></span>
       <button class="adsb-layer-btn" id="radarLayerBtn" data-active="0" style="margin-left:10px">🌧 Radar Overlay</button>
+      <button class="adsb-layer-btn" id="satLayerBtn" data-active="0" style="margin-left:8px">🛰 Satellite</button>
     </div>
 
     <div class="radar-box adsb-box" style="height:580px">
@@ -3646,6 +3648,8 @@ body.night .tab-btn.active{
         style="width:100%;height:100%;border:none;display:block"
       ></iframe>
       <div class="overlay-blocker"></div>
+      <!-- Satellite tile overlay (NASA GIBS — GOES-East GeoColor, free, no key) -->
+      <div id="sat-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden;display:none"></div>
       <!-- Radar tile overlay (RainViewer — free, no key) -->
       <div id="radar-overlay" style="position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;display:none"></div>
     </div>
@@ -4051,6 +4055,7 @@ function setMapViewFromUrl(u){
     if(isFinite(lat) && isFinite(lon)){
       _mapView = { lat, lon, zoom: isFinite(zoom) ? zoom : _mapView.zoom };
       if(_radarActive) renderRadarTiles();
+      if(_satActive) renderSatTiles();
     }
   }catch(_){}
 }
@@ -4090,6 +4095,7 @@ function setMapViewFromUrl(u){
         if(saveBtn) saveBtn.title = `Saved: lat ${lat.toFixed(2)}, lon ${lon.toFixed(2)}, zoom ${zoom.toFixed(1)}`;
         _mapView = { lat, lon, zoom: isFinite(zoom) ? zoom : _mapView.zoom };
         if(_radarActive) renderRadarTiles();
+        if(_satActive) renderSatTiles();
       }
     }
   });
@@ -5412,6 +5418,8 @@ function renderWorldOvr(){
 var _radarActive   = false;
 var _radarTimestamp= null;
 var _radarTimer    = null;
+var _satActive     = false;
+var _satTimer      = null;
 
 // Convert lat/lon to OSM/Google tile XY at a given zoom level
 function latLonToTile(lat, lon, z){
@@ -5448,21 +5456,20 @@ async function fetchRadarTimestamp(){
   }catch(e){ console.warn('[Radar]',e.message); }
 }
 
-function renderRadarTiles(){
-  const overlay = document.getElementById('radar-overlay');
-  if(!overlay || !_radarActive || !_radarTimestamp) return;
+/* Shared XYZ tile-overlay renderer for the ADS-B map.
+   Sources max out below the map's zoom range (RainViewer z7, GIBS z7),
+   so tiles are requested at the clamped zoom and scaled up to match the
+   map exactly — correct for fractional zoom levels too. */
+function renderTileOverlay(overlayId, active, maxZ, cssClass, urlFor){
+  const overlay = document.getElementById(overlayId);
+  if(!overlay || !active) return;
   const box = overlay.getBoundingClientRect();
   const W = box.width||overlay.offsetWidth, H = box.height||overlay.offsetHeight;
   if(!W||!H){ overlay.innerHTML=''; return; }
 
-  // RainViewer's free tier only serves radar tiles up to zoom 7
-  // (512px tiles, Universal Blue palette, past data, PNG) — deeper
-  // requests return a "Zoom Level Not Supported" placeholder image.
-  // So we clamp to z=7 and scale the tiles up to match the map zoom.
-  const RADAR_MAX_Z = 7;
-  const z = Math.max(1, Math.min(RADAR_MAX_Z, Math.round(_mapView.zoom)));
+  const z = Math.max(1, Math.min(maxZ, Math.round(_mapView.zoom)));
   // On-screen size of one tile: the map world is 256·2^zoom px wide and a
-  // z-level tile covers 1/2^z of it (exact for fractional zooms as well).
+  // z-level tile covers 1/2^z of it.
   const tilePx = 256 * Math.pow(2, _mapView.zoom - z);
   const n = Math.pow(2, z);
 
@@ -5478,11 +5485,29 @@ function renderRadarTiles(){
       if(ty<0 || ty>=n) continue;
       const txw = ((tx % n) + n) % n; // wrap X for the tile URL
       const {px,py} = tileToPixel(tx,ty,z,_mapView,W,H);
-      const url=`https://tilecache.rainviewer.com${_radarTimestamp}/512/${z}/${txw}/${ty}/2/1_1.png`;
-      html+=`<img class="radar-tile" src="${url}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px;width:${tilePx.toFixed(1)}px;height:${tilePx.toFixed(1)}px" loading="lazy" onerror="this.style.display='none'">`;
+      html+=`<img class="${cssClass}" src="${urlFor(z,txw,ty)}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px;width:${tilePx.toFixed(1)}px;height:${tilePx.toFixed(1)}px" loading="lazy" onerror="this.style.display='none'">`;
     }
   }
   overlay.innerHTML = html;
+}
+
+function renderRadarTiles(){
+  // RainViewer free tier: radar only, max zoom 7, 512px tiles,
+  // Universal Blue palette, PNG. Beyond that the API returns a
+  // "Zoom Level Not Supported" placeholder image.
+  if(!_radarTimestamp) return;
+  renderTileOverlay('radar-overlay', _radarActive, 7, 'radar-tile',
+    (z,x,y)=>`https://tilecache.rainviewer.com${_radarTimestamp}/512/${z}/${x}/${y}/2/1_1.png`);
+}
+
+function renderSatTiles(){
+  // NASA GIBS — GOES-East ABI GeoColor (true color by day, IR at night),
+  // free, no key, refreshed every ~10 min. Omitting the time segment
+  // returns the latest imagery; the ?t bucket busts the browser cache
+  // once per 10 minutes. GIBS REST order is /{z}/{row=y}/{col=x}.
+  const bucket = Math.floor(Date.now()/600000);
+  renderTileOverlay('sat-overlay', _satActive, 7, 'sat-tile',
+    (z,x,y)=>`https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/GOES-East_ABI_GeoColor/default/GoogleMapsCompatible_Level7/${z}/${y}/${x}.png?t=${bucket}`);
 }
 
 async function toggleRadar(){
@@ -5509,10 +5534,32 @@ async function toggleRadar(){
   }
 }
 
-// Wire the radar button
-(function wireRadarBtn(){
-  const btn = document.getElementById('radarLayerBtn');
-  if(btn) btn.addEventListener('click', toggleRadar);
+function toggleSat(){
+  const btn = document.getElementById('satLayerBtn');
+  _satActive = !_satActive;
+  if(btn) btn.dataset.active = _satActive?'1':'0';
+
+  const overlay = document.getElementById('sat-overlay');
+  if(!overlay) return;
+
+  if(_satActive){
+    overlay.style.display='';
+    renderSatTiles();
+    // Re-render every 10 min: picks up fresh GOES imagery (cache bucket)
+    _satTimer = setInterval(renderSatTiles, 10*60*1000);
+  }else{
+    overlay.style.display='none';
+    overlay.innerHTML='';
+    if(_satTimer){ clearInterval(_satTimer); _satTimer=null; }
+  }
+}
+
+// Wire the overlay buttons
+(function wireOverlayBtns(){
+  const radarBtn = document.getElementById('radarLayerBtn');
+  if(radarBtn) radarBtn.addEventListener('click', toggleRadar);
+  const satBtn = document.getElementById('satLayerBtn');
+  if(satBtn) satBtn.addEventListener('click', toggleSat);
 })();
 
 /* ═══════════════════════════════════════════════════════
