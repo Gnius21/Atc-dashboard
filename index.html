@@ -2012,6 +2012,14 @@ body.night .tab-btn.active{
   margin-top:5px;font-weight:500;letter-spacing:.08em;
 }
 
+/* ── ISLAND CARD BASE LAYOUT ── */
+.island-card-v2{
+  padding:18px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
 /* ── SECTION SPACING ── */
 .ic-section{padding:0}
 
@@ -2209,7 +2217,7 @@ body.night .tab-btn.active{
   .ic-stats{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:600px){
-  .island-card-v2{padding:14px 12px;gap:12px}
+  .island-card-v2{padding:14px 12px;gap:10px}
   .ic-flag{font-size:1.5rem}
   .ic-name{font-size:.85rem;letter-spacing:.12em}
   .ic-sub{font-size:.46rem}
@@ -2449,6 +2457,7 @@ body.night .tab-btn.active{
 .wave-back, .wave-mid, .wave-front{
   animation:waveBob 3.5s ease-in-out infinite;
   transform-origin:center;
+  will-change:transform;
 }
 .wave-back  {animation-delay:0s;   animation-duration:4.5s}
 .wave-mid   {animation-delay:.4s;  animation-duration:3.5s}
@@ -2803,32 +2812,43 @@ body.night .tab-btn.active{
 .wx-svg{width:100%;height:100%;display:block;overflow:visible}
 
 .wx-sun-rays{
-  transform-origin:40px 40px;
+  transform-box:fill-box;
+  transform-origin:center;
   animation:wxSunSpin 20s linear infinite;
+  will-change:transform;
 }
 @keyframes wxSunSpin{to{transform:rotate(360deg)}}
-.wx-sun circle:nth-of-type(1){animation:wxSunPulse 3s ease-in-out infinite}
+.wx-sun circle:nth-of-type(1){
+  transform-box:fill-box;transform-origin:center;
+  animation:wxSunPulse 3s ease-in-out infinite;
+  will-change:transform,opacity;
+}
 @keyframes wxSunPulse{
-  0%,100%{opacity:.85;transform-origin:40px 40px;transform:scale(1)}
+  0%,100%{opacity:.85;transform:scale(1)}
   50%   {opacity:1;transform:scale(1.08)}
 }
 
-.wx-sun-rays-small{transform-origin:28px 28px;animation:wxSunSpin 20s linear infinite}
+.wx-sun-rays-small{
+  transform-box:fill-box;transform-origin:center;
+  animation:wxSunSpin 20s linear infinite;
+  will-change:transform;
+}
 
-.wx-cloud-drift{animation:wxCloudDrift 4s ease-in-out infinite}
-.wx-cloud-float{animation:wxCloudFloat 3.5s ease-in-out infinite}
+.wx-cloud-drift{animation:wxCloudDrift 4s ease-in-out infinite;will-change:transform}
+.wx-cloud-float{animation:wxCloudFloat 3.5s ease-in-out infinite;will-change:transform}
 @keyframes wxCloudDrift{
   0%,100%{transform:translateX(0)}
-  50%   {transform:translateX(2px)}
+  50%   {transform:translateX(4px)}
 }
 @keyframes wxCloudFloat{
   0%,100%{transform:translateY(0)}
-  50%   {transform:translateY(-2px)}
+  50%   {transform:translateY(-4px)}
 }
 
 .wx-drop{
   animation:wxDropFall 1.4s linear infinite;
   opacity:0;
+  will-change:transform,opacity;
 }
 .wx-drop-1{animation-delay:0s}
 .wx-drop-2{animation-delay:.28s}
@@ -2843,23 +2863,25 @@ body.night .tab-btn.active{
 }
 
 .wx-bolt{
-  transform-origin:42px 56px;
+  transform-box:fill-box;
+  transform-origin:center;
   animation:wxBoltFlash 2.6s ease-in-out infinite;
+  will-change:transform,opacity;
 }
 @keyframes wxBoltFlash{
   0%,40%,100%{opacity:0;transform:scale(0.8)}
-  45%        {opacity:1;transform:scale(1.1);filter:drop-shadow(0 0 8px #fbbf24)}
-  55%        {opacity:.6}
+  45%        {opacity:1;transform:scale(1.1)}
+  55%        {opacity:.7}
   60%        {opacity:1;transform:scale(1)}
 }
 
-.wx-fog-line{animation:wxFogSlide 4s ease-in-out infinite}
+.wx-fog-line{animation:wxFogSlide 4s ease-in-out infinite;will-change:transform,opacity}
 .wx-fog-1{animation-delay:0s}
 .wx-fog-2{animation-delay:.7s}
 .wx-fog-3{animation-delay:1.4s}
 @keyframes wxFogSlide{
-  0%,100%{transform:translateX(-3px);opacity:.7}
-  50%   {transform:translateX(3px);opacity:1}
+  0%,100%{transform:translateX(-4px);opacity:.65}
+  50%   {transform:translateX(4px);opacity:1}
 }
 
 .marine-island{
@@ -4346,10 +4368,18 @@ function switchTab(name){
   try{
     if(name==='forecast' && !forecastLoaded) loadForecast();
   }catch(err){ console.error('[Tabs] loadForecast failed:', err); }
-  // (Dashboard/KNMI tabs removed)
   try{
     if(name==='marine' && !marineLoaded){ loadMarine(); fetchTides(); }
   }catch(err){ console.error('[Tabs] loadMarine failed:', err); }
+  try{
+    if(name==='world'){
+      const WORLD_STALE = 15 * 60 * 1000;
+      if(!window._worldOvrLastFetch || Date.now()-window._worldOvrLastFetch >= WORLD_STALE){
+        window._worldOvrLastFetch = Date.now();
+        fetchWorldOvr();
+      }
+    }
+  }catch(err){ console.error('[Tabs] fetchWorldOvr failed:', err); }
 
   // Auto-refresh forecast/marine if data is >6 min stale when switching back
   try{
@@ -5897,10 +5927,7 @@ async function refresh(){
   // WeatherAPI quota guard — only refresh every WX_REFRESH_MS (15 min)
   // unless this is the first call of the session.
   if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
-    await Promise.all([
-      ...ICAOS.map(fetchWeatherAPI),
-      fetchWorldOvr(),    // World overview: EHAM KMIA KLGA TNCE TBPB
-    ]);
+    await Promise.all(ICAOS.map(fetchWeatherAPI));
     _lastWxFetch = Date.now();
   }
 
