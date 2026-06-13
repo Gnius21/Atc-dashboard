@@ -10,6 +10,7 @@
  *   GET /taf/:icaos               → CheckWX decoded TAF
  *   GET /wx?q=..&days=..&aqi=..&alerts=..  → WeatherAPI forecast.json
  *   GET /flights?direction=arrivals|departures  → AeroDataBox board for TNCC
+ *   GET /subscriptions/balance     → AeroDataBox subscription balance
  *
  * Secrets (set with `wrangler secret put <NAME>`)
  *   CHECKWX_KEY        CheckWX API key
@@ -42,11 +43,12 @@ export default {
     const path = url.pathname.replace(/\/+$/, '');   // strip trailing slash
 
     try {
-      if (path === '/flights')          return await handleFlights(url, env, ctx, cors);
-      if (path === '/wx')               return await handleWeather(url, env, ctx, cors);
-      if (path.startsWith('/metar/'))   return await handleCheckWX('metar', path.slice(7), env, ctx, cors);
-      if (path.startsWith('/taf/'))     return await handleCheckWX('taf',   path.slice(5), env, ctx, cors);
-      if (path === '' || path === '/')  return json({ ok: true, service: 'rwc-atc-proxy' }, 200, cors);
+      if (path === '/flights')                  return await handleFlights(url, env, ctx, cors);
+      if (path === '/subscriptions/balance')    return await handleSubscriptionBalance(url, env, ctx, cors);
+      if (path === '/wx')                       return await handleWeather(url, env, ctx, cors);
+      if (path.startsWith('/metar/'))           return await handleCheckWX('metar', path.slice(7), env, ctx, cors);
+      if (path.startsWith('/taf/'))             return await handleCheckWX('taf',   path.slice(5), env, ctx, cors);
+      if (path === '' || path === '/')          return json({ ok: true, service: 'rwc-atc-proxy' }, 200, cors);
       return json({ error: 'Not found' }, 404, cors);
     } catch (err) {
       return json({ error: String(err && err.message || err) }, 502, cors);
@@ -100,6 +102,32 @@ async function handleFlights(url, env, ctx, cors) {
   const body = JSON.stringify({ direction, updated: new Date().toISOString(), rows });
   const res  = new Response(body, {
     headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${FLIGHTS_TTL}` },
+  });
+  ctx.waitUntil(cache.put(cacheKey, res.clone()));
+  return withCors(res, cors);
+}
+
+/* ─────────────────────── subscription balance (AeroDataBox) ────────────────────── */
+async function handleSubscriptionBalance(url, env, ctx, cors) {
+  if (!env.AERODATABOX_KEY) return json({ error: 'AERODATABOX_KEY not configured' }, 503, cors);
+
+  // Cache subscription balance for 1 hour (3600 seconds)
+  const cache    = caches.default;
+  const cacheKey = new Request('https://proxy.invalid/subscriptions/balance', { method: 'GET' });
+  const hit      = await cache.match(cacheKey);
+  if (hit) return withCors(hit, cors);
+
+  const api = `https://${AERODATABOX_HOST}/subscriptions/balance`;
+  const upstream = await fetch(api, {
+    headers: { 'x-rapidapi-key': env.AERODATABOX_KEY, 'x-rapidapi-host': AERODATABOX_HOST },
+  });
+  if (!upstream.ok) {
+    return json({ error: 'AeroDataBox HTTP ' + upstream.status }, upstream.status, cors);
+  }
+  const data = await upstream.json();
+
+  const res = new Response(JSON.stringify(data), {
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'public, max-age=3600' },
   });
   ctx.waitUntil(cache.put(cacheKey, res.clone()));
   return withCors(res, cors);
