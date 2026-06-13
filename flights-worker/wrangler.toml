@@ -1,0 +1,14 @@
+name = "rwc-atc-proxy"
+main = "worker.js"
+compatibility_date = "2024-11-01"
+
+# Lock CORS to your dashboard's origin once you know it (recommended).
+# Use "*" only while testing. For GitHub Pages this is your pages origin,
+# e.g. "https://gnius21.github.io".
+[vars]
+ALLOWED_ORIGIN = "*"
+
+# Secrets are NOT stored here. Set them once after `wrangler login`:
+#   wrangler secret put CHECKWX_KEY
+#   wrangler secret put WEATHERAPI_KEY
+#   wrangler secret put AERODATABOX_KEY
