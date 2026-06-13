@@ -1294,82 +1294,6 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   z-index:2;
 }
 
-/* ── FLIGHTS: native board + iframe side by side ── */
-.flights-split{
-  display:grid;
-  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-  gap:14px;align-items:stretch;
-}
-@media(max-width:900px){ .flights-split{grid-template-columns:1fr} }
-.fb-panel{
-  display:flex;flex-direction:column;
-  height:calc(100vh - 170px);min-height:500px;
-  border:1px solid var(--border-hi);
-  border-radius:var(--radius-lg);
-  background:linear-gradient(180deg,var(--panel),var(--bg2));
-  overflow:hidden;
-  box-shadow:inset 0 0 80px rgba(0,0,0,0.5),0 0 0 1px rgba(34,211,238,0.06);
-}
-@media(max-width:900px){ .fb-panel{height:560px;min-height:0} }
-.fb-head{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-bottom:1px solid var(--border);
-  background:linear-gradient(180deg,rgba(34,211,238,0.06),transparent);
-  flex-shrink:0;
-}
-.fb-head-title{
-  font-family:var(--display);font-size:.8rem;font-weight:700;letter-spacing:.08em;
-  color:var(--accent-bright);display:flex;align-items:center;gap:8px;
-}
-.fb-refresh{
-  margin-left:auto;background:none;border:1px solid var(--border-hi);
-  color:var(--accent);border-radius:6px;width:28px;height:28px;cursor:pointer;
-  font-size:1.05rem;line-height:1;transition:background .2s;
-}
-.fb-refresh:hover{background:var(--accent-glow)}
-.fb-refresh.spinning{animation:refreshSpinAll .9s linear infinite}
-.fb-list{flex:1;overflow-y:auto;padding:4px}
-.fb-row{
-  display:grid;grid-template-columns:58px 1fr auto;
-  gap:10px;align-items:center;
-  padding:9px 10px;border-bottom:1px solid var(--border);
-}
-.fb-row:last-child{border-bottom:none}
-.fb-row:hover{background:rgba(34,211,238,0.04)}
-.fb-time{
-  font-family:var(--mono);font-weight:700;font-size:.86rem;color:var(--accent-bright);
-  font-variant-numeric:tabular-nums;line-height:1.1;
-}
-.fb-time-rev{display:block;font-size:.52rem;color:var(--amber);font-weight:600;margin-top:2px}
-.fb-mid{min-width:0}
-.fb-place{
-  font-family:var(--display);font-weight:600;font-size:.82rem;color:var(--text);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.fb-meta{
-  font-family:var(--mono);font-size:.56rem;color:var(--text-dim);margin-top:3px;
-  letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-.fb-flightno{color:var(--accent);font-weight:600}
-.fb-status{
-  font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.05em;
-  text-transform:uppercase;text-align:center;padding:3px 8px;border-radius:5px;
-  white-space:nowrap;border:1px solid currentColor;
-}
-.fb-st-done{color:var(--text-dim)}
-.fb-st-active{color:#22d3ee;box-shadow:0 0 10px rgba(34,211,238,0.18)}
-.fb-st-soon{color:#4ade80}
-.fb-st-delay{color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,0.2)}
-.fb-st-cancel{color:#f87171;box-shadow:0 0 10px rgba(248,113,113,0.22)}
-.fb-empty,.fb-notice{
-  padding:26px 18px;text-align:center;font-family:var(--mono);font-size:.62rem;
-  color:var(--text-dim);line-height:1.8;
-}
-.fb-notice a{color:var(--accent)}
-.fb-notice b{color:var(--accent-bright)}
-.fb-notice code{color:var(--accent-bright);background:rgba(0,0,0,0.4);padding:1px 6px;border-radius:3px}
-.flights-split .rwc-frame-wrap{height:calc(100vh - 170px);min-height:500px}
-@media(max-width:900px){ .flights-split .rwc-frame-wrap{height:560px;min-height:0} }
 
 /* ── ACTIVE TAB — multi-layer effect ── */
 .tab-btn.active{
@@ -3940,22 +3864,9 @@ body.night .tab-btn.active{
       </div>
       <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Open in new tab ↗</a>
     </div>
-    <div class="flights-split">
-      <!-- Native parsed board (AeroDataBox) -->
-      <div class="fb-panel">
-        <div class="fb-head">
-          <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
-          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh live board" aria-label="Refresh live board">↻</button>
-        </div>
-        <div id="flightBoard" class="fb-list">
-          <div class="fb-empty">Loading flights…</div>
-        </div>
-      </div>
-      <!-- Official airport page (iframe) -->
-      <div class="rwc-frame-wrap">
-        <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-        <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
-      </div>
+    <div class="rwc-frame-wrap">
+      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
     </div>
   </div>
 </div>
@@ -4637,167 +4548,23 @@ wireTabs(); wireTabKeys();
   else setTimeout(load, 1500);
 })();
 
-/* ════════════════════════════════
-   NATIVE FLIGHT BOARD — AeroDataBox (RapidAPI)
-   Curaçao Intl (TNCC). Paste your free RapidAPI key into AERODATABOX_KEY
-   below to enable the parsed board shown beside the official airport page.
-   Free tier is limited, so results are cached 15 min per direction and
-   only fetched when the Flights tab is opened or manually refreshed.
-════════════════════════════════ */
-const AERODATABOX_KEY  = '';   // ← paste your RapidAPI AeroDataBox key here
-const AERODATABOX_HOST = 'aerodatabox.p.rapidapi.com';
-const FLIGHT_TTL = 15 * 60 * 1000;
-const _flightCache = { departures:null, arrivals:null };   // {ts, rows}
-let _flightDir = 'departures';
-
-function _pad2(n){ return String(n).padStart(2,'0'); }
-
-// Curaçao is UTC-4 year-round (no DST). AeroDataBox wants the airport's
-// local time, max 12 h window, formatted YYYY-MM-DDTHH:mm.
-function _flightWindow(){
-  const cur  = new Date(Date.now() - 4*3600*1000);          // local Curaçao
-  const from = new Date(cur.getTime() - 30*60*1000);        // 30 min ago
-  const to   = new Date(cur.getTime() + 11*3600*1000);      // +11 h  (11.5 h span)
-  const f = d=>`${d.getUTCFullYear()}-${_pad2(d.getUTCMonth()+1)}-${_pad2(d.getUTCDate())}T${_pad2(d.getUTCHours())}:${_pad2(d.getUTCMinutes())}`;
-  return { from:f(from), to:f(to) };
-}
-
-function _fmtHM(iso){
-  if(!iso) return '—';
-  const d = new Date(iso);
-  if(!isNaN(d)) return d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
-  const m = String(iso).match(/(\d{2}):(\d{2})/);
-  return m ? `${m[1]}:${m[2]}` : '—';
-}
-
-function _flightStatus(s){
-  const t = (s||'').toLowerCase();
-  if(/cancel|divert/.test(t))                              return {cls:'fb-st-cancel', label:s||'Cancelled'};
-  if(/delay/.test(t))                                      return {cls:'fb-st-delay',  label:s||'Delayed'};
-  if(/board|gate|check|expect|approach|en\s?route/.test(t))return {cls:'fb-st-active', label:s};
-  if(/arriv|depart|landed/.test(t))                        return {cls:'fb-st-done',   label:s};
-  return {cls:'fb-st-soon', label:s||'Scheduled'};   // scheduled / unknown / default
-}
-
-async function fetchCuracaoFlights(direction){
-  const cached = _flightCache[direction];
-  if(cached && Date.now()-cached.ts < FLIGHT_TTL) return cached.rows;
-  if(!AERODATABOX_KEY) throw {noKey:true};
-
-  const { from, to } = _flightWindow();
-  const dir = direction==='arrivals' ? 'Arrival' : 'Departure';
-  const url = `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}`+
-    `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false`+
-    `&withCargo=false&withPrivate=false&withLocation=false`;
-  const r = await fetch(url, {
-    headers:{ 'x-rapidapi-key':AERODATABOX_KEY, 'x-rapidapi-host':AERODATABOX_HOST },
-    cache:'no-store',
-  });
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const data = await r.json();
-  const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
-
-  const rows = list.map(f=>{
-    const mv = f.movement || {};
-    const ap = mv.airport  || {};
-    return {
-      schedISO: mv.scheduledTime?.local || mv.scheduledTime?.utc || null,
-      revISO:   mv.revisedTime?.local   || mv.revisedTime?.utc   || null,
-      place:    ap.municipalityName || ap.name || ap.iata || '—',
-      iata:     ap.iata || '',
-      flightNo: (f.number||'').replace(/\s+/g,' ').trim() || '—',
-      airline:  f.airline?.name || '',
-      terminal: mv.terminal || '',
-      gate:     mv.gate || '',
-      status:   f.status || '',
-    };
-  }).sort((a,b)=> new Date(a.schedISO||0) - new Date(b.schedISO||0));
-
-  _flightCache[direction] = { ts:Date.now(), rows };
-  return rows;
-}
-
-async function renderFlightBoard(direction){
-  const el = document.getElementById('flightBoard');
-  if(!el) return;
-  setBadge('flightBoardBadge','LOADING','loading');
-  try{
-    const rows = await fetchCuracaoFlights(direction);
-    if(!rows.length){
-      el.innerHTML = `<div class="fb-empty">No ${direction} in the next ~12 hours.</div>`;
-      setBadge('flightBoardBadge','LIVE');
-      return;
-    }
-    const rel = direction==='arrivals' ? 'from' : 'to';
-    el.innerHTML = rows.map(f=>{
-      const st = _flightStatus(f.status);
-      const t  = _fmtHM(f.schedISO);
-      const tr = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
-      const meta = [f.airline, f.terminal?('T'+f.terminal):'', f.gate?('Gate '+f.gate):'']
-        .filter(Boolean).join(' · ');
-      return `<div class="fb-row">
-        <div class="fb-time">${t}${tr?`<span class="fb-time-rev">→ ${tr}</span>`:''}</div>
-        <div class="fb-mid">
-          <div class="fb-place">${rel} ${f.place}${f.iata?` (${f.iata})`:''}</div>
-          <div class="fb-meta"><span class="fb-flightno">${f.flightNo}</span>${meta?' · '+meta:''}</div>
-        </div>
-        <div class="fb-status ${st.cls}">${st.label}</div>
-      </div>`;
-    }).join('');
-    setBadge('flightBoardBadge','LIVE');
-  }catch(err){
-    if(err && err.noKey){
-      el.innerHTML = `<div class="fb-notice">
-        📋 The native board needs a free <b>AeroDataBox</b> key.<br><br>
-        1. Sign up at <a href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox" target="_blank" rel="noopener">RapidAPI → AeroDataBox</a><br>
-        2. Copy your key<br>
-        3. Paste it into <code>AERODATABOX_KEY</code> in index.html<br><br>
-        The official airport board on the right works without a key.
-      </div>`;
-      setBadge('flightBoardBadge','NO KEY','error');
-      return;
-    }
-    el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
-    setBadge('flightBoardBadge','ERROR','error');
-  }
-}
-
-// Manual refresh — clears cache for the current direction
-(function wireFlightBoardRefresh(){
-  const btn = document.getElementById('flightBoardRefresh');
-  if(!btn) return;
-  btn.addEventListener('click', ()=>{
-    _flightCache[_flightDir] = null;
-    btn.classList.add('spinning');
-    Promise.resolve(renderFlightBoard(_flightDir)).finally(()=>{
-      setTimeout(()=>btn.classList.remove('spinning'), 700);
-    });
-  });
-})();
-
-// Flights sub-toggle (Departures ↔ Arrivals) — drives BOTH the native
-// board and the official airport iframe.
+// Flights sub-toggle (Departures ↔ Arrivals)
 document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const mode=btn.dataset.flights;
-    _flightDir = mode;
     document.querySelectorAll('.flights-toggle-btn').forEach(b=>b.classList.toggle('active',b===btn));
     document.querySelectorAll('.flights-frame').forEach(f=>{
       const on=f.dataset.mode===mode;
       f.classList.toggle('active',on);
       f.style.display = on ? '' : 'none';
-      // Lazy-load whichever side is being switched to
       if(on && !f.src){
         f.src = mode==='arrivals'
           ? 'https://curacao-airport.com/flights/?type=arrivals'
           : 'https://curacao-airport.com/flights/?type=departures';
       }
     });
-    // Keep the "open in new tab" link in sync
     const ext = document.getElementById('flightsExtLink');
     if(ext) ext.href = `https://curacao-airport.com/flights/?type=${mode}`;
-    // Re-render the native board for the chosen direction
-    renderFlightBoard(mode);
   });
 });
 
@@ -6359,8 +6126,6 @@ function triggerManualRefresh(){
           ? 'https://curacao-airport.com/flights/?type=arrivals'
           : 'https://curacao-airport.com/flights/?type=departures';
       }
-      // Render the native AeroDataBox board (cached, so cheap on re-open)
-      if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
     }
   };
 
