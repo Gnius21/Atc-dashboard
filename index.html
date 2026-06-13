@@ -4256,11 +4256,11 @@ body.night .tab-btn.active{
           <div class="wd-topbar-left">
             <button class="wd-icon-btn" aria-label="Apps">▦</button>
             <button class="wd-icon-btn" aria-label="Notifications">🔔</button>
-            <div class="wd-loc">📍 Seattle, Australia</div>
+            <div class="wd-loc" id="wdLoc">📍 Seattle <span class="data-badge loading" id="wdBadge">LOADING</span></div>
           </div>
           <div class="wd-search">
             <span class="wd-search-ico">🔍</span>
-            <input type="text" placeholder="Search city..." aria-label="Search city"/>
+            <input type="text" id="wdSearch" placeholder="Search city…  (press Enter)" aria-label="Search city"/>
           </div>
           <div class="wd-topbar-right">
             <button class="wd-icon-btn" aria-label="Settings">⚙</button>
@@ -4286,7 +4286,7 @@ body.night .tab-btn.active{
           <div class="wd-left">
 
             <!-- Forecast row -->
-            <div class="wd-forecast">
+            <div class="wd-forecast" id="wdForecast">
               <div class="wd-day-main">
                 <div class="wd-dm-head"><span>Monday</span><span>11:42 PM</span></div>
                 <div class="wd-dm-temp">
@@ -4384,7 +4384,7 @@ body.night .tab-btn.active{
               <h3 class="wd-panel-title">Chance of rain</h3>
               <div class="wd-chart">
                 <div class="wd-chart-y"><span>Rainy</span><span>Sunny</span><span>Heavy</span></div>
-                <div class="wd-bars">
+                <div class="wd-bars" id="wdBars">
                   <div class="wd-bar" style="height:48%"></div>
                   <div class="wd-bar" style="height:40%"></div>
                   <div class="wd-bar" style="height:92%"></div>
@@ -4393,7 +4393,7 @@ body.night .tab-btn.active{
                   <div class="wd-bar" style="height:62%"></div>
                 </div>
               </div>
-              <div class="wd-xlabels">
+              <div class="wd-xlabels" id="wdXlabels">
                 <span>10AM</span><span>11AM</span><span>12AM</span><span>01PM</span><span>02PM</span><span>03PM</span>
               </div>
             </div>
@@ -4404,28 +4404,28 @@ body.night .tab-btn.active{
               <span class="wd-showall">Show All ›</span>
             </div>
 
-            <div class="wd-citycard">
-              <div class="wd-cc-country">US</div>
-              <div class="wd-cc-city">California</div>
-              <div class="wd-cc-cond">Mostly Sunny</div>
-              <div class="wd-cc-ico">🌤️</div>
-              <div class="wd-cc-temp">29°</div>
-            </div>
-
-            <div class="wd-citycard">
-              <div class="wd-cc-country">China</div>
-              <div class="wd-cc-city">Beijing</div>
-              <div class="wd-cc-cond">Cloudy</div>
-              <div class="wd-cc-ico">☁️</div>
-              <div class="wd-cc-temp">19°</div>
-            </div>
-
-            <div class="wd-citycard">
-              <div class="wd-cc-country">Israel</div>
-              <div class="wd-cc-city">Jerusalem</div>
-              <div class="wd-cc-cond">Sunny</div>
-              <div class="wd-cc-ico">🌤️</div>
-              <div class="wd-cc-temp">31°</div>
+            <div id="wdCities">
+              <div class="wd-citycard">
+                <div class="wd-cc-country">US</div>
+                <div class="wd-cc-city">California</div>
+                <div class="wd-cc-cond">Mostly Sunny</div>
+                <div class="wd-cc-ico">🌤️</div>
+                <div class="wd-cc-temp">29°</div>
+              </div>
+              <div class="wd-citycard">
+                <div class="wd-cc-country">China</div>
+                <div class="wd-cc-city">Beijing</div>
+                <div class="wd-cc-cond">Cloudy</div>
+                <div class="wd-cc-ico">☁️</div>
+                <div class="wd-cc-temp">19°</div>
+              </div>
+              <div class="wd-citycard">
+                <div class="wd-cc-country">Israel</div>
+                <div class="wd-cc-city">Jerusalem</div>
+                <div class="wd-cc-cond">Sunny</div>
+                <div class="wd-cc-ico">🌤️</div>
+                <div class="wd-cc-temp">31°</div>
+              </div>
             </div>
 
           </div>
@@ -5937,6 +5937,185 @@ async function fetchWeatherAPI(icao){
   }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
 }
 
+/* ════════════════════════════════
+   WORLD ▸ DASHBOARD — live weather (WeatherAPI forecast.json)
+   Powers the recreated weather-dashboard sub-view with real data.
+════════════════════════════════ */
+let _wdLocation   = 'Seattle';
+let _wdLastFetch  = 0;
+const WD_TTL      = 15 * 60 * 1000;   // 15 min
+const WD_CITIES   = [
+  { country:'US',     city:'California', q:'Los Angeles' },
+  { country:'China',  city:'Beijing',   q:'Beijing'      },
+  { country:'Israel', city:'Jerusalem', q:'Jerusalem'    },
+];
+
+function wdWxUrl(q, days){
+  return PROXY_BASE
+    ? `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}&days=${days}&aqi=no&alerts=no`
+    : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=${days}&aqi=no&alerts=no`;
+}
+
+/* WeatherAPI condition code → emoji (day/night aware) */
+function wdEmoji(code, isDay=1){
+  if(code===1000) return isDay ? '☀️' : '🌙';
+  if(code===1003) return isDay ? '🌤️' : '☁️';
+  if(code===1006 || code===1009) return '☁️';
+  if(code===1030 || code===1135 || code===1147) return '🌫️';
+  if([1087,1273,1276,1279,1282].includes(code)) return '⛈️';
+  if([1066,1069,1114,1117,1210,1213,1216,1219,1222,1225,1237,1255,1258,1261,1264].includes(code)) return '❄️';
+  if(code >= 1063) return '🌧️';
+  return '🌤️';
+}
+
+/* "2026-06-13 23:42" → "11:42 PM" */
+function wd12h(localtime){
+  const t = (localtime||'').split(' ')[1];
+  if(!t) return '';
+  let [h,m] = t.split(':').map(Number);
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${String(m).padStart(2,'0')} ${ap}`;
+}
+
+/* "06:02 AM" (WeatherAPI astro) passed through, trimming leading zero */
+function wdAstro(s){ return (s||'').replace(/^0/,''); }
+
+async function loadWdDashboard(force){
+  const root = document.getElementById('world-sub-dashboard');
+  if(!root) return;
+  if(!force && Date.now()-_wdLastFetch < WD_TTL && _wdLastFetch) return;
+  setBadge('wdBadge','LOADING','loading');
+  try{
+    // Primary location (7-day forecast) + the three "other cities" in parallel
+    const [mainRes, ...cityRes] = await Promise.all([
+      fetch(wdWxUrl(_wdLocation, 7), {cache:'no-store'}),
+      ...WD_CITIES.map(c => fetch(wdWxUrl(c.q, 1), {cache:'no-store'}).catch(()=>null)),
+    ]);
+    if(!mainRes || !mainRes.ok) throw new Error('HTTP '+(mainRes && mainRes.status));
+    const data = await mainRes.json();
+    renderWdMain(data);
+    renderWdRain(data);
+    // Cities
+    const cityData = await Promise.all(cityRes.map(r => (r && r.ok) ? r.json().catch(()=>null) : null));
+    renderWdCities(cityData);
+    _wdLastFetch = Date.now();
+    setBadge('wdBadge','LIVE');
+  }catch(e){
+    console.warn('[WD] dashboard load failed:', e.message);
+    setBadge('wdBadge','ERROR','error');
+  }
+}
+
+function renderWdMain(data){
+  const cur  = data.current || {};
+  const loc  = data.location || {};
+  const days = (data.forecast && data.forecast.forecastday) || [];
+  if(!days.length) return;
+
+  // Location label
+  const locEl = document.getElementById('wdLoc');
+  if(locEl){
+    const name = [loc.name, loc.country].filter(Boolean).join(', ') || _wdLocation;
+    locEl.innerHTML = `📍 ${name} <span class="data-badge" id="wdBadge">LIVE</span>`;
+  }
+
+  const wdWeekday = (d, opt) => new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:opt});
+
+  const d0   = days[0];
+  const code = cur.condition?.code ?? 1000;
+  const mainCard = `
+    <div class="wd-day-main">
+      <div class="wd-dm-head"><span>${wdWeekday(d0.date,'long')}</span><span>${wd12h(loc.localtime)}</span></div>
+      <div class="wd-dm-temp">
+        <span class="wd-deg">${Math.round(cur.temp_c)}°</span>
+        <span class="wd-ico">${wdEmoji(code, cur.is_day)}</span>
+      </div>
+      <div class="wd-dm-stats">
+        <div class="wd-dm-col">
+          <div><span>Real Feel</span><b>${Math.round(cur.feelslike_c)}°</b></div>
+          <div><span>Wind: ${cur.wind_dir||''}</span><b>${Math.round(cur.wind_kph)} km/h</b></div>
+          <div><span>Pressure</span><b>${Math.round(cur.pressure_mb)}MB</b></div>
+          <div><span>Humidity</span><b>${cur.humidity}%</b></div>
+        </div>
+        <div class="wd-dm-col">
+          <div><span>Sunrise</span><b>${wdAstro(d0.astro?.sunrise)}</b></div>
+          <div><span>Sunset</span><b>${wdAstro(d0.astro?.sunset)}</b></div>
+        </div>
+      </div>
+    </div>`;
+
+  const dayCards = days.slice(1, 7).map(d => `
+    <div class="wd-day">
+      <div class="wd-dname">${wdWeekday(d.date,'short')}</div>
+      <div class="wd-dico">${wdEmoji(d.day?.condition?.code ?? 1000, 1)}</div>
+      <div class="wd-dtemp">${Math.round(d.day?.maxtemp_c)}°</div>
+    </div>`).join('');
+
+  const row = document.getElementById('wdForecast');
+  if(row) row.innerHTML = mainCard + dayCards;
+}
+
+function renderWdRain(data){
+  const days = (data.forecast && data.forecast.forecastday) || [];
+  const hours = [];
+  const nowH  = new Date((data.location?.localtime||'').replace(' ','T')).getHours();
+  // Collect upcoming hours across today + tomorrow, starting at the current hour
+  (days[0]?.hour || []).forEach(h => { if(new Date(h.time.replace(' ','T')).getHours() >= nowH) hours.push(h); });
+  (days[1]?.hour || []).forEach(h => hours.push(h));
+  const pick = hours.slice(0, 6);
+  if(!pick.length) return;
+
+  const bars = pick.map(h => {
+    const pct = Math.max(4, Math.min(100, h.chance_of_rain || 0));
+    return `<div class="wd-bar" style="height:${pct}%" title="${h.chance_of_rain||0}% rain"></div>`;
+  }).join('');
+  const labels = pick.map(h => {
+    let hr = new Date(h.time.replace(' ','T')).getHours();
+    const ap = hr >= 12 ? 'PM' : 'AM';
+    hr = hr % 12 || 12;
+    return `<span>${String(hr).padStart(2,'0')}${ap}</span>`;
+  }).join('');
+
+  const barsEl = document.getElementById('wdBars');
+  const lblEl  = document.getElementById('wdXlabels');
+  if(barsEl) barsEl.innerHTML = bars;
+  if(lblEl)  lblEl.innerHTML  = labels;
+}
+
+function renderWdCities(cityData){
+  const wrap = document.getElementById('wdCities');
+  if(!wrap) return;
+  const cards = WD_CITIES.map((c, i) => {
+    const d   = cityData[i];
+    const cur = d?.current;
+    const code = cur?.condition?.code ?? 1000;
+    const cond = cur?.condition?.text || '—';
+    const temp = cur?.temp_c != null ? `${Math.round(cur.temp_c)}°` : '—°';
+    return `
+      <div class="wd-citycard">
+        <div class="wd-cc-country">${c.country}</div>
+        <div class="wd-cc-city">${c.city}</div>
+        <div class="wd-cc-cond">${cond}</div>
+        <div class="wd-cc-ico">${wdEmoji(code, cur?.is_day ?? 1)}</div>
+        <div class="wd-cc-temp">${temp}</div>
+      </div>`;
+  }).join('');
+  wrap.innerHTML = cards;
+}
+
+/* Search box → change location */
+(function wireWdSearch(){
+  const input = document.getElementById('wdSearch');
+  if(!input) return;
+  input.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && input.value.trim()){
+      _wdLocation = input.value.trim();
+      loadWdDashboard(true);
+    }
+  });
+})();
+
 
 /* ════════════════════════════════
    WORLD OVERVIEW — 5 connecting airports
@@ -6690,6 +6869,8 @@ function triggerManualRefresh(){
     const db = document.getElementById('world-sub-dashboard');
     if(ov) ov.style.display = name === 'overview'  ? '' : 'none';
     if(db) db.style.display = name === 'dashboard' ? '' : 'none';
+    // Lazy-load live weather the first time the Dashboard opens (cached after)
+    if(name === 'dashboard' && typeof loadWdDashboard === 'function') loadWdDashboard();
   };
 
 })();
