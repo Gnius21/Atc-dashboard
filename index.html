@@ -3081,8 +3081,18 @@ body.night .tab-btn.active{
 #offlineBanner .offline-icon{font-size:.9rem;line-height:1;}
 @keyframes offlineSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 @media (prefers-reduced-motion: reduce){
-  #offlineBanner{animation:none;}
-  .sync-refresh-icon.spinning{animation-duration:0s;}
+  /* Honour the OS "reduce motion" setting: kill decorative looping
+     animations site-wide (also eases CPU/GPU load on low-end devices),
+     while keeping functional transitions like bar fills snappy. */
+  *,*::before,*::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .sync-refresh-icon.spinning,
+  .iframe-refresh-btn.spinning,
+  .atc-spinner{animation:none !important;}
 }
 
 /* ── TIDE PANEL ── */
@@ -3700,7 +3710,6 @@ body.night .tab-btn.active{
       <iframe
         id="adsbFrame"
         class="windy-iframe"
-        src="https://globe.adsbexchange.com/?lat=12.35&lon=-69.50&zoom=8"
         data-no-stale="1"
         allow="fullscreen"
         referrerpolicy="no-referrer-when-downgrade"
@@ -4136,10 +4145,13 @@ function setMapViewFromUrl(u){
   let trackedUrl = saved || DEFAULT;
   setMapViewFromUrl(trackedUrl);
 
-  // Restore saved position on load
-  if(trackedUrl !== frame.src){
-    frame.src = trackedUrl;
-  }
+  // Load the globe on idle rather than during boot. It's the single
+  // heaviest resource on the page, so deferring it lets the critical
+  // METAR + island-card data paint first; the user sees weather instantly
+  // and the live-traffic map streams in a moment later.
+  const loadGlobe = ()=>{ if(frame.src !== trackedUrl) frame.src = trackedUrl; };
+  if('requestIdleCallback' in window) requestIdleCallback(loadGlobe, {timeout:2500});
+  else setTimeout(loadGlobe, 1200);
 
   // Listen for position updates from ADS-B Exchange via postMessage
   window.addEventListener('message', e=>{
@@ -4458,16 +4470,20 @@ function wireTabKeys(){
 wireTabs(); wireTabKeys();
 
 // ATC is the default active tab — switchTab never fires for it on load,
-// so initialise its Windy iframes (data-src → src) right away.
+// so initialise its Windy iframes (data-src → src). Deferred to idle so the
+// critical weather data renders before these secondary embeds compete for
+// bandwidth on first paint.
 (function initActivePaneIframes(){
   const active = document.querySelector('.tab-pane.active');
   if(!active) return;
-  active.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
+  const load = ()=>active.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
     if(!f.src){
       f.src = f.getAttribute('data-src');
       f.removeAttribute('data-src');
     }
   });
+  if('requestIdleCallback' in window) requestIdleCallback(load, {timeout:3000});
+  else setTimeout(load, 1500);
 })();
 
 // Flights sub-toggle (Departures ↔ Arrivals)
@@ -6052,7 +6068,7 @@ function triggerManualRefresh(){
 
 })();
 
-// refresh() calls fetchWorldOvr() internally — no double-call needed
+// World overview now fetches lazily on first World-tab open (see switchTab).
 refresh();
 setInterval(refresh,REFRESH_MS);
 
