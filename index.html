@@ -2717,25 +2717,25 @@ body.night .tab-btn.active{
 /* ── ZONE 1: HERO ── */
 .fd-hero{
   display:flex;align-items:flex-start;justify-content:space-between;
-  padding:14px 14px 10px;
+  padding:18px 18px 14px;
   background:linear-gradient(180deg,rgba(34,211,238,0.055),transparent);
   border-bottom:1px solid var(--border);
 }
 .fd-hero-left{display:flex;flex-direction:column;gap:2px}
 .fd-day-name{
-  font-family:var(--display);font-size:.92rem;font-weight:800;
+  font-family:var(--display);font-size:1.3rem;font-weight:800;
   letter-spacing:.08em;color:#fff;
   text-shadow:0 0 16px rgba(255,255,255,0.2);
 }
 .fd-day-date{
-  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  font-family:var(--mono);font-size:.68rem;color:var(--text-dim);
   letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px;
 }
 .fd-temps{
   display:flex;align-items:baseline;gap:3px;margin-top:4px;
 }
 .fd-temp-hi{
-  font-family:var(--display);font-size:1.6rem;font-weight:700;
+  font-family:var(--display);font-size:2.4rem;font-weight:700;
   color:#ffb347;
   text-shadow:0 0 18px rgba(255,179,71,0.45);
   letter-spacing:-.03em;font-variant-numeric:tabular-nums;
@@ -2746,17 +2746,18 @@ body.night .tab-btn.active{
   margin:0 1px;line-height:1;align-self:center;
 }
 .fd-temp-lo{
-  font-family:var(--display);font-size:1rem;font-weight:600;
+  font-family:var(--display);font-size:1.5rem;font-weight:600;
   color:var(--accent);
   text-shadow:0 0 10px rgba(90,184,255,0.3);
   line-height:1;font-variant-numeric:tabular-nums;
 }
 .fd-hero-right{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
 }
-.fd-icon{width:56px;height:56px;flex-shrink:0}
+.fd-icon{width:88px;height:88px;flex-shrink:0;animation:fdIconFloat 3s ease-in-out infinite}
+@keyframes fdIconFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.06)}}
 .fd-cond{
-  font-family:var(--mono);font-size:.52rem;font-weight:600;
+  font-family:var(--mono);font-size:.72rem;font-weight:600;
   color:var(--accent-bright);letter-spacing:.04em;
   text-align:center;max-width:62px;line-height:1.3;
 }
@@ -2774,11 +2775,11 @@ body.night .tab-btn.active{
   gap:6px;align-items:center;
 }
 .fd-bar-lo{
-  font-family:var(--mono);font-size:.55rem;color:var(--accent);
+  font-family:var(--mono);font-size:.68rem;color:var(--accent);
   font-weight:600;text-align:right;font-variant-numeric:tabular-nums;
 }
 .fd-bar-hi{
-  font-family:var(--mono);font-size:.55rem;color:#ffb347;
+  font-family:var(--mono);font-size:.68rem;color:#ffb347;
   font-weight:600;text-align:left;font-variant-numeric:tabular-nums;
 }
 .fd-temp-bar{
@@ -2801,9 +2802,9 @@ body.night .tab-btn.active{
   grid-template-columns:18px 32px 1fr 36px 44px;
   gap:5px;align-items:center;
 }
-.fd-data-icon{font-size:.8rem;line-height:1;text-align:center}
+.fd-data-icon{font-size:1rem;line-height:1;text-align:center}
 .fd-data-label{
-  font-family:var(--mono);font-size:.5rem;letter-spacing:.12em;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--text-dim);font-weight:600;
 }
 .fd-mini-bar{
@@ -2821,12 +2822,12 @@ body.night .tab-btn.active{
   animation:barShimmer 2s linear infinite;
 }
 .fd-data-val{
-  font-family:var(--display);font-size:.82rem;font-weight:700;
+  font-family:var(--display);font-size:1.05rem;font-weight:700;
   font-variant-numeric:tabular-nums;letter-spacing:-.01em;
   text-align:right;
 }
 .fd-data-sub{
-  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  font-family:var(--mono);font-size:.64rem;color:var(--text-dim);
   letter-spacing:.06em;font-weight:500;text-align:right;
   white-space:nowrap;
 }
@@ -2848,11 +2849,11 @@ body.night .tab-btn.active{
   border-radius:4px;
 }
 .fd-detail-lbl{
-  font-family:var(--mono);font-size:.44rem;letter-spacing:.18em;
+  font-family:var(--mono);font-size:.60rem;letter-spacing:.18em;
   text-transform:uppercase;color:var(--text-dim);font-weight:600;
 }
 .fd-detail-val{
-  font-family:var(--display);font-size:.85rem;font-weight:700;
+  font-family:var(--display);font-size:1.05rem;font-weight:700;
   color:var(--accent-bright);font-variant-numeric:tabular-nums;
   letter-spacing:-.01em;line-height:1.1;
 }
@@ -2863,12 +2864,12 @@ body.night .tab-btn.active{
   display:flex;justify-content:space-between;align-items:center;gap:4px;
 }
 .fd-sun-item{
-  font-family:var(--mono);font-size:.52rem;color:var(--text-dim);
+  font-family:var(--mono);font-size:.66rem;color:var(--text-dim);
   letter-spacing:.06em;font-weight:500;flex-shrink:0;
 }
 .fd-conf{
   display:flex;align-items:center;gap:4px;
-  font-family:var(--mono);font-size:.5rem;font-weight:600;
+  font-family:var(--mono);font-size:.64rem;font-weight:600;
   letter-spacing:.1em;text-transform:uppercase;cursor:help;
 }
 .fd-conf-dot{
@@ -2878,7 +2879,7 @@ body.night .tab-btn.active{
   display:flex;justify-content:center;
 }
 .fd-aqi-badge{
-  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;font-weight:700;
+  font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;font-weight:700;
   text-transform:uppercase;padding:2px 8px;
   border:1px solid;border-radius:10px;
   white-space:nowrap;
@@ -4051,7 +4052,7 @@ body.night .tab-btn.active{
   </div>
 
   <div class="full">
-    <div class="section-title">4-Day Forecast — ABC Islands · Multi-Model Blend <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
+    <div class="section-title">4-Day Forecast — ABC Islands · 8-Model Ensemble <span class="data-badge loading" id="fcastBadge">LOADING</span> <span id="fcastUpdated" style="font-family:var(--mono);font-size:.5rem;color:var(--text-dim);font-weight:500;letter-spacing:.1em;margin-left:8px"></span></div>
     <div id="forecast-content" class="island-widgets-grid">
       <div style="padding:24px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading 3-day forecast…</div>
     </div>
@@ -6928,6 +6929,8 @@ const FCAST_MODELS = [
   'ukmo_seamless',     // UK Met Office — good Atlantic track record
   'gem_seamless',      // Environment Canada GEM — strong in tropics
   'meteofrance_seamless', // Météo-France ARPÈGE/AROME — Caribbean coverage
+  'jma_seamless',         // Japan Meteorological Agency — solid global tropics
+  'bom_access_global',    // Australian BOM ACCESS — global, good Southern Atlantic
 ];
 const FCAST_CACHE_MS = 15 * 60 * 1000;
 const _fcastCache = {}; // {icao: {ts, days, hourly}}
@@ -7249,7 +7252,8 @@ async function loadForecast(forceNewsUpdate=false){
 
       const summary    = wxDays.length ? buildForecastSummary(wxDays, loc) : '';
       const modelCount = models ? FCAST_MODELS.filter(m=>models.daily?.[`temperature_2m_max_${m}`]?.[0]!=null).length : 0;
-      const modelSrc   = modelCount>=5 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF`
+      const modelSrc   = modelCount>=7 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF JMA BOM`
+                       : modelCount>=5 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF`
                        : modelCount>=4 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO`
                        : modelCount>=2 ? `${modelCount}-model blend`
                        : modelCount===1 ? '1 model + WeatherAPI' : 'WeatherAPI only';
