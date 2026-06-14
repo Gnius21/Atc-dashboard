@@ -2132,6 +2132,7 @@ body.night .tab-btn.active{
 
 /* Grid: 3-col on wide, 2-col medium, 1-col narrow */
 /* world-ovr breakpoints moved to main responsive block */
+#world-ovr-grid{gap:18px;}
 
 
 
@@ -3655,7 +3656,7 @@ body.night .tab-btn.active{
 
 /* ── Wide desktop: world overview prefers 5 cards/row ── */
 @media(min-width:1200px){
-  #world-ovr-grid{grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr))!important}
+  #world-ovr-grid{grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr))!important;gap:20px!important}
   .layout{gap:18px;padding:20px 24px 40px}
 }
 
