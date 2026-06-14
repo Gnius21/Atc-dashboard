@@ -413,6 +413,118 @@ body.theme-neon .data-badge{border-color:rgba(0,229,255,0.3);}
 body.theme-neon .clock-block{background:rgba(20,5,50,0.7);border-color:rgba(90,40,200,0.3);}
 body.theme-neon .night-btn,body.theme-neon .toggle-container{background:rgba(10,3,28,0.75);border-color:rgba(90,40,200,0.35);color:var(--accent);}
 
+/* ── MOONLIT theme — deep indigo night, moonlit periwinkle (Ottawa night) ── */
+body.theme-moonlit{
+  --accent:#93b4ff;--accent-bright:#c5d6ff;--accent-dim:#1f2c5c;
+  --accent-glow:rgba(147,180,255,0.16);
+  --cyan:#7c9eff;--cyan-glow:rgba(124,158,255,0.25);
+  --green:#5be3b0;--amber:#ffcf6b;--red:#ff7a99;--magenta:#b8a4f0;
+  --bg:#070b1f;--bg2:#0d1430;--bg3:#141d42;
+  --panel:rgba(16,24,58,0.72);--panel-hi:rgba(26,38,82,0.9);
+  --border:rgba(147,180,255,0.12);--border-hi:rgba(147,180,255,0.28);--border-bright:rgba(124,158,255,0.5);
+  --text:#dee6ff;--text-dim:#8b9bd0;--muted:#26345f;
+  /* Weather icons — moonlit blue/white */
+  --wx-cloud:#c3d2f5;--wx-cloud-hi:#e2eaff;--wx-cloud-dark:#6f86bc;--wx-cloud-dark-hi:#8ba0d4;
+  --wx-storm:#26345f;--wx-storm-hi:#445a98;--wx-drop:#7c9eff;--wx-fog:#c3d2f5;
+  --wx-sun:#ffcf6b;--wx-sun-hi:#ffe5a8;
+  --radius:14px;--radius-lg:20px;
+}
+body.theme-moonlit{background:linear-gradient(180deg,#070b1f 0%,#0c1538 50%,#101a45 100%)!important;}
+body.theme-moonlit::before{
+  background-image:
+    linear-gradient(rgba(124,158,255,0.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,158,255,0.03) 1px,transparent 1px)!important;
+}
+body.theme-moonlit::after{
+  background:
+    radial-gradient(circle 360px at 50% -4%,rgba(197,214,255,0.22) 0%,rgba(147,180,255,0.08) 30%,transparent 62%),
+    radial-gradient(ellipse 60% 50% at 12% 88%,rgba(124,158,255,0.08) 0%,transparent 60%)!important;
+}
+body.theme-moonlit .scanline{background:linear-gradient(transparent,rgba(124,158,255,0.02) 50%,transparent);}
+body.theme-moonlit header{background:rgba(13,20,48,0.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:rgba(147,180,255,0.16);}
+body.theme-moonlit .tab-bar{background:rgba(10,16,40,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-moonlit .tab-btn{color:rgba(160,180,235,0.6);}
+body.theme-moonlit .tab-btn.active{background:linear-gradient(180deg,rgba(70,100,200,0.6),rgba(40,60,150,0.78));border-color:rgba(147,180,255,0.5);box-shadow:0 5px 18px rgba(50,80,180,0.4),inset 0 1px 0 rgba(200,215,255,0.2);color:#fff;}
+body.theme-moonlit .tab-btn:hover:not(.active){background:rgba(100,130,230,0.12);color:#c5d6ff;}
+body.theme-moonlit .panel{background:rgba(16,24,58,0.62);border-color:rgba(147,180,255,0.16);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);}
+body.theme-moonlit .fcast-day{background:rgba(14,22,52,0.85);backdrop-filter:blur(12px);}
+body.theme-moonlit .wx-bar{background:rgba(10,16,40,0.78);border-bottom-color:rgba(147,180,255,0.14);}
+body.theme-moonlit .section-title{color:var(--accent-bright);}
+body.theme-moonlit .data-badge{border-color:rgba(147,180,255,0.32);}
+body.theme-moonlit .clock-block{background:rgba(16,24,58,0.6);border-color:rgba(147,180,255,0.22);}
+body.theme-moonlit .night-btn,body.theme-moonlit .toggle-container{background:rgba(16,24,58,0.6);border-color:rgba(147,180,255,0.25);color:var(--accent);}
+
+/* ── AMETHYST theme — royal violet + pink, vibrant glass (3D weather) ── */
+body.theme-amethyst{
+  --accent:#c77dff;--accent-bright:#ecb8ff;--accent-dim:#5b2a8c;
+  --accent-glow:rgba(199,125,255,0.16);
+  --cyan:#b06aff;--cyan-glow:rgba(176,106,255,0.24);
+  --green:#3ee6b4;--amber:#ffc94d;--red:#ff6b9d;--magenta:#ff6bd6;
+  --bg:#160a2e;--bg2:#1f0d42;--bg3:#2a1257;
+  --panel:rgba(255,255,255,0.06);--panel-hi:rgba(255,255,255,0.11);
+  --border:rgba(199,125,255,0.2);--border-hi:rgba(230,160,255,0.4);--border-bright:rgba(255,107,214,0.55);
+  --text:#f4e9ff;--text-dim:#b193d8;--muted:#5b3a8a;
+  /* Weather icons — bright violet/pink */
+  --wx-cloud:#d9c2ff;--wx-cloud-hi:#f0e2ff;--wx-cloud-dark:#9a6fcc;--wx-cloud-dark-hi:#b48fe0;
+  --wx-storm:#5b2a8c;--wx-storm-hi:#8a4fc4;--wx-drop:#b06aff;--wx-fog:#d9c2ff;
+  --wx-sun:#ffc94d;--wx-sun-hi:#ffe39a;
+  --radius:16px;--radius-lg:22px;
+}
+body.theme-amethyst{background:linear-gradient(150deg,#160a2e 0%,#250d50 55%,#3a1060 100%)!important;}
+body.theme-amethyst::before{
+  background:
+    radial-gradient(ellipse 800px 650px at 12% 6%,rgba(168,85,247,0.26) 0%,transparent 58%),
+    radial-gradient(ellipse 650px 550px at 88% 90%,rgba(255,107,214,0.16) 0%,transparent 55%)!important;
+}
+body.theme-amethyst header{background:rgba(35,12,72,0.58);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(220,160,255,0.14);}
+body.theme-amethyst .tab-bar{background:rgba(28,10,60,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-amethyst .tab-btn{color:rgba(210,170,255,0.62);}
+body.theme-amethyst .tab-btn.active{background:linear-gradient(180deg,rgba(168,85,247,0.82),rgba(120,40,200,0.9));border-color:rgba(230,160,255,0.55);box-shadow:0 5px 20px rgba(168,85,247,0.45),inset 0 1px 0 rgba(240,210,255,0.22);color:#fff;}
+body.theme-amethyst .tab-btn:hover:not(.active){background:rgba(180,90,255,0.14);color:#e9b8ff;}
+body.theme-amethyst .panel{background:rgba(255,255,255,0.06);border-color:rgba(220,160,255,0.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-amethyst .fcast-day{background:rgba(40,16,80,0.55);backdrop-filter:blur(12px);}
+body.theme-amethyst .wx-bar{background:rgba(28,10,60,0.7);border-bottom-color:rgba(220,160,255,0.16);}
+body.theme-amethyst .section-title{color:var(--accent-bright);}
+body.theme-amethyst .data-badge{border-color:rgba(255,107,214,0.36);}
+body.theme-amethyst .clock-block{background:rgba(40,16,80,0.5);border-color:rgba(220,160,255,0.22);}
+body.theme-amethyst .night-btn,body.theme-amethyst .toggle-container{background:rgba(40,16,80,0.5);border-color:rgba(220,160,255,0.25);color:var(--accent);}
+
+/* ── NEBULA theme — deep purple dashboard, cyan + magenta gradient ── */
+body.theme-nebula{
+  --accent:#22d3ee;--accent-bright:#7df0ff;--accent-dim:#4a2c8c;
+  --accent-glow:rgba(34,211,238,0.14);
+  --cyan:#22d3ee;--cyan-glow:rgba(34,211,238,0.25);
+  --green:#34e89e;--amber:#ffd54d;--red:#ff5d8f;--magenta:#d946ef;
+  --bg:#140e34;--bg2:#1b1448;--bg3:#241a5a;
+  --panel:rgba(27,20,72,0.7);--panel-hi:rgba(40,28,100,0.88);
+  --border:rgba(124,92,220,0.2);--border-hi:rgba(160,120,255,0.36);--border-bright:rgba(34,211,238,0.5);
+  --text:#ece8ff;--text-dim:#9b8dd0;--muted:#3a2a70;
+  /* Weather icons — cyan/violet on purple */
+  --wx-cloud:#c4bdf0;--wx-cloud-hi:#e6e2ff;--wx-cloud-dark:#7a6cb8;--wx-cloud-dark-hi:#988bd4;
+  --wx-storm:#4a2c8c;--wx-storm-hi:#6f4fc0;--wx-drop:#22d3ee;--wx-fog:#c4bdf0;
+  --wx-sun:#ffd54d;--wx-sun-hi:#ffe89a;
+  --radius:14px;--radius-lg:20px;
+}
+body.theme-nebula{background:linear-gradient(145deg,#140e34 0%,#1d1450 55%,#2a1a5e 100%)!important;}
+body.theme-nebula::before{
+  background:
+    radial-gradient(ellipse 850px 650px at 8% 2%,rgba(124,58,237,0.28) 0%,transparent 58%),
+    radial-gradient(ellipse 700px 550px at 92% 95%,rgba(34,211,238,0.16) 0%,transparent 55%),
+    radial-gradient(ellipse 500px 450px at 60% 50%,rgba(217,70,239,0.1) 0%,transparent 52%)!important;
+}
+body.theme-nebula header{background:rgba(20,14,52,0.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:rgba(160,120,255,0.16);}
+body.theme-nebula .tab-bar{background:rgba(16,10,44,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-nebula .tab-btn{color:rgba(170,150,235,0.6);}
+body.theme-nebula .tab-btn.active{background:linear-gradient(180deg,rgba(124,58,237,0.8),rgba(34,140,200,0.7));border-color:rgba(34,211,238,0.45);box-shadow:0 5px 20px rgba(124,58,237,0.45),0 0 22px rgba(34,211,238,0.14),inset 0 1px 0 rgba(200,180,255,0.2);color:#fff;}
+body.theme-nebula .tab-btn:hover:not(.active){background:rgba(124,58,237,0.14);color:#bda8ff;}
+body.theme-nebula .panel{background:linear-gradient(135deg,rgba(40,28,100,0.6),rgba(20,14,52,0.78));border-color:rgba(124,92,220,0.22);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-nebula .fcast-day{background:rgba(27,20,72,0.82);backdrop-filter:blur(10px);}
+body.theme-nebula .wx-bar{background:rgba(16,10,44,0.82);border-bottom-color:rgba(160,120,255,0.16);}
+body.theme-nebula .section-title{color:var(--accent-bright);}
+body.theme-nebula .data-badge{border-color:rgba(34,211,238,0.34);}
+body.theme-nebula .clock-block{background:rgba(40,28,100,0.55);border-color:rgba(160,120,255,0.22);}
+body.theme-nebula .night-btn,body.theme-nebula .toggle-container{background:rgba(40,28,100,0.55);border-color:rgba(160,120,255,0.25);color:var(--accent);}
+
 .lock-label{
   font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
   color:var(--text-dim);line-height:1;margin-top:1px;
@@ -423,6 +535,46 @@ body.theme-lavender .fd-temp-hi{color:#7c3aed}
 body.theme-lavender .fd-temp-lo{color:#4338ca}
 body.theme-lavender .fd-day-name{color:var(--accent)}
 body.theme-lavender .fd-cond{color:var(--accent-bright)}
+
+/* ──────────────────────────────────────────────────────────────
+   LAVENDER LIGHT — readability fixes
+   Many components were authored for dark themes with dark
+   (rgba(0,0,0,…)) backgrounds or hardcoded white text, which
+   becomes invisible / muddy on the light lavender background.
+   These overrides flip those surfaces light and force dark text.
+─────────────────────────────────────────────────────────────── */
+/* Forecast written summary — was dark bg + dark text (invisible) */
+body.theme-lavender .fcast-summary{
+  background:rgba(99,102,241,0.07);
+  border-color:rgba(99,102,241,0.18);
+  border-left-color:var(--accent);
+  color:#1e1b4b;
+}
+body.theme-lavender .fcast-summary strong{color:var(--accent);text-shadow:none}
+/* Forecast hero/zone surfaces */
+body.theme-lavender .fd-hero{background:linear-gradient(180deg,rgba(99,102,241,0.06),transparent)}
+body.theme-lavender .fd-data-val{color:#1e1b4b}
+body.theme-lavender .fd-temp-sep{color:rgba(99,102,241,0.5)}
+body.theme-lavender .fd-temp-bar,
+body.theme-lavender .fd-mini-bar{background:rgba(99,102,241,0.14);border-color:rgba(99,102,241,0.14)}
+/* Hourly strip — was sitting on rgba(0,0,0,…) dark patches */
+body.theme-lavender .hourly-strip-wrap{background:rgba(99,102,241,0.05)}
+body.theme-lavender .hourly-cell{background:rgba(99,102,241,0.06);border-color:rgba(99,102,241,0.12)}
+body.theme-lavender .hourly-cell:hover{background:rgba(99,102,241,0.12)}
+/* Storm chips / link — flip dark chips to light so red text reads */
+body.theme-lavender .storm-chip{background:rgba(255,255,255,0.75);color:#9b1c1c}
+body.theme-lavender .storm-chip strong{color:#7f1d1d}
+body.theme-lavender .storm-meta{color:#a05656}
+body.theme-lavender .storm-banner-link{background:rgba(255,255,255,0.75);color:#b91c1c}
+body.theme-lavender .storm-banner-link:hover{color:#7f1d1d;background:rgba(248,113,113,0.14)}
+/* Dust alert body text (alert sits on a colored banner; keep dark for light theme) */
+body.theme-lavender .dust-alert-body{color:#1e1b4b}
+body.theme-lavender .dust-alert-advice{color:#4a4570}
+/* Marine wave art mini-panel — lighten the dark gradient box */
+body.theme-lavender .marine-wave-art{background:linear-gradient(180deg,rgba(99,102,241,0.12),rgba(99,102,241,0.05));border-color:rgba(99,102,241,0.18)}
+/* Forecast detail cells already lightened above (line ~462); ensure values read */
+body.theme-lavender .fd-detail-val{color:var(--accent)}
+body.theme-lavender .ic-temp-high{color:#c2410c}
 
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -3713,6 +3865,30 @@ body.night .tab-btn.active{
         <span class="theme-opt-sub">Cyan · Neon Purple</span>
       </button>
 
+      <button class="theme-opt" data-theme="moonlit" title="Moonlit — deep indigo night, periwinkle blue">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#0c1538,#101a45);border-color:rgba(147,180,255,0.6)">
+          <span style="font-size:1rem">🌌</span>
+        </div>
+        <span class="theme-opt-name">Moonlit</span>
+        <span class="theme-opt-sub">Indigo · Night Sky</span>
+      </button>
+
+      <button class="theme-opt" data-theme="amethyst" title="Amethyst — royal violet + pink, vibrant glass">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#250d50,#3a1060);border-color:rgba(255,107,214,0.6)">
+          <span style="font-size:1rem">💜</span>
+        </div>
+        <span class="theme-opt-name">Amethyst</span>
+        <span class="theme-opt-sub">Violet · Pink Glass</span>
+      </button>
+
+      <button class="theme-opt" data-theme="nebula" title="Nebula — deep purple dashboard, cyan + magenta">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#1d1450,#2a1a5e);border-color:rgba(34,211,238,0.6)">
+          <span style="font-size:1rem">🌠</span>
+        </div>
+        <span class="theme-opt-name">Nebula</span>
+        <span class="theme-opt-sub">Cyan · Magenta Purple</span>
+      </button>
+
     </div>
     <button class="theme-picker-close" id="themePickerClose">✕</button>
   </div>
@@ -4202,12 +4378,12 @@ updateClocks();
    Five themes: dark (default), night, purple, navy, lavender.
    Persisted in localStorage so choice survives page reload.
 ════════════════════════════════ */
-const THEMES = ['dark','night','purple','navy','lavender','glass','neon'];
+const THEMES = ['dark','night','purple','navy','lavender','glass','neon','moonlit','amethyst','nebula'];
 const THEME_CLASSES = THEMES.filter(t=>t!=='dark').map(t=>'theme-'+t).concat(['night']);
 
 function applyTheme(theme){
   // Remove all theme classes first
-  document.body.classList.remove('night','theme-purple','theme-navy','theme-lavender','theme-dark','theme-glass','theme-neon');
+  document.body.classList.remove('night','theme-purple','theme-navy','theme-lavender','theme-dark','theme-glass','theme-neon','theme-moonlit','theme-amethyst','theme-nebula');
   if(theme==='night')     document.body.classList.add('night');
   else if(theme!=='dark') document.body.classList.add(`theme-${theme}`);
   try{ localStorage.setItem('atc_theme',''+theme); }catch(_){}
@@ -4216,12 +4392,12 @@ function applyTheme(theme){
     btn.classList.toggle('active', btn.dataset.theme===theme);
   });
   // Update theme-btn emoji
-  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'🔮',neon:'⚡'};
+  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'🔮',neon:'⚡',moonlit:'🌌',amethyst:'💜',nebula:'🌠'};
   const themeBtn=document.getElementById('themeBtn');
   if(themeBtn) themeBtn.textContent=icons[theme]||'🎨';
 
   // Update browser theme-color meta (status bar tint)
-  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7',glass:'#130826',neon:'#080318'};
+  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7',glass:'#130826',neon:'#080318',moonlit:'#070b1f',amethyst:'#160a2e',nebula:'#140e34'};
   const metaTheme=document.querySelector('meta[name="theme-color"]');
   if(metaTheme) metaTheme.content = metaColors[theme]||'#05080f';
 
