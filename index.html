@@ -1480,6 +1480,11 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 }
 .fb-refresh:hover{background:var(--accent-glow)}
 .fb-refresh.spinning{animation:refreshSpinAll .9s linear infinite}
+.fb-updated{
+  margin-left:auto;font-family:var(--mono);font-size:.56rem;
+  letter-spacing:.06em;color:var(--text-dim);white-space:nowrap;
+}
+.fb-updated + .fb-refresh{margin-left:8px}
 .subscription-info{
   display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:6px 14px;border-bottom:1px solid var(--border);
@@ -4136,12 +4141,25 @@ body.night .tab-btn.active{
         <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
         <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
       </div>
-      <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Live Board ↗</a>
+      <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Official board ↗</a>
     </div>
-    <!-- Official airport page (full-width) -->
-    <div class="rwc-frame-wrap" style="min-height:600px;">
-      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
+    <div class="flights-split">
+      <!-- Native parsed board (data/flights.json, refreshed by GitHub Actions) -->
+      <div class="fb-panel">
+        <div class="fb-head">
+          <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
+          <span class="fb-updated" id="flightBoardUpdated"></span>
+          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh live board" aria-label="Refresh live board">↻</button>
+        </div>
+        <div id="flightBoard" class="fb-list">
+          <div class="fb-empty">Loading flights…</div>
+        </div>
+      </div>
+      <!-- Official airport page (iframe) -->
+      <div class="rwc-frame-wrap">
+        <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+        <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
+      </div>
     </div>
   </div>
 </div>
@@ -4828,16 +4846,17 @@ wireTabs(); wireTabKeys();
 })();
 
 /* ════════════════════════════════
-   NATIVE FLIGHT BOARD — via Cloudflare Worker (PROXY_BASE) → AeroDataBox
-   The Worker holds the AeroDataBox key as a secret and caches each
-   direction 15 min, so no key ships in this HTML. Set PROXY_BASE (top of
-   this script) to your Worker URL to enable the parsed board shown beside
-   the official airport page. With PROXY_BASE empty the board explains how
-   to enable it and the official iframe keeps working on its own.
+   NATIVE FLIGHT BOARD — reads data/flights.json (same-origin)
+   A GitHub Actions workflow (.github/workflows/flights.yml) refreshes that
+   file from AeroDataBox on a schedule via scripts/fetch-flights.mjs, so no
+   API key ever ships in this HTML. The board shows beside the official
+   airport page; if the file hasn't been generated yet it explains how to
+   enable it and the official iframe keeps working on its own.
 ════════════════════════════════ */
-const FLIGHT_TTL = 15 * 60 * 1000;
-const _flightCache = { departures:null, arrivals:null };   // {ts, rows}
-let _flightDir = 'departures';
+const FLIGHTS_JSON = 'data/flights.json';
+const FLIGHT_TTL   = 5 * 60 * 1000;   // re-read the JSON at most every 5 min
+let _flightDir  = 'departures';
+let _flightData = null;               // { ts, payload }
 
 function _fmtHM(iso){
   if(!iso) return '—';
@@ -4856,29 +4875,39 @@ function _flightStatus(s){
   return {cls:'fb-st-soon', label:s||'Scheduled'};   // scheduled / unknown / default
 }
 
-async function fetchCuracaoFlights(direction){
-  const cached = _flightCache[direction];
-  if(cached && Date.now()-cached.ts < FLIGHT_TTL) return cached.rows;
-  if(!PROXY_BASE) throw {noProxy:true};
-
-  const r = await fetch(`${PROXY_BASE}/flights?direction=${direction}`, {cache:'no-store'});
-  if(!r.ok){
-    let msg = 'HTTP '+r.status;
-    try{ const j = await r.json(); if(j && j.error) msg = j.error; }catch(_){}
-    throw new Error(msg);
-  }
-  const data = await r.json();
-  const rows = data.rows || [];
-  _flightCache[direction] = { ts:Date.now(), rows };
-  return rows;
+async function fetchFlightData(){
+  if(_flightData && Date.now()-_flightData.ts < FLIGHT_TTL) return _flightData.payload;
+  // Cache-bust each minute so a fresh workflow commit shows up promptly.
+  const r = await fetch(`${FLIGHTS_JSON}?t=${Math.floor(Date.now()/60000)}`, {cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const payload = await r.json();
+  _flightData = { ts:Date.now(), payload };
+  return payload;
 }
 
 async function renderFlightBoard(direction){
-  const el = document.getElementById('flightBoard');
+  const el  = document.getElementById('flightBoard');
+  const upd = document.getElementById('flightBoardUpdated');
   if(!el) return;
   setBadge('flightBoardBadge','LOADING','loading');
   try{
-    const rows = await fetchCuracaoFlights(direction);
+    const data = await fetchFlightData();
+    const rows = (direction==='arrivals' ? data.arrivals : data.departures) || [];
+
+    if(upd){
+      upd.textContent = data.updated
+        ? 'Updated ' + new Date(data.updated).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'})
+        : '';
+    }
+
+    if(!data.updated){
+      el.innerHTML = `<div class="fb-notice">📋 The live board fills in automatically once the
+        <b>flight updater</b> runs (GitHub → Actions → “Update Curaçao flights”).<br><br>
+        Add the <code>AERODATABOX_KEY</code> repo secret, then run the workflow once.<br><br>
+        The official airport board on the right works now.</div>`;
+      setBadge('flightBoardBadge','SETUP','error');
+      return;
+    }
     if(!rows.length){
       el.innerHTML = `<div class="fb-empty">No ${direction} in the next ~12 hours.</div>`;
       setBadge('flightBoardBadge','LIVE');
@@ -4902,46 +4931,20 @@ async function renderFlightBoard(direction){
     }).join('');
     setBadge('flightBoardBadge','LIVE');
   }catch(err){
-    if(err && err.noProxy){
-      el.innerHTML = `<div class="fb-notice">
-        📋 The live board runs through a free <b>Cloudflare Worker</b> that hides the API key.<br><br>
-        1. Deploy the Worker in <code>flights-worker/</code> (see its README)<br>
-        2. Set <code>PROXY_BASE</code> in index.html to your Worker URL<br><br>
-        The official airport board on the right works without it.
-      </div>`;
-      setBadge('flightBoardBadge','SETUP','error');
-      return;
-    }
+    if(upd) upd.textContent = '';
     el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
     setBadge('flightBoardBadge','ERROR','error');
   }
 }
 
-async function fetchSubscriptionBalance(){
-  const el = document.getElementById('subscriptionInfo');
-  const valueEl = document.getElementById('subscriptionBalance');
-  if(!el || !valueEl || !PROXY_BASE) return;
-  try{
-    const r = await fetch(`${PROXY_BASE}/subscriptions/balance`, {cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const data = await r.json();
-    if(data && data.remainingBalance !== undefined){
-      valueEl.textContent = data.remainingBalance.toLocaleString();
-      el.style.display = '';
-    }
-  }catch(err){
-    // Silently fail if subscription balance can't be fetched
-  }
-}
-
-// Manual refresh — clears cache for the current direction
+// Manual refresh — drops the client cache and re-reads the JSON file
 (function wireFlightBoardRefresh(){
   const btn = document.getElementById('flightBoardRefresh');
   if(!btn) return;
   btn.addEventListener('click', ()=>{
-    _flightCache[_flightDir] = null;
+    _flightData = null;
     btn.classList.add('spinning');
-    Promise.resolve(renderFlightBoard(_flightDir)).then(() => fetchSubscriptionBalance()).finally(()=>{
+    Promise.resolve(renderFlightBoard(_flightDir)).finally(()=>{
       setTimeout(()=>btn.classList.remove('spinning'), 700);
     });
   });
@@ -4967,7 +4970,6 @@ document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
     const ext = document.getElementById('flightsExtLink');
     if(ext) ext.href = `https://curacao-airport.com/flights/?type=${mode}`;
     renderFlightBoard(mode);
-    fetchSubscriptionBalance();
   });
 });
 
@@ -6553,10 +6555,7 @@ function triggerManualRefresh(){
           : 'https://curacao-airport.com/flights/?type=departures';
       }
       // Render the live board (cached, so cheap on re-open)
-      if(typeof renderFlightBoard==='function') {
-        renderFlightBoard(_flightDir);
-        if(typeof fetchSubscriptionBalance==='function') fetchSubscriptionBalance();
-      }
+      if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
     }
   };
 
