@@ -4136,28 +4136,12 @@ body.night .tab-btn.active{
         <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
         <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
       </div>
-      <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Open in new tab ↗</a>
+      <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Live Board ↗</a>
     </div>
-    <div class="flights-split">
-      <!-- Native parsed board (via Cloudflare Worker → AeroDataBox) -->
-      <div class="fb-panel">
-        <div class="fb-head">
-          <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
-          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh live board" aria-label="Refresh live board">↻</button>
-        </div>
-        <div id="subscriptionInfo" class="subscription-info" style="display:none;">
-          <span class="subscription-label">API Balance:</span>
-          <span class="subscription-value" id="subscriptionBalance">—</span>
-        </div>
-        <div id="flightBoard" class="fb-list">
-          <div class="fb-empty">Loading flights…</div>
-        </div>
-      </div>
-      <!-- Official airport page (iframe) -->
-      <div class="rwc-frame-wrap">
-        <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-        <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
-      </div>
+    <!-- Official airport page (full-width) -->
+    <div class="rwc-frame-wrap" style="min-height:600px;">
+      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
     </div>
   </div>
 </div>
