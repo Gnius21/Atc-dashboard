@@ -798,127 +798,6 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .atc-subbtn:hover{border-color:var(--bdrb);color:var(--cyan);}
 .atc-subbtn.active{background:var(--accd);border-color:var(--bdrb);color:var(--acc);}
 
-/* ──────────────────────────────────────────────────────────────
-   WEATHER DASHBOARD (World ▸ Dashboard sub-view)
-   Self-contained, dark-themed recreation. All styles scoped to .wd-app
-─────────────────────────────────────────────────────────────── */
-.wd-app{
-  --wd-bg:#0d0d10;--wd-card:#171719;--wd-card2:#1f1f23;
-  --wd-line:rgba(255,255,255,0.06);--wd-text:#f3f3f5;--wd-muted:#8a8a93;--wd-accent:#c4b6f2;
-  background:var(--wd-bg);border:1px solid var(--wd-line);border-radius:20px;
-  padding:24px;font-family:'Inter',system-ui,sans-serif;color:var(--wd-text);
-}
-.wd-app *{box-sizing:border-box}
-/* Top bar */
-.wd-topbar{display:flex;align-items:center;gap:16px;margin-bottom:22px}
-.wd-topbar-left,.wd-topbar-right{display:flex;align-items:center;gap:10px}
-.wd-icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--wd-line);
-  background:var(--wd-card);color:var(--wd-text);cursor:pointer;font-size:.95rem;
-  display:flex;align-items:center;justify-content:center;transition:.15s;flex-shrink:0}
-.wd-icon-btn:hover{background:var(--wd-card2)}
-.wd-icon-active{background:#fff;color:#111}
-.wd-loc{display:flex;align-items:center;gap:6px;font-weight:600;font-size:.9rem;margin-left:6px;white-space:nowrap}
-.wd-search{flex:1;display:flex;align-items:center;gap:10px;background:var(--wd-card);
-  border:1px solid var(--wd-line);border-radius:14px;padding:0 16px;height:44px;color:var(--wd-muted)}
-.wd-search input{flex:1;background:none;border:none;outline:none;color:var(--wd-text);font-size:.85rem}
-.wd-search input::placeholder{color:var(--wd-muted)}
-.wd-avatar{width:42px;height:42px;border-radius:50%;flex-shrink:0;
-  background:radial-gradient(circle at 35% 30%,#d8b48f,#8a6b4f);border:2px solid rgba(255,255,255,.15)}
-/* Sub-header */
-.wd-subhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:22px;flex-wrap:wrap}
-.wd-daytabs{display:flex;gap:22px;font-size:1.1rem;font-weight:600}
-.wd-daytabs span{color:var(--wd-muted);cursor:pointer;transition:.15s}
-.wd-daytabs span.active{color:var(--wd-text)}
-.wd-toggle{display:flex;background:var(--wd-card);border:1px solid var(--wd-line);border-radius:24px;padding:4px}
-.wd-toggle span{padding:7px 18px;border-radius:20px;font-size:.8rem;color:var(--wd-muted);cursor:pointer;white-space:nowrap}
-.wd-toggle span.active{background:#e9eef5;color:#1a1a1a;font-weight:600}
-/* Main grid */
-.wd-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px}
-.wd-left{min-width:0}
-/* Forecast row */
-.wd-forecast{display:grid;grid-template-columns:2fr repeat(6,1fr);gap:12px;margin-bottom:24px}
-.wd-day-main{background:linear-gradient(160deg,#eef1f8,#dde2ec);color:#1a1a20;
-  border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.wd-dm-head{display:flex;justify-content:space-between;font-size:.82rem;font-weight:600}
-.wd-dm-temp{display:flex;align-items:center;justify-content:space-between}
-.wd-deg{font-size:3.2rem;font-weight:700;line-height:1}
-.wd-dm-temp .wd-ico{font-size:2.4rem}
-.wd-dm-stats{background:linear-gradient(160deg,#d9e3f3,#c8d5ea);border-radius:12px;
-  padding:10px 12px;display:flex;justify-content:space-between;gap:10px}
-.wd-dm-col{display:flex;flex-direction:column;gap:3px}
-.wd-dm-col div{display:flex;flex-direction:column;line-height:1.15}
-.wd-dm-col span{font-size:.54rem;color:#5a6276}
-.wd-dm-col b{font-size:.66rem;color:#2a3146;font-weight:700}
-.wd-day{background:var(--wd-card);border:1px solid var(--wd-line);border-radius:16px;
-  padding:16px 6px;display:flex;flex-direction:column;align-items:center;gap:14px}
-.wd-dname{font-size:.82rem;color:var(--wd-muted);font-weight:600}
-.wd-dico{font-size:1.7rem}
-.wd-dtemp{font-size:1.35rem;font-weight:700}
-/* Map */
-.wd-mapsec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.wd-mapsec-head h3{font-size:1.1rem;font-weight:600;margin:0}
-.wd-viewwide{background:var(--wd-card);border:1px solid var(--wd-line);border-radius:20px;
-  padding:8px 15px;font-size:.75rem;color:var(--wd-text);cursor:pointer}
-.wd-map{position:relative;background:#141417;border:1px solid var(--wd-line);
-  border-radius:18px;overflow:hidden;height:300px}
-.wd-map svg{width:100%;height:100%;display:block;opacity:.9}
-.wd-marker{position:absolute;width:30px;height:30px;border-radius:50%;background:#0a0a0c;
-  border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;
-  font-size:.8rem;transform:translate(-50%,-50%);box-shadow:0 3px 10px rgba(0,0,0,.5)}
-.wd-mapcard{position:absolute;left:18px;top:50%;transform:translateY(-50%);width:188px;
-  background:#fff;border-radius:16px;padding:14px;color:#222;box-shadow:0 12px 34px rgba(0,0,0,.45)}
-.wd-mapcard p{font-size:.72rem;text-align:center;margin:0 0 10px;font-weight:600;line-height:1.45}
-.wd-mapcard-img{height:72px;border-radius:10px;margin-bottom:10px;
-  background:radial-gradient(circle at 50% 50%,#f3f6fb 0%,#aebbd2 30%,#5f6d88 55%,#2c3447 80%),
-             conic-gradient(from 220deg at 50% 50%,rgba(255,255,255,.55),rgba(255,255,255,0) 55%);
-  background-blend-mode:screen}
-.wd-getstarted{width:100%;border:none;background:var(--wd-accent);color:#3a2d6b;
-  border-radius:10px;padding:10px;font-weight:700;font-size:.78rem;cursor:pointer;transition:.15s}
-.wd-getstarted:hover{filter:brightness(1.05)}
-.wd-back,.wd-layers,.wd-compass{position:absolute;width:32px;height:32px;border-radius:9px;
-  background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:1rem}
-.wd-back{left:14px;top:14px;border-radius:50%}
-.wd-layers{right:14px;top:14px}
-.wd-compass{right:14px;bottom:14px;border-radius:50%}
-.wd-mapctrl{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px}
-.wd-mapctrl button{width:32px;height:32px;border-radius:9px;background:rgba(0,0,0,.5);
-  border:1px solid rgba(255,255,255,.12);color:#fff;cursor:pointer;font-size:1.05rem}
-.wd-seattle{position:absolute;right:58px;bottom:30px;display:flex;align-items:center;gap:7px;
-  font-size:.75rem;color:var(--wd-text)}
-.wd-marker-inline{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
-  border-radius:50%;background:#0a0a0c;border:1px solid rgba(255,255,255,.18);font-size:.7rem}
-/* Right column panels */
-.wd-panel{background:var(--wd-card);border:1px solid var(--wd-line);border-radius:18px;padding:18px;margin-bottom:20px}
-.wd-panel-title{font-size:1.05rem;font-weight:600;margin:0 0 14px}
-.wd-chart{position:relative;height:175px;padding-left:48px}
-.wd-chart-y{position:absolute;left:0;top:0;bottom:18px;display:flex;flex-direction:column;
-  justify-content:space-between;font-size:.66rem;color:var(--wd-muted)}
-.wd-bars{height:100%;display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
-  border-left:1px dashed rgba(255,255,255,.08);padding-left:8px}
-.wd-bar{width:7px;border-radius:6px;background:linear-gradient(180deg,#d4dbeb,#717a93)}
-.wd-xlabels{display:flex;justify-content:space-between;padding-left:56px;margin-top:10px;
-  font-size:.6rem;color:var(--wd-muted)}
-.wd-cities-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.wd-showall{font-size:.75rem;color:var(--wd-muted);cursor:pointer}
-.wd-citycard{position:relative;background:var(--wd-card);border:1px solid var(--wd-line);
-  border-radius:16px;padding:15px 16px;margin-bottom:12px;min-height:86px}
-.wd-cc-country{font-size:.62rem;color:var(--wd-muted)}
-.wd-cc-city{font-size:1.08rem;font-weight:700;margin:3px 0 7px}
-.wd-cc-cond{font-size:.72rem;color:var(--wd-muted)}
-.wd-cc-ico{position:absolute;right:16px;top:13px;font-size:1.7rem}
-.wd-cc-temp{position:absolute;right:18px;bottom:14px;font-size:1.45rem;font-weight:700}
-@media(max-width:1100px){
-  .wd-grid{grid-template-columns:1fr}
-  .wd-forecast{grid-template-columns:1fr repeat(3,1fr)}
-}
-@media(max-width:720px){
-  .wd-topbar{flex-wrap:wrap}
-  .wd-search{order:3;flex-basis:100%}
-  .wd-forecast{grid-template-columns:repeat(3,1fr)}
-  .wd-day-main{grid-column:1/-1}
-}
-
 .tab-pane{display:none}
 .tab-pane.active{display:block}
 
@@ -2142,9 +2021,11 @@ body.night .tab-btn.active{
 /* ── WORLD AIRPORT DETAIL MODAL ── */
 .world-ovr-card{cursor:pointer}
 .world-ovr-card:hover{border-color:var(--border-bright)}
-.world-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(2,4,10,0.72);backdrop-filter:blur(4px);padding:16px}
-.world-modal-inner{position:relative;width:min(640px,100%);max-height:88vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--border-hi);border-radius:var(--radius-lg);box-shadow:var(--shadow-panel);padding:18px 18px 14px}
-.world-modal-close{position:absolute;top:10px;right:10px;background:none;border:1px solid var(--border-hi);border-radius:6px;color:var(--text-dim);font-size:.8rem;padding:4px 9px;cursor:pointer;z-index:1}
+.world-modal{position:fixed;inset:0;z-index:300;background:var(--bg);overflow-y:auto}
+.world-modal-inner{max-width:1300px;margin:0 auto;padding:20px 24px 60px;min-height:100%}
+.world-modal-close{position:fixed;top:14px;right:14px;background:var(--bg2);border:1px solid var(--border-hi);border-radius:8px;color:var(--text-dim);font-size:.8rem;padding:6px 12px;cursor:pointer;z-index:400}
+.wm-windy-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+@media(max-width:720px){.wm-windy-row{grid-template-columns:1fr}}
 .world-modal-close:hover{color:var(--accent-bright);border-color:var(--border-bright)}
 .wm-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
 .wm-flag{font-size:1.8rem}
@@ -4233,203 +4114,10 @@ body.night .tab-btn.active{
 <div class="layout">
   <div class="full">
 
-    <!-- World sub-nav -->
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-      <button class="atc-subbtn active" data-worldsub="overview"  onclick="switchWorldSub('overview',this)">🌍 OVERVIEW</button>
-      <button class="atc-subbtn"        data-worldsub="dashboard" onclick="switchWorldSub('dashboard',this)">📊 DASHBOARD</button>
-    </div>
-
-    <!-- OVERVIEW sub-view -->
     <div id="world-sub-overview">
       <div class="section-title">World Overview — Connecting Airports <span class="data-badge loading" id="worldOvrBadge">LOADING</span></div>
       <div id="world-ovr-grid" class="island-widgets-grid">
         <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center;grid-column:1/-1">Loading…</div>
-      </div>
-    </div>
-
-    <!-- DASHBOARD sub-view -->
-    <div id="world-sub-dashboard" style="display:none;">
-      <div class="wd-app">
-
-        <!-- Top bar -->
-        <div class="wd-topbar">
-          <div class="wd-topbar-left">
-            <button class="wd-icon-btn" aria-label="Apps">▦</button>
-            <button class="wd-icon-btn" aria-label="Notifications">🔔</button>
-            <div class="wd-loc" id="wdLoc">📍 Seattle <span class="data-badge loading" id="wdBadge">LOADING</span></div>
-          </div>
-          <div class="wd-search">
-            <span class="wd-search-ico">🔍</span>
-            <input type="text" id="wdSearch" placeholder="Search city…  (press Enter)" aria-label="Search city"/>
-          </div>
-          <div class="wd-topbar-right">
-            <button class="wd-icon-btn" aria-label="Settings">⚙</button>
-            <button class="wd-icon-btn wd-icon-active" aria-label="Dark mode">🌙</button>
-            <div class="wd-avatar"></div>
-          </div>
-        </div>
-
-        <!-- Sub-header -->
-        <div class="wd-subhead">
-          <div class="wd-daytabs">
-            <span>Today</span><span>Tomorrow</span><span class="active">Next 7 days</span>
-          </div>
-          <div class="wd-toggle">
-            <span class="active">Forecast</span><span>Air quality</span>
-          </div>
-        </div>
-
-        <!-- Main grid -->
-        <div class="wd-grid">
-
-          <!-- LEFT column -->
-          <div class="wd-left">
-
-            <!-- Forecast row -->
-            <div class="wd-forecast" id="wdForecast">
-              <div class="wd-day-main">
-                <div class="wd-dm-head"><span>Monday</span><span>11:42 PM</span></div>
-                <div class="wd-dm-temp">
-                  <span class="wd-deg">16°</span>
-                  <span class="wd-ico">☀️</span>
-                </div>
-                <div class="wd-dm-stats">
-                  <div class="wd-dm-col">
-                    <div><span>Real Feel</span><b>18°</b></div>
-                    <div><span>Wind: N-E</span><b>5-8 km/h</b></div>
-                    <div><span>Pressure</span><b>1000MB</b></div>
-                    <div><span>Humidity</span><b>51%</b></div>
-                  </div>
-                  <div class="wd-dm-col">
-                    <div><span>Sunrise</span><b>6:02 AM</b></div>
-                    <div><span>Sunset</span><b>8:18 PM</b></div>
-                  </div>
-                </div>
-              </div>
-              <div class="wd-day"><div class="wd-dname">Tue</div><div class="wd-dico">⛈️</div><div class="wd-dtemp">10°</div></div>
-              <div class="wd-day"><div class="wd-dname">Wed</div><div class="wd-dico">🌦️</div><div class="wd-dtemp">15°</div></div>
-              <div class="wd-day"><div class="wd-dname">Thu</div><div class="wd-dico">⛅</div><div class="wd-dtemp">11°</div></div>
-              <div class="wd-day"><div class="wd-dname">Fri</div><div class="wd-dico">⛈️</div><div class="wd-dtemp">18°</div></div>
-              <div class="wd-day"><div class="wd-dname">Sat</div><div class="wd-dico">🌧️</div><div class="wd-dtemp">12°</div></div>
-              <div class="wd-day"><div class="wd-dname">Sun</div><div class="wd-dico">🌧️</div><div class="wd-dtemp">10°</div></div>
-            </div>
-
-            <!-- Global map -->
-            <div class="wd-mapsec-head">
-              <h3>Global map</h3>
-              <button class="wd-viewwide">View wide ✦</button>
-            </div>
-            <div class="wd-map">
-              <svg viewBox="0 0 1000 460" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-                <g fill="#2b2b31">
-                  <!-- North America -->
-                  <path d="M150 70 L260 60 L305 95 L280 130 L325 150 L300 180 L250 178 L232 240 L198 246 L184 184 L150 168 L120 120 L132 84 Z"/>
-                  <!-- Greenland -->
-                  <path d="M340 50 L380 48 L388 78 L360 92 L338 74 Z"/>
-                  <!-- South America -->
-                  <path d="M300 275 L350 268 L366 305 L356 366 L322 418 L300 384 L296 322 Z"/>
-                  <!-- Europe -->
-                  <path d="M470 92 L548 86 L566 112 L544 142 L500 148 L480 122 Z"/>
-                  <!-- Africa -->
-                  <path d="M482 178 L566 172 L596 224 L562 306 L520 346 L500 292 L486 232 Z"/>
-                  <!-- Asia -->
-                  <path d="M566 70 L800 58 L876 102 L852 156 L770 164 L706 144 L646 156 L592 124 Z"/>
-                  <!-- India -->
-                  <path d="M660 162 L702 168 L690 214 L668 204 Z"/>
-                  <!-- SE Asia islands -->
-                  <path d="M790 200 L840 196 L852 224 L812 234 Z"/>
-                  <!-- Australia -->
-                  <path d="M800 320 L884 314 L906 362 L862 396 L808 380 Z"/>
-                </g>
-                <g fill="#33333a">
-                  <circle cx="760" cy="250" r="6"/><circle cx="790" cy="262" r="5"/>
-                  <circle cx="430" cy="160" r="4"/><circle cx="906" cy="332" r="5"/>
-                </g>
-              </svg>
-
-              <!-- Weather markers -->
-              <div class="wd-marker" style="left:24%;top:40%">☁️</div>
-              <div class="wd-marker" style="left:20%;top:52%">🌤️</div>
-              <div class="wd-marker" style="left:50%;top:40%">🌤️</div>
-              <div class="wd-marker" style="left:52%;top:62%">🌧️</div>
-              <div class="wd-marker" style="left:44%;top:54%">⛈️</div>
-              <div class="wd-marker" style="left:64%;top:54%">⛈️</div>
-              <div class="wd-marker" style="left:70%;top:44%">🌤️</div>
-              <div class="wd-marker" style="left:33%;top:72%">☁️</div>
-
-              <!-- Info card -->
-              <div class="wd-mapcard">
-                <p>Explore global map of wind, weather and oceans condition.</p>
-                <div class="wd-mapcard-img"></div>
-                <button class="wd-getstarted">Get started</button>
-              </div>
-
-              <!-- Controls -->
-              <button class="wd-back" aria-label="Back">↶</button>
-              <button class="wd-layers" aria-label="Layers">⛃</button>
-              <div class="wd-mapctrl">
-                <button aria-label="Zoom in">+</button>
-                <button aria-label="Zoom out">−</button>
-              </div>
-              <div class="wd-seattle">Seattle, AU <span class="wd-marker-inline">🌤️</span></div>
-              <button class="wd-compass" aria-label="Compass">◈</button>
-            </div>
-          </div>
-
-          <!-- RIGHT column -->
-          <div class="wd-right">
-
-            <!-- Chance of rain -->
-            <div class="wd-panel">
-              <h3 class="wd-panel-title">Chance of rain</h3>
-              <div class="wd-chart">
-                <div class="wd-chart-y"><span>Rainy</span><span>Sunny</span><span>Heavy</span></div>
-                <div class="wd-bars" id="wdBars">
-                  <div class="wd-bar" style="height:48%"></div>
-                  <div class="wd-bar" style="height:40%"></div>
-                  <div class="wd-bar" style="height:92%"></div>
-                  <div class="wd-bar" style="height:58%"></div>
-                  <div class="wd-bar" style="height:44%"></div>
-                  <div class="wd-bar" style="height:62%"></div>
-                </div>
-              </div>
-              <div class="wd-xlabels" id="wdXlabels">
-                <span>10AM</span><span>11AM</span><span>12AM</span><span>01PM</span><span>02PM</span><span>03PM</span>
-              </div>
-            </div>
-
-            <!-- Other large cities -->
-            <div class="wd-cities-head">
-              <h3 class="wd-panel-title">Other large cities</h3>
-              <span class="wd-showall">Show All ›</span>
-            </div>
-
-            <div id="wdCities">
-              <div class="wd-citycard">
-                <div class="wd-cc-country">US</div>
-                <div class="wd-cc-city">California</div>
-                <div class="wd-cc-cond">Mostly Sunny</div>
-                <div class="wd-cc-ico">🌤️</div>
-                <div class="wd-cc-temp">29°</div>
-              </div>
-              <div class="wd-citycard">
-                <div class="wd-cc-country">China</div>
-                <div class="wd-cc-city">Beijing</div>
-                <div class="wd-cc-cond">Cloudy</div>
-                <div class="wd-cc-ico">☁️</div>
-                <div class="wd-cc-temp">19°</div>
-              </div>
-              <div class="wd-citycard">
-                <div class="wd-cc-country">Israel</div>
-                <div class="wd-cc-city">Jerusalem</div>
-                <div class="wd-cc-cond">Sunny</div>
-                <div class="wd-cc-ico">🌤️</div>
-                <div class="wd-cc-temp">31°</div>
-              </div>
-            </div>
-
-          </div>
-        </div>
       </div>
     </div>
 
@@ -5937,184 +5625,6 @@ async function fetchWeatherAPI(icao){
   }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
 }
 
-/* ════════════════════════════════
-   WORLD ▸ DASHBOARD — live weather (WeatherAPI forecast.json)
-   Powers the recreated weather-dashboard sub-view with real data.
-════════════════════════════════ */
-let _wdLocation   = 'Seattle';
-let _wdLastFetch  = 0;
-const WD_TTL      = 15 * 60 * 1000;   // 15 min
-const WD_CITIES   = [
-  { country:'US',     city:'California', q:'Los Angeles' },
-  { country:'China',  city:'Beijing',   q:'Beijing'      },
-  { country:'Israel', city:'Jerusalem', q:'Jerusalem'    },
-];
-
-function wdWxUrl(q, days){
-  return PROXY_BASE
-    ? `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}&days=${days}&aqi=no&alerts=no`
-    : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=${days}&aqi=no&alerts=no`;
-}
-
-/* WeatherAPI condition code → emoji (day/night aware) */
-function wdEmoji(code, isDay=1){
-  if(code===1000) return isDay ? '☀️' : '🌙';
-  if(code===1003) return isDay ? '🌤️' : '☁️';
-  if(code===1006 || code===1009) return '☁️';
-  if(code===1030 || code===1135 || code===1147) return '🌫️';
-  if([1087,1273,1276,1279,1282].includes(code)) return '⛈️';
-  if([1066,1069,1114,1117,1210,1213,1216,1219,1222,1225,1237,1255,1258,1261,1264].includes(code)) return '❄️';
-  if(code >= 1063) return '🌧️';
-  return '🌤️';
-}
-
-/* "2026-06-13 23:42" → "11:42 PM" */
-function wd12h(localtime){
-  const t = (localtime||'').split(' ')[1];
-  if(!t) return '';
-  let [h,m] = t.split(':').map(Number);
-  const ap = h >= 12 ? 'PM' : 'AM';
-  h = h % 12 || 12;
-  return `${h}:${String(m).padStart(2,'0')} ${ap}`;
-}
-
-/* "06:02 AM" (WeatherAPI astro) passed through, trimming leading zero */
-function wdAstro(s){ return (s||'').replace(/^0/,''); }
-
-async function loadWdDashboard(force){
-  const root = document.getElementById('world-sub-dashboard');
-  if(!root) return;
-  if(!force && Date.now()-_wdLastFetch < WD_TTL && _wdLastFetch) return;
-  setBadge('wdBadge','LOADING','loading');
-  try{
-    // Primary location (7-day forecast) + the three "other cities" in parallel
-    const [mainRes, ...cityRes] = await Promise.all([
-      fetch(wdWxUrl(_wdLocation, 7), {cache:'no-store'}),
-      ...WD_CITIES.map(c => fetch(wdWxUrl(c.q, 1), {cache:'no-store'}).catch(()=>null)),
-    ]);
-    if(!mainRes || !mainRes.ok) throw new Error('HTTP '+(mainRes && mainRes.status));
-    const data = await mainRes.json();
-    renderWdMain(data);
-    renderWdRain(data);
-    // Cities
-    const cityData = await Promise.all(cityRes.map(r => (r && r.ok) ? r.json().catch(()=>null) : null));
-    renderWdCities(cityData);
-    _wdLastFetch = Date.now();
-    setBadge('wdBadge','LIVE');
-  }catch(e){
-    console.warn('[WD] dashboard load failed:', e.message);
-    setBadge('wdBadge','ERROR','error');
-  }
-}
-
-function renderWdMain(data){
-  const cur  = data.current || {};
-  const loc  = data.location || {};
-  const days = (data.forecast && data.forecast.forecastday) || [];
-  if(!days.length) return;
-
-  // Location label
-  const locEl = document.getElementById('wdLoc');
-  if(locEl){
-    const name = [loc.name, loc.country].filter(Boolean).join(', ') || _wdLocation;
-    locEl.innerHTML = `📍 ${name} <span class="data-badge" id="wdBadge">LIVE</span>`;
-  }
-
-  const wdWeekday = (d, opt) => new Date(d+'T00:00:00').toLocaleDateString('en-US',{weekday:opt});
-
-  const d0   = days[0];
-  const code = cur.condition?.code ?? 1000;
-  const mainCard = `
-    <div class="wd-day-main">
-      <div class="wd-dm-head"><span>${wdWeekday(d0.date,'long')}</span><span>${wd12h(loc.localtime)}</span></div>
-      <div class="wd-dm-temp">
-        <span class="wd-deg">${Math.round(cur.temp_c)}°</span>
-        <span class="wd-ico">${wdEmoji(code, cur.is_day)}</span>
-      </div>
-      <div class="wd-dm-stats">
-        <div class="wd-dm-col">
-          <div><span>Real Feel</span><b>${Math.round(cur.feelslike_c)}°</b></div>
-          <div><span>Wind: ${cur.wind_dir||''}</span><b>${Math.round(cur.wind_kph)} km/h</b></div>
-          <div><span>Pressure</span><b>${Math.round(cur.pressure_mb)}MB</b></div>
-          <div><span>Humidity</span><b>${cur.humidity}%</b></div>
-        </div>
-        <div class="wd-dm-col">
-          <div><span>Sunrise</span><b>${wdAstro(d0.astro?.sunrise)}</b></div>
-          <div><span>Sunset</span><b>${wdAstro(d0.astro?.sunset)}</b></div>
-        </div>
-      </div>
-    </div>`;
-
-  const dayCards = days.slice(1, 7).map(d => `
-    <div class="wd-day">
-      <div class="wd-dname">${wdWeekday(d.date,'short')}</div>
-      <div class="wd-dico">${wdEmoji(d.day?.condition?.code ?? 1000, 1)}</div>
-      <div class="wd-dtemp">${Math.round(d.day?.maxtemp_c)}°</div>
-    </div>`).join('');
-
-  const row = document.getElementById('wdForecast');
-  if(row) row.innerHTML = mainCard + dayCards;
-}
-
-function renderWdRain(data){
-  const days = (data.forecast && data.forecast.forecastday) || [];
-  const hours = [];
-  const nowH  = new Date((data.location?.localtime||'').replace(' ','T')).getHours();
-  // Collect upcoming hours across today + tomorrow, starting at the current hour
-  (days[0]?.hour || []).forEach(h => { if(new Date(h.time.replace(' ','T')).getHours() >= nowH) hours.push(h); });
-  (days[1]?.hour || []).forEach(h => hours.push(h));
-  const pick = hours.slice(0, 6);
-  if(!pick.length) return;
-
-  const bars = pick.map(h => {
-    const pct = Math.max(4, Math.min(100, h.chance_of_rain || 0));
-    return `<div class="wd-bar" style="height:${pct}%" title="${h.chance_of_rain||0}% rain"></div>`;
-  }).join('');
-  const labels = pick.map(h => {
-    let hr = new Date(h.time.replace(' ','T')).getHours();
-    const ap = hr >= 12 ? 'PM' : 'AM';
-    hr = hr % 12 || 12;
-    return `<span>${String(hr).padStart(2,'0')}${ap}</span>`;
-  }).join('');
-
-  const barsEl = document.getElementById('wdBars');
-  const lblEl  = document.getElementById('wdXlabels');
-  if(barsEl) barsEl.innerHTML = bars;
-  if(lblEl)  lblEl.innerHTML  = labels;
-}
-
-function renderWdCities(cityData){
-  const wrap = document.getElementById('wdCities');
-  if(!wrap) return;
-  const cards = WD_CITIES.map((c, i) => {
-    const d   = cityData[i];
-    const cur = d?.current;
-    const code = cur?.condition?.code ?? 1000;
-    const cond = cur?.condition?.text || '—';
-    const temp = cur?.temp_c != null ? `${Math.round(cur.temp_c)}°` : '—°';
-    return `
-      <div class="wd-citycard">
-        <div class="wd-cc-country">${c.country}</div>
-        <div class="wd-cc-city">${c.city}</div>
-        <div class="wd-cc-cond">${cond}</div>
-        <div class="wd-cc-ico">${wdEmoji(code, cur?.is_day ?? 1)}</div>
-        <div class="wd-cc-temp">${temp}</div>
-      </div>`;
-  }).join('');
-  wrap.innerHTML = cards;
-}
-
-/* Search box → change location */
-(function wireWdSearch(){
-  const input = document.getElementById('wdSearch');
-  if(!input) return;
-  input.addEventListener('keydown', e => {
-    if(e.key === 'Enter' && input.value.trim()){
-      _wdLocation = input.value.trim();
-      loadWdDashboard(true);
-    }
-  });
-})();
 
 
 /* ════════════════════════════════
@@ -6399,6 +5909,13 @@ async function openWorldModal(icao){
     fcHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">Forecast unavailable.</div>`;
   }
 
+  const windyBase = (overlay) =>
+    `https://embed.windy.com/embed2.html?lat=${ap.lat}&lon=${ap.lon}` +
+    `&detailLat=${ap.lat}&detailLon=${ap.lon}&zoom=8&level=surface` +
+    `&overlay=${overlay}&product=${overlay}&menu=&message=true&marker=true` +
+    `&calendar=now&type=map&location=coordinates&detail=true` +
+    `&metricWind=kt&metricTemp=%C2%B0C`;
+
   body.innerHTML = hdr + `
     <div class="wm-section">
       <div class="wm-section-title">📡 Live METAR</div>
@@ -6411,6 +5928,21 @@ async function openWorldModal(icao){
     <div class="wm-section">
       <div class="wm-section-title">📅 3-Day Forecast</div>
       ${fcHtml}
+    </div>
+    <div class="wm-section">
+      <div class="wm-section-title">🌧 Radar &amp; 🛰 Satellite</div>
+      <div class="wm-windy-row">
+        <div>
+          <div class="wm-section-title" style="margin-bottom:6px">Windy Radar</div>
+          <iframe src="${windyBase('radar')}" frameborder="0" allowfullscreen
+            style="width:100%;height:380px;border-radius:10px;border:1px solid var(--border)"></iframe>
+        </div>
+        <div>
+          <div class="wm-section-title" style="margin-bottom:6px">Windy Satellite</div>
+          <iframe src="${windyBase('satellite')}" frameborder="0" allowfullscreen
+            style="width:100%;height:380px;border-radius:10px;border:1px solid var(--border)"></iframe>
+        </div>
+      </div>
     </div>`;
 }
 
@@ -6861,16 +6393,10 @@ function triggerManualRefresh(){
     }
   };
 
-  // World tab sub-nav (Overview ↔ Dashboard)
+  // World tab sub-nav (overview only — dashboard removed)
   window.switchWorldSub = function(name, btn){
     document.querySelectorAll('#tab-world .atc-subbtn').forEach(b => b.classList.remove('active'));
     if(btn) btn.classList.add('active');
-    const ov = document.getElementById('world-sub-overview');
-    const db = document.getElementById('world-sub-dashboard');
-    if(ov) ov.style.display = name === 'overview'  ? '' : 'none';
-    if(db) db.style.display = name === 'dashboard' ? '' : 'none';
-    // Lazy-load live weather the first time the Dashboard opens (cached after)
-    if(name === 'dashboard' && typeof loadWdDashboard === 'function') loadWdDashboard();
   };
 
 })();
