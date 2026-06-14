@@ -3950,6 +3950,7 @@ body.night .tab-btn.active{
   <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
   <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
   <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">5</span></div>
+  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">6</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -3958,13 +3959,7 @@ body.night .tab-btn.active{
 
   <div class="full">
 
-    <!-- ATC Sub-nav -->
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-      <button class="atc-subbtn active" data-atcsub="audio" onclick="switchAtcSub('audio',this)">📡 ATC AUDIO</button>
-      <button class="atc-subbtn"        data-atcsub="flights" onclick="switchAtcSub('flights',this)">✈ FLIGHTS</button>
-    </div>
-
-    <!-- ATC AUDIO sub-view -->
+    <!-- ATC AUDIO -->
     <div id="atc-sub-audio">
     <div class="section-title">Live ATC — Curaçao · Aruba · Bonaire</div>
     <div class="panel">
@@ -4132,11 +4127,14 @@ body.night .tab-btn.active{
 
 </div>
 
-    <!-- FLIGHTS sub-view (hidden by default) -->
-    <div id="atc-sub-flights" style="display:none;">
+</div>
+</div>
+
+<!-- ═══ TAB: FLIGHTS ═══ -->
+<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights">
 <div class="layout">
   <div class="full">
-    <div class="section-title">Flights — Curaçao International (TNCC)
+    <div class="section-title">Flights — Curaçao International (TNCC) / Hato
       <div class="flights-toggle">
         <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
         <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
@@ -4144,27 +4142,24 @@ body.night .tab-btn.active{
       <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Official board ↗</a>
     </div>
     <div class="flights-split">
-      <!-- Native parsed board (data/flights.json, refreshed by GitHub Actions) -->
+      <!-- Live parsed board via AeroDataBox -->
       <div class="fb-panel">
         <div class="fb-head">
           <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
           <span class="fb-updated" id="flightBoardUpdated"></span>
-          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh live board" aria-label="Refresh live board">↻</button>
+          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh" aria-label="Refresh live board">↻</button>
         </div>
         <div id="flightBoard" class="fb-list">
           <div class="fb-empty">Loading flights…</div>
         </div>
       </div>
-      <!-- Official airport page (iframe) -->
+      <!-- Official airport page iframe -->
       <div class="rwc-frame-wrap">
         <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
         <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
       </div>
     </div>
   </div>
-</div>
-    </div><!-- /atc-sub-flights -->
-
 </div>
 </div>
 
@@ -4718,11 +4713,16 @@ function switchTab(name){
 
   // ── STEP 2: side effects — each isolated so one failure can't break the tab ──
   try{
-    // Flights tab: lazy-load whichever sub-frame is currently active
-
-
-    // Flights is now a sub-tab inside ATC; lazy-load handled by switchAtcSub.
-
+    // Flights tab: render live board + lazy-load official iframe on first open
+    if(name==='flights'){
+      if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
+      const active = document.querySelector('#tab-flights .flights-frame.active');
+      if(active && !active.src){
+        active.src = _flightDir==='arrivals'
+          ? 'https://curacao-airport.com/flights/?type=arrivals'
+          : 'https://curacao-airport.com/flights/?type=departures';
+      }
+    }
     // Lazy-init Windy iframes inside the tab being opened (data-src → src).
     const pane=document.getElementById('tab-'+name);
     if(pane){
@@ -4820,7 +4820,7 @@ function wireTabKeys(){
   document.addEventListener('keydown', e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
     if(e.ctrlKey||e.metaKey||e.altKey) return; // don't hijack browser shortcuts (Cmd/Ctrl+1 etc.)
-    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'world'};
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'world','6':'flights'};
     if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
   });
 }
@@ -6399,7 +6399,7 @@ document.addEventListener('visibilitychange', () => {
 (function applyUrlTab(){
   try{
     const tab = new URLSearchParams(window.location.search).get('tab');
-    if(tab && ['atc','weather','forecast','marine','world'].includes(tab)){
+    if(tab && ['atc','weather','forecast','marine','world','flights'].includes(tab)){
       setTimeout(()=>{ try{ switchTab(tab); }catch(_){} }, 100);
     }
   }catch(_){}
@@ -6549,26 +6549,6 @@ function triggerManualRefresh(){
     if(e.key==='Enter' || e.key===' '){ e.preventDefault(); triggerManualRefresh(); }
   });
 
-  // ── ATC sub-tab switcher (Audio ↔ Flights) ──
-  window.switchAtcSub = function(name, btn){
-    document.querySelectorAll('#tab-atc .atc-subbtn').forEach(b => b.classList.remove('active'));
-    if(btn) btn.classList.add('active');
-    const audio   = document.getElementById('atc-sub-audio');
-    const flights = document.getElementById('atc-sub-flights');
-    if(audio)   audio.style.display   = name === 'audio'   ? '' : 'none';
-    if(flights) flights.style.display = name === 'flights' ? '' : 'none';
-    // Lazy-load flights iframe on first open
-    if(name === 'flights'){
-      const active = document.querySelector('#atc-sub-flights .flights-frame.active');
-      if(active && !active.src){
-        active.src = active.dataset.mode==='arrivals'
-          ? 'https://curacao-airport.com/flights/?type=arrivals'
-          : 'https://curacao-airport.com/flights/?type=departures';
-      }
-      // Render the live board (cached, so cheap on re-open)
-      if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
-    }
-  };
 
   // World tab sub-nav (overview only — dashboard removed)
   window.switchWorldSub = function(name, btn){
