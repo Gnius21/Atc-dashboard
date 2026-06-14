@@ -4846,17 +4846,14 @@ wireTabs(); wireTabKeys();
 })();
 
 /* ════════════════════════════════
-   NATIVE FLIGHT BOARD — reads data/flights.json (same-origin)
-   A GitHub Actions workflow (.github/workflows/flights.yml) refreshes that
-   file from AeroDataBox on a schedule via scripts/fetch-flights.mjs, so no
-   API key ever ships in this HTML. The board shows beside the official
-   airport page; if the file hasn't been generated yet it explains how to
-   enable it and the official iframe keeps working on its own.
+   NATIVE FLIGHT BOARD — calls AeroDataBox directly (RapidAPI)
+   One call per direction, cached 15 min in memory.
 ════════════════════════════════ */
-const FLIGHTS_JSON = 'data/flights.json';
-const FLIGHT_TTL   = 5 * 60 * 1000;   // re-read the JSON at most every 5 min
+const AERODATABOX_KEY  = 'fafc884e9emsh0432aeb81b1e3cap145cebjsn9b428d821746';
+const AERODATABOX_HOST = 'aerodatabox.p.rapidapi.com';
+const FLIGHT_TTL       = 15 * 60 * 1000;
 let _flightDir  = 'departures';
-let _flightData = null;               // { ts, payload }
+let _flightData = { departures:null, arrivals:null };  // {ts, rows}
 
 function _fmtHM(iso){
   if(!iso) return '—';
@@ -4875,14 +4872,43 @@ function _flightStatus(s){
   return {cls:'fb-st-soon', label:s||'Scheduled'};   // scheduled / unknown / default
 }
 
-async function fetchFlightData(){
-  if(_flightData && Date.now()-_flightData.ts < FLIGHT_TTL) return _flightData.payload;
-  // Cache-bust each minute so a fresh workflow commit shows up promptly.
-  const r = await fetch(`${FLIGHTS_JSON}?t=${Math.floor(Date.now()/60000)}`, {cache:'no-store'});
+function _flightWindow(){
+  const pad = n => String(n).padStart(2,'0');
+  const cur  = new Date(Date.now() - 4*3600*1000);  // Curaçao UTC-4
+  const from = new Date(cur.getTime() - 30*60*1000);
+  const to   = new Date(cur.getTime() + 11*3600*1000);
+  const f = d => `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}`;
+  return { from:f(from), to:f(to) };
+}
+
+async function fetchCuracaoFlights(direction){
+  const cached = _flightData[direction];
+  if(cached && Date.now()-cached.ts < FLIGHT_TTL) return cached.rows;
+  const {from,to} = _flightWindow();
+  const dir = direction==='arrivals' ? 'Arrival' : 'Departure';
+  const url = `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}` +
+    `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
+    `&withCargo=false&withPrivate=false&withLocation=false`;
+  const r = await fetch(url, {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}});
   if(!r.ok) throw new Error('HTTP '+r.status);
-  const payload = await r.json();
-  _flightData = { ts:Date.now(), payload };
-  return payload;
+  const data = await r.json();
+  const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
+  const rows = list.map(f=>{
+    const mv=f.movement||{}, ap=mv.airport||{};
+    return {
+      schedISO: mv.scheduledTime?.local||mv.scheduledTime?.utc||null,
+      revISO:   mv.revisedTime?.local||mv.revisedTime?.utc||null,
+      place:    ap.municipalityName||ap.name||ap.iata||'—',
+      iata:     ap.iata||'',
+      flightNo: (f.number||'').replace(/\s+/g,' ').trim()||'—',
+      airline:  f.airline?.name||'',
+      terminal: mv.terminal||'',
+      gate:     mv.gate||'',
+      status:   f.status||'',
+    };
+  }).sort((a,b)=>new Date(a.schedISO||0)-new Date(b.schedISO||0));
+  _flightData[direction]={ts:Date.now(),rows};
+  return rows;
 }
 
 async function renderFlightBoard(direction){
@@ -4891,25 +4917,10 @@ async function renderFlightBoard(direction){
   if(!el) return;
   setBadge('flightBoardBadge','LOADING','loading');
   try{
-    const data = await fetchFlightData();
-    const rows = (direction==='arrivals' ? data.arrivals : data.departures) || [];
-
-    if(upd){
-      upd.textContent = data.updated
-        ? 'Updated ' + new Date(data.updated).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'})
-        : '';
-    }
-
-    if(!data.updated){
-      el.innerHTML = `<div class="fb-notice">📋 The live board fills in automatically once the
-        <b>flight updater</b> runs (GitHub → Actions → “Update Curaçao flights”).<br><br>
-        Add the <code>AERODATABOX_KEY</code> repo secret, then run the workflow once.<br><br>
-        The official airport board on the right works now.</div>`;
-      setBadge('flightBoardBadge','SETUP','error');
-      return;
-    }
+    const rows = await fetchCuracaoFlights(direction);
+    if(upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
     if(!rows.length){
-      el.innerHTML = `<div class="fb-empty">No ${direction} in the next ~12 hours.</div>`;
+      el.innerHTML = `<div class=”fb-empty”>No ${direction} in the next ~12 hours.</div>`;
       setBadge('flightBoardBadge','LIVE');
       return;
     }
@@ -4920,29 +4931,29 @@ async function renderFlightBoard(direction){
       const tr = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
       const meta = [f.airline, f.terminal?('T'+f.terminal):'', f.gate?('Gate '+f.gate):'']
         .filter(Boolean).join(' · ');
-      return `<div class="fb-row">
-        <div class="fb-time">${t}${tr?`<span class="fb-time-rev">→ ${tr}</span>`:''}</div>
-        <div class="fb-mid">
-          <div class="fb-place">${rel} ${f.place}${f.iata?` (${f.iata})`:''}</div>
-          <div class="fb-meta"><span class="fb-flightno">${f.flightNo}</span>${meta?' · '+meta:''}</div>
+      return `<div class=”fb-row”>
+        <div class=”fb-time”>${t}${tr?`<span class=”fb-time-rev”>→ ${tr}</span>`:''}</div>
+        <div class=”fb-mid”>
+          <div class=”fb-place”>${rel} ${f.place}${f.iata?` (${f.iata})`:''}</div>
+          <div class=”fb-meta”><span class=”fb-flightno”>${f.flightNo}</span>${meta?' · '+meta:''}</div>
         </div>
-        <div class="fb-status ${st.cls}">${st.label}</div>
+        <div class=”fb-status ${st.cls}”>${st.label}</div>
       </div>`;
     }).join('');
     setBadge('flightBoardBadge','LIVE');
   }catch(err){
     if(upd) upd.textContent = '';
-    el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
+    el.innerHTML = `<div class=”fb-notice”>⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
     setBadge('flightBoardBadge','ERROR','error');
   }
 }
 
-// Manual refresh — drops the client cache and re-reads the JSON file
+// Manual refresh — clears the in-memory cache for the current direction
 (function wireFlightBoardRefresh(){
   const btn = document.getElementById('flightBoardRefresh');
   if(!btn) return;
   btn.addEventListener('click', ()=>{
-    _flightData = null;
+    _flightData[_flightDir] = null;
     btn.classList.add('spinning');
     Promise.resolve(renderFlightBoard(_flightDir)).finally(()=>{
       setTimeout(()=>btn.classList.remove('spinning'), 700);
