@@ -660,7 +660,7 @@ header::before{
 }
 
 .header-title{
-  font-family:var(--display);font-weight:700;font-size:.92rem;
+  font-family:var(--display);font-weight:700;font-size:1.08rem;
   letter-spacing:.28em;text-transform:uppercase;
   color:var(--accent-bright);
   text-shadow:0 0 24px rgba(155,212,255,0.35);
@@ -919,11 +919,11 @@ body.night .tab-bar::before{
 }
 
 .tab-btn{
-  flex:1;min-width:100px;
-  padding:13px 18px;
+  flex:1;min-width:108px;
+  padding:15px 20px;
   border:none;background:transparent;
   color:var(--text-dim);
-  font-family:var(--mono);font-weight:600;font-size:.82rem;
+  font-family:var(--mono);font-weight:600;font-size:.94rem;
   letter-spacing:.18em;text-transform:uppercase;
   cursor:pointer;
   border-radius:10px;
@@ -954,8 +954,8 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .tab-pane.active{display:block}
 
 .tab-key{
-  font-family:var(--mono);font-size:.62rem;letter-spacing:.5px;
-  padding:3px 6px;border-radius:4px;
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.5px;
+  padding:3px 7px;border-radius:4px;
   background:rgba(0,0,0,0.25);color:rgba(255,255,255,0.6);
   border:none;
   transition:all .3s;
@@ -2048,17 +2048,21 @@ body.night .tab-btn.active{
 /* ── WORLD OVERVIEW CARDS — redesigned ── */
 .world-ovr-card{
   display:grid;
-  grid-template-columns:72px 1fr;
+  grid-template-columns:88px 1fr;
   grid-template-rows:auto;
   align-items:start;
-  gap:0 14px;
-  padding:16px 18px;
+  gap:0 16px;
+  padding:20px 22px;
   cursor:default;position:relative;overflow:hidden;
   transition:transform .25s,box-shadow .25s;
+}
+.world-ovr-card{
+  background-image:linear-gradient(135deg,rgba(34,211,238,0.05),transparent 55%);
 }
 .world-ovr-card:hover{
   transform:translateY(-3px);
   box-shadow:0 12px 32px rgba(0,0,0,0.35),0 0 0 1px rgba(34,211,238,0.18);
+  background-image:linear-gradient(135deg,rgba(34,211,238,0.09),transparent 55%);
 }
 .world-ovr-card::before{
   content:'';position:absolute;left:0;top:0;right:0;height:2px;
@@ -2071,59 +2075,59 @@ body.night .tab-btn.active{
 .wov-left{
   grid-column:1;grid-row:1/99;
   display:flex;flex-direction:column;align-items:center;
-  gap:6px;padding-top:4px;
+  gap:8px;padding-top:4px;
 }
-.wov-icon{width:62px;height:62px;flex-shrink:0;}
-.wov-flag{font-size:1.4rem;line-height:1;}
+.wov-icon{width:76px;height:76px;flex-shrink:0;}
+.wov-flag{font-size:1.75rem;line-height:1;}
 
 /* Right column rows */
 .wov-header{
   display:flex;align-items:baseline;justify-content:space-between;
-  gap:6px;margin-bottom:2px;
+  gap:8px;margin-bottom:3px;
 }
 .wov-name{
-  font-family:var(--display);font-size:.82rem;font-weight:700;
+  font-family:var(--display);font-size:1.05rem;font-weight:700;
   color:var(--text);letter-spacing:.02em;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 .wov-sub{
-  font-family:var(--mono);font-size:.48rem;letter-spacing:.07em;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:.07em;
   color:var(--text-dim);white-space:nowrap;
 }
 .wov-localtime{
-  font-family:var(--mono);font-size:.72rem;font-weight:700;
+  font-family:var(--mono);font-size:.92rem;font-weight:700;
   color:var(--accent-bright);letter-spacing:.05em;white-space:nowrap;
   flex-shrink:0;
 }
 .wov-localtime.wov-night{color:#a78bfa;}  /* purple tint at night */
 
 .wov-temp-row{
-  display:flex;align-items:baseline;gap:8px;margin:4px 0 2px;
+  display:flex;align-items:baseline;gap:10px;margin:6px 0 3px;
 }
 .wov-temp{
-  font-family:var(--display);font-size:1.7rem;font-weight:700;
+  font-family:var(--display);font-size:2.3rem;font-weight:700;
   line-height:1;
   text-shadow:0 0 14px rgba(34,211,238,0.35);
 }
 .wov-feels{
-  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
-  padding-top:4px;
+  font-family:var(--mono);font-size:.66rem;color:var(--text-dim);
+  padding-top:5px;
 }
 .wov-cond{
-  font-family:var(--mono);font-size:.54rem;letter-spacing:.04em;
-  color:var(--text-dim);line-height:1.3;margin-bottom:6px;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
+  color:var(--text-dim);line-height:1.35;margin-bottom:8px;
 }
 .wov-stats{
-  display:flex;gap:12px;flex-wrap:wrap;
-  font-family:var(--mono);font-size:.5rem;color:var(--text-dim);
+  display:flex;gap:14px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.66rem;color:var(--text-dim);
 }
 .wov-stats span{white-space:nowrap;}
 .wov-icao{
-  font-family:var(--mono);font-size:.44rem;letter-spacing:.14em;
-  color:rgba(155,212,255,0.28);margin-top:6px;display:block;
+  font-family:var(--mono);font-size:.56rem;letter-spacing:.14em;
+  color:rgba(155,212,255,0.4);margin-top:8px;display:block;
 }
 .wov-daynight{
-  font-size:.7rem;line-height:1;opacity:.7;margin-top:2px;
+  font-size:.85rem;line-height:1;opacity:.7;margin-top:2px;
 }
 
 /* Grid: 3-col on wide, 2-col medium, 1-col narrow */
@@ -2180,26 +2184,26 @@ body.night .tab-btn.active{
 @media(max-width:720px){.wm-windy-row{grid-template-columns:1fr}}
 .world-modal-close:hover{color:var(--accent-bright);border-color:var(--border-bright)}
 .wm-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.wm-flag{font-size:1.8rem}
-.wm-name{font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--text)}
-.wm-sub{font-family:var(--mono);font-size:.55rem;color:var(--text-dim);letter-spacing:.08em}
-.wm-section{margin-top:13px}
-.wm-section-title{font-family:var(--mono);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px}
-.wm-raw{font-family:var(--mono);font-size:.62rem;color:var(--accent-bright);background:rgba(90,184,255,0.05);border:1px solid var(--border);border-radius:6px;padding:8px 10px;line-height:1.5;word-break:break-word}
-.wm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
-.wm-cell{border:1px solid var(--border);border-radius:6px;padding:7px 9px;background:rgba(255,255,255,0.02)}
-.wm-cell-lbl{font-family:var(--mono);font-size:.46rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
-.wm-cell-val{font-family:var(--display);font-size:.8rem;font-weight:600;color:var(--accent-bright);line-height:1.25}
-.wm-note{font-family:var(--mono);font-size:.48rem;color:var(--text-dim);margin-top:5px}
-.wm-fc-row{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.6rem;color:var(--text)}
+.wm-flag{font-size:2.3rem}
+.wm-name{font-family:var(--display);font-size:1.4rem;font-weight:700;color:var(--text)}
+.wm-sub{font-family:var(--mono);font-size:.72rem;color:var(--text-dim);letter-spacing:.08em}
+.wm-section{margin-top:18px}
+.wm-section-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:9px}
+.wm-raw{font-family:var(--mono);font-size:.82rem;color:var(--accent-bright);background:rgba(90,184,255,0.05);border:1px solid var(--border);border-radius:6px;padding:11px 13px;line-height:1.6;word-break:break-word}
+.wm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.wm-cell{border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:rgba(255,255,255,0.02)}
+.wm-cell-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);margin-bottom:5px}
+.wm-cell-val{font-family:var(--display);font-size:1.05rem;font-weight:600;color:var(--accent-bright);line-height:1.25}
+.wm-note{font-family:var(--mono);font-size:.62rem;color:var(--text-dim);margin-top:7px}
+.wm-fc-row{display:flex;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:.78rem;color:var(--text)}
 .wm-fc-row:last-child{border-bottom:none}
-.wm-fc-day{width:78px;font-weight:600;flex-shrink:0}
-.wm-fc-icon{width:26px;height:26px;flex-shrink:0}
-.wm-fc-temps{width:78px;flex-shrink:0}
+.wm-fc-day{width:96px;font-weight:600;flex-shrink:0}
+.wm-fc-icon{width:36px;height:36px;flex-shrink:0}
+.wm-fc-temps{width:92px;flex-shrink:0}
 .wm-fc-hi{color:var(--accent-bright);font-weight:700}
 .wm-fc-lo{color:var(--text-dim)}
-.wm-fc-rain{width:50px;flex-shrink:0;color:#22d3ee}
-.wm-fc-wind{width:64px;flex-shrink:0;color:#fbbf24}
+.wm-fc-rain{width:58px;flex-shrink:0;color:#22d3ee}
+.wm-fc-wind{width:74px;flex-shrink:0;color:#fbbf24}
 .wm-fc-cond{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim)}
 
 /* ── HEADER ── */
@@ -3651,7 +3655,7 @@ body.night .tab-btn.active{
 
 /* ── Wide desktop: world overview prefers 5 cards/row ── */
 @media(min-width:1200px){
-  #world-ovr-grid{grid-template-columns:repeat(auto-fit, minmax(min(100%,220px),1fr))!important}
+  #world-ovr-grid{grid-template-columns:repeat(auto-fit, minmax(min(100%,300px),1fr))!important}
   .layout{gap:18px;padding:20px 24px 40px}
 }
 
@@ -3660,12 +3664,12 @@ body.night .tab-btn.active{
   .col-6{grid-column:1/-1}
   .layout{gap:12px;padding:12px 14px 28px}
   header{height:50px;padding:0 10px;gap:8px}
-  .header-title{font-size:.56rem;letter-spacing:.16em}
-  .clock-time{font-size:.82rem}
+  .header-title{font-size:.7rem;letter-spacing:.16em}
+  .clock-time{font-size:1rem}
   .clock-block{padding:4px 8px}
-  .clock-label{font-size:.4rem}
+  .clock-label{font-size:.48rem}
   .taf-period,.taf-header-row{grid-template-columns:140px 56px 1fr 56px 1fr 70px}
-  .tab-btn{padding:9px 10px;font-size:.56rem;letter-spacing:.08em;gap:5px;min-width:60px}
+  .tab-btn{padding:10px 11px;font-size:.7rem;letter-spacing:.08em;gap:5px;min-width:68px}
   .tropics-lbl{display:none}
   .sync-indicator .sync-refresh-icon{display:none}
   /* ADS-B map shorter on tablet */
@@ -3700,7 +3704,7 @@ body.night .tab-btn.active{
     scrollbar-width:none;
   }
   .tab-bar::-webkit-scrollbar{display:none}
-  .tab-btn{padding:7px 8px;font-size:.5rem;letter-spacing:.06em;gap:3px;min-width:52px;flex-shrink:0;border-radius:7px}
+  .tab-btn{padding:8px 9px;font-size:.62rem;letter-spacing:.06em;gap:3px;min-width:60px;flex-shrink:0;border-radius:7px}
   .tab-key{display:none}
   .btn{padding:5px 9px;font-size:.58rem}
   /* Header actions */
@@ -3737,7 +3741,7 @@ body.night .tab-btn.active{
   .header-pill{display:none}
   /* Keep sync-indicator but hide text, show icon only */
   #syncTime{display:none}
-  .tab-btn{padding:6px 6px;font-size:.48rem;min-width:46px}
+  .tab-btn{padding:7px 7px;font-size:.58rem;min-width:54px}
   .wx-bar{height:40px}
   .wx-bar-cell{padding:0 6px;gap:4px}
   .wx-bar-flag{font-size:1rem}
@@ -5987,7 +5991,7 @@ async function openWorldModal(icao){
     </div>`;
   modal.style.display='flex';
   modal.dataset.icao = icao;
-  body.innerHTML = hdr + `<div style="font-family:var(--mono);font-size:.6rem;color:var(--text-dim);padding:14px 2px">Loading live data…</div>`;
+  body.innerHTML = hdr + `<div style="font-family:var(--mono);font-size:.76rem;color:var(--text-dim);padding:16px 2px">Loading live data…</div>`;
 
   let c = _worldDetailCache[icao];
   if(!c || Date.now()-c.ts > 10*60*1000){
@@ -6031,7 +6035,7 @@ async function openWorldModal(icao){
       </div>
       <div class="wm-note">CheckWX · Observed ${m.observed?fmtUTC(m.observed):'—'}</div>`;
   }else{
-    metarHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">METAR unavailable for ${icao}.</div>`;
+    metarHtml = `<div style="font-family:var(--mono);font-size:.74rem;color:var(--text-dim)">METAR unavailable for ${icao}.</div>`;
   }
 
   // ── CURRENT WEATHER DETAILS ──
@@ -6043,10 +6047,10 @@ async function openWorldModal(icao){
     const wmo = mapWeatherApiToWMO(cur.condition?.code, cur.condition?.text||'');
     const localtime = c.fc?.location?.localtime?.split(' ')[1] || '';
     curHtml = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <span style="display:inline-block;width:40px;height:40px;flex-shrink:0">${animatedWeatherSVG(wmo)}</span>
-        <span style="font-family:var(--display);font-size:.85rem;color:var(--text)">${cur.condition?.text||'—'}</span>
-        ${localtime?`<span style="margin-left:auto;font-family:var(--mono);font-size:.6rem;color:var(--text-dim)">Local ${localtime}</span>`:''}
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+        <span style="display:inline-block;width:54px;height:54px;flex-shrink:0">${animatedWeatherSVG(wmo)}</span>
+        <span style="font-family:var(--display);font-size:1.15rem;color:var(--text)">${cur.condition?.text||'—'}</span>
+        ${localtime?`<span style="margin-left:auto;font-family:var(--mono);font-size:.78rem;color:var(--text-dim)">Local ${localtime}</span>`:''}
       </div>
       <div class="wm-grid">
         ${wmCell('Temp', cur.temp_c!=null?Math.round(cur.temp_c)+'°C':'—')}
@@ -6059,7 +6063,7 @@ async function openWorldModal(icao){
         ${wmCell('Pressure', cur.pressure_mb!=null?cur.pressure_mb+' mb':'—')}
       </div>`;
   }else{
-    curHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">Weather details unavailable.</div>`;
+    curHtml = `<div style="font-family:var(--mono);font-size:.74rem;color:var(--text-dim)">Weather details unavailable.</div>`;
   }
 
   // ── 3-DAY FORECAST ──
@@ -6083,7 +6087,7 @@ async function openWorldModal(icao){
       </div>`;
     }).join('');
   }else{
-    fcHtml = `<div style="font-family:var(--mono);font-size:.58rem;color:var(--text-dim)">Forecast unavailable.</div>`;
+    fcHtml = `<div style="font-family:var(--mono);font-size:.74rem;color:var(--text-dim)">Forecast unavailable.</div>`;
   }
 
   const windyBase = (overlay) =>
