@@ -1455,28 +1455,30 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 @media(max-width:900px){ .flights-split{grid-template-columns:1fr} }
 .fb-panel{
   display:flex;flex-direction:column;
-  height:calc(100vh - 170px);min-height:500px;
+  height:calc(100vh - 170px);min-height:540px;
   border:1px solid var(--border-hi);
   border-radius:var(--radius-lg);
   background:linear-gradient(180deg,var(--panel),var(--bg2));
   overflow:hidden;
   box-shadow:inset 0 0 80px rgba(0,0,0,0.5),0 0 0 1px rgba(34,211,238,0.06);
 }
-@media(max-width:900px){ .fb-panel{height:560px;min-height:0} }
+@media(max-width:900px){ .fb-panel{height:580px;min-height:0} }
+
+/* Board header */
 .fb-head{
   display:flex;align-items:center;gap:10px;
-  padding:10px 14px;border-bottom:1px solid var(--border);
-  background:linear-gradient(180deg,rgba(34,211,238,0.06),transparent);
+  padding:11px 16px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(34,211,238,0.07),transparent);
   flex-shrink:0;
 }
 .fb-head-title{
-  font-family:var(--display);font-size:.8rem;font-weight:700;letter-spacing:.08em;
+  font-family:var(--display);font-size:.82rem;font-weight:700;letter-spacing:.08em;
   color:var(--accent-bright);display:flex;align-items:center;gap:8px;
 }
 .fb-refresh{
   margin-left:auto;background:none;border:1px solid var(--border-hi);
-  color:var(--accent);border-radius:6px;width:28px;height:28px;cursor:pointer;
-  font-size:1.05rem;line-height:1;transition:background .2s;
+  color:var(--accent);border-radius:6px;width:30px;height:30px;cursor:pointer;
+  font-size:1.1rem;line-height:1;transition:background .2s;
 }
 .fb-refresh:hover{background:var(--accent-glow)}
 .fb-refresh.spinning{animation:refreshSpinAll .9s linear infinite}
@@ -1485,60 +1487,116 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   letter-spacing:.06em;color:var(--text-dim);white-space:nowrap;
 }
 .fb-updated + .fb-refresh{margin-left:8px}
-.subscription-info{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:6px 14px;border-bottom:1px solid var(--border);
-  background:rgba(34,211,238,0.03);
-  font-size:.7rem;font-family:var(--mono);
-  flex-shrink:0;
+
+/* Column header row */
+.fb-col-hdr{
+  display:grid;
+  grid-template-columns:4px 100px 1fr 68px 56px 90px;
+  gap:0 10px;padding:6px 14px 6px 0;
+  border-bottom:2px solid rgba(34,211,238,0.18);
+  font-family:var(--mono);font-size:.48rem;letter-spacing:.14em;
+  color:rgba(155,212,255,.45);text-transform:uppercase;flex-shrink:0;
 }
-.subscription-label{
-  color:var(--text-dim);font-weight:500;
+@media(max-width:500px){
+  .fb-col-hdr{grid-template-columns:4px 1fr 72px 80px;gap:0 8px}
+  .fb-col-gate,.fb-col-airline{display:none}
 }
-.subscription-value{
-  color:var(--cyan);font-weight:600;
-}
-.fb-list{flex:1;overflow-y:auto;padding:4px}
+
+/* Scrollable list */
+.fb-list{flex:1;overflow-y:auto;padding:0}
+.fb-list::-webkit-scrollbar{width:4px}
+.fb-list::-webkit-scrollbar-thumb{background:rgba(34,211,238,0.2);border-radius:2px}
+
+/* Flight row */
 .fb-row{
-  display:grid;grid-template-columns:58px 1fr auto;
-  gap:10px;align-items:center;
-  padding:9px 10px;border-bottom:1px solid var(--border);
+  display:grid;
+  grid-template-columns:4px 100px 1fr 68px 56px 90px;
+  gap:0 10px;align-items:center;
+  padding:11px 14px 11px 0;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .15s;position:relative;
 }
+.fb-row:hover{background:rgba(34,211,238,.035)}
 .fb-row:last-child{border-bottom:none}
-.fb-row:hover{background:rgba(34,211,238,0.04)}
-.fb-time{
-  font-family:var(--mono);font-weight:700;font-size:.86rem;color:var(--accent-bright);
-  font-variant-numeric:tabular-nums;line-height:1.1;
+@media(max-width:500px){
+  .fb-row{grid-template-columns:4px 1fr 72px 80px;gap:0 8px}
+  .fb-gate-cell,.fb-airline{display:none}
 }
-.fb-time-rev{display:block;font-size:.52rem;color:var(--amber);font-weight:600;margin-top:2px}
-.fb-mid{min-width:0}
+
+/* Left status stripe */
+.fb-bar{width:4px;align-self:stretch;border-radius:0 2px 2px 0;flex-shrink:0;}
+.fb-bar-active{background:#22d3ee;box-shadow:0 0 8px #22d3ee88}
+.fb-bar-soon  {background:#4ade80}
+.fb-bar-delay {background:#fbbf24;box-shadow:0 0 8px #fbbf2466}
+.fb-bar-cancel{background:#f87171;box-shadow:0 0 6px #f8717166}
+.fb-bar-done  {background:rgba(255,255,255,.12)}
+
+/* Flight number + airline */
+.fb-fno-cell{min-width:0;display:flex;flex-direction:column;gap:2px;padding-left:2px}
+.fb-flightno{
+  font-family:var(--display);font-size:1rem;font-weight:700;
+  color:var(--accent-bright);letter-spacing:.02em;white-space:nowrap;
+}
+.fb-airline{
+  font-family:var(--mono);font-size:.55rem;color:var(--text-dim);
+  letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Destination / origin */
+.fb-dest-cell{min-width:0;display:flex;flex-direction:column;gap:2px}
 .fb-place{
-  font-family:var(--display);font-weight:600;font-size:.82rem;color:var(--text);
+  font-family:var(--display);font-weight:600;font-size:.88rem;color:var(--text);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.fb-meta{
-  font-family:var(--mono);font-size:.56rem;color:var(--text-dim);margin-top:3px;
-  letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.fb-iata-tag{
+  display:inline-block;font-family:var(--mono);font-size:.52rem;font-weight:700;
+  color:var(--accent);letter-spacing:.06em;
+  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);
+  border-radius:3px;padding:1px 5px;margin-top:1px;
 }
-.fb-flightno{color:var(--accent);font-weight:600}
+
+/* Time */
+.fb-time-cell{text-align:center;min-width:0}
+.fb-time{
+  font-family:var(--mono);font-weight:700;font-size:1rem;
+  color:var(--accent-bright);font-variant-numeric:tabular-nums;display:block;
+}
+.fb-time-rev{
+  display:block;font-family:var(--mono);font-size:.54rem;
+  color:#fbbf24;font-weight:600;margin-top:2px;font-variant-numeric:tabular-nums;
+}
+
+/* Gate */
+.fb-gate-cell{text-align:center;min-width:0}
+.fb-gate{
+  font-family:var(--mono);font-size:.64rem;font-weight:600;
+  color:var(--text-dim);letter-spacing:.05em;
+}
+
+/* Status badge */
 .fb-status{
-  font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.05em;
-  text-transform:uppercase;text-align:center;padding:3px 8px;border-radius:5px;
-  white-space:nowrap;border:1px solid currentColor;
+  font-family:var(--mono);font-size:.54rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;text-align:center;
+  padding:4px 7px;border-radius:5px;white-space:nowrap;
+  border:1px solid currentColor;
 }
-.fb-st-done{color:var(--text-dim)}
-.fb-st-active{color:#22d3ee;box-shadow:0 0 10px rgba(34,211,238,0.18)}
-.fb-st-soon{color:#4ade80}
-.fb-st-delay{color:#fbbf24;box-shadow:0 0 10px rgba(251,191,36,0.2)}
-.fb-st-cancel{color:#f87171;box-shadow:0 0 10px rgba(248,113,113,0.22)}
+.fb-st-done  {color:var(--text-dim);border-color:rgba(255,255,255,.12)}
+.fb-st-active{color:#22d3ee;border-color:rgba(34,211,238,.45);box-shadow:0 0 10px rgba(34,211,238,.18)}
+.fb-st-soon  {color:#4ade80;border-color:rgba(74,222,128,.35)}
+.fb-st-delay {color:#fbbf24;border-color:rgba(251,191,36,.4);box-shadow:0 0 10px rgba(251,191,36,.18)}
+.fb-st-cancel{color:#f87171;border-color:rgba(248,113,113,.4);box-shadow:0 0 10px rgba(248,113,113,.18)}
+
 .fb-empty,.fb-notice{
-  padding:26px 18px;text-align:center;font-family:var(--mono);font-size:.62rem;
+  padding:30px 20px;text-align:center;font-family:var(--mono);font-size:.62rem;
   color:var(--text-dim);line-height:1.8;
 }
-.fb-notice a{color:var(--accent)}
 .fb-notice b{color:var(--accent-bright)}
 .fb-notice code{color:var(--accent-bright);background:rgba(0,0,0,0.4);padding:1px 6px;border-radius:3px}
-.flights-split .rwc-frame-wrap{height:calc(100vh - 170px);min-height:500px}
+
+/* Subscription info (kept for compat, now hidden) */
+.subscription-info{display:none}
+
+.flights-split .rwc-frame-wrap{height:calc(100vh - 170px);min-height:540px}
 @media(max-width:900px){ .flights-split .rwc-frame-wrap{height:560px;min-height:0} }
 
 /* ── ACTIVE TAB — multi-layer effect ── */
@@ -4911,6 +4969,14 @@ async function fetchCuracaoFlights(direction){
   return rows;
 }
 
+const _barCls = {
+  'fb-st-active':'fb-bar-active',
+  'fb-st-soon'  :'fb-bar-soon',
+  'fb-st-delay' :'fb-bar-delay',
+  'fb-st-cancel':'fb-bar-cancel',
+  'fb-st-done'  :'fb-bar-done',
+};
+
 async function renderFlightBoard(direction){
   const el  = document.getElementById('flightBoard');
   const upd = document.getElementById('flightBoardUpdated');
@@ -4924,22 +4990,42 @@ async function renderFlightBoard(direction){
       setBadge('flightBoardBadge','LIVE');
       return;
     }
-    const rel = direction==='arrivals' ? 'from' : 'to';
-    el.innerHTML = rows.map(f=>{
-      const st = _flightStatus(f.status);
-      const t  = _fmtHM(f.schedISO);
-      const tr = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
-      const meta = [f.airline, f.terminal?('T'+f.terminal):'', f.gate?('Gate '+f.gate):'']
-        .filter(Boolean).join(' · ');
+    const isArr = direction==='arrivals';
+    const colHdr = `<div class=”fb-col-hdr”>
+      <span></span>
+      <span>Flight</span>
+      <span>${isArr ? 'From' : 'To'}</span>
+      <span style=”text-align:center”>Time</span>
+      <span class=”fb-col-gate” style=”text-align:center”>Gate</span>
+      <span style=”text-align:center”>Status</span>
+    </div>`;
+    const rowsHtml = rows.map(f=>{
+      const st  = _flightStatus(f.status);
+      const bar = _barCls[st.cls] || 'fb-bar-done';
+      const t   = _fmtHM(f.schedISO);
+      const tr  = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
+      const gate = [f.terminal?'T'+f.terminal:'', f.gate?f.gate:''].filter(Boolean).join(' ');
       return `<div class=”fb-row”>
-        <div class=”fb-time”>${t}${tr?`<span class=”fb-time-rev”>→ ${tr}</span>`:''}</div>
-        <div class=”fb-mid”>
-          <div class=”fb-place”>${rel} ${f.place}${f.iata?` (${f.iata})`:''}</div>
-          <div class=”fb-meta”><span class=”fb-flightno”>${f.flightNo}</span>${meta?' · '+meta:''}</div>
+        <div class=”fb-bar ${bar}”></div>
+        <div class=”fb-fno-cell”>
+          <span class=”fb-flightno”>${f.flightNo}</span>
+          <span class=”fb-airline”>${f.airline||'—'}</span>
+        </div>
+        <div class=”fb-dest-cell”>
+          <span class=”fb-place”>${f.place}</span>
+          ${f.iata?`<span class=”fb-iata-tag”>${f.iata}</span>`:''}
+        </div>
+        <div class=”fb-time-cell”>
+          <span class=”fb-time”>${t}</span>
+          ${tr?`<span class=”fb-time-rev”>→ ${tr}</span>`:''}
+        </div>
+        <div class=”fb-gate-cell”>
+          <span class=”fb-gate”>${gate||'—'}</span>
         </div>
         <div class=”fb-status ${st.cls}”>${st.label}</div>
       </div>`;
     }).join('');
+    el.innerHTML = colHdr + rowsHtml;
     setBadge('flightBoardBadge','LIVE');
   }catch(err){
     if(upd) upd.textContent = '';
