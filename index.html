@@ -1581,6 +1581,92 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .fb-st-delay  .fb-card-badge{color:#fbbf24;border-color:rgba(251,191,36,.45)}
 .fb-st-cancel .fb-card-badge{color:#f87171;border-color:rgba(248,113,113,.4)}
 
+/* Destination weather chip */
+.fb-card-wx{
+  display:none;align-items:center;gap:3px;flex-shrink:0;
+  font-family:var(--mono);font-size:.66rem;font-weight:700;color:var(--text);
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:6px;padding:1px 6px 1px 3px;
+}
+.fb-card-wx.show{display:inline-flex}
+.fb-wx-ic{display:inline-flex;width:20px;height:20px;flex-shrink:0}
+.fb-wx-ic svg{width:100%;height:100%}
+.fb-wx-t{font-variant-numeric:tabular-nums;letter-spacing:.01em}
+
+/* Summary stats strip */
+.fb-stats{
+  display:flex;flex-wrap:wrap;gap:7px;align-items:center;
+  padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);
+  background:linear-gradient(180deg,rgba(34,211,238,.05),transparent);
+}
+.fb-stat{
+  font-family:var(--mono);font-size:.58rem;font-weight:600;letter-spacing:.04em;
+  color:var(--text-dim);text-transform:uppercase;
+  padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.03);white-space:nowrap;
+}
+.fb-stat b{font-family:var(--display);font-size:.82rem;font-weight:800;color:var(--text)}
+.fb-stat-total{border-color:rgba(34,211,238,.3)}
+.fb-stat-total b{color:var(--accent-bright)}
+.fb-stat-ok{border-color:rgba(74,222,128,.3)} .fb-stat-ok b{color:#4ade80}
+.fb-stat-active{border-color:rgba(34,211,238,.35)} .fb-stat-active b{color:#22d3ee}
+.fb-stat-delay{border-color:rgba(251,191,36,.35)} .fb-stat-delay b{color:#fbbf24}
+.fb-stat-cancel{border-color:rgba(248,113,113,.35)} .fb-stat-cancel b{color:#f87171}
+
+/* Next-flight hero */
+.fb-hero{
+  margin:0;border-bottom:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(120% 140% at 100% 0%,rgba(34,211,238,.16),transparent 60%),
+    linear-gradient(180deg,rgba(34,211,238,.06),rgba(0,0,0,.12));
+  border-left:3px solid #22d3ee;
+}
+.fb-hero.fb-st-delay{border-left-color:#fbbf24;background:radial-gradient(120% 140% at 100% 0%,rgba(251,191,36,.16),transparent 60%),linear-gradient(180deg,rgba(251,191,36,.06),rgba(0,0,0,.12))}
+.fb-hero.fb-st-active{border-left-color:#22d3ee}
+.fb-hero-tag{
+  font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-bright);
+  padding:8px 16px 0;
+}
+.fb-hero-body{display:flex;align-items:center;gap:14px;padding:7px 16px 14px}
+.fb-hero .fb-logo{width:60px;height:60px;border-radius:13px}
+.fb-hero .fb-logo img{width:52px;height:52px}
+.fb-hero-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.fb-hero-fno{
+  font-family:var(--display);font-size:1.65rem;font-weight:800;line-height:1;
+  color:#fff;letter-spacing:.01em;white-space:nowrap;
+}
+.fb-hero-route{display:flex;align-items:center;gap:7px;min-width:0;flex-wrap:wrap}
+.fb-hero-orig{font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--text-dim)}
+.fb-hero-arrow{color:var(--accent);font-size:.8rem}
+.fb-hero-iata{
+  font-family:var(--mono);font-size:.62rem;font-weight:700;color:var(--accent);
+  background:rgba(34,211,238,.14);border:1px solid rgba(34,211,238,.3);
+  border-radius:4px;padding:1px 6px;
+}
+.fb-hero-city{
+  font-family:var(--display);font-size:1.15rem;font-weight:600;color:var(--text);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+}
+.fb-hero-aln{font-family:var(--mono);font-size:.6rem;color:var(--text-dim);letter-spacing:.05em;text-transform:uppercase}
+.fb-hero-side{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.fb-hero-time{
+  font-family:var(--mono);font-size:1.9rem;font-weight:700;line-height:1;
+  color:var(--accent-bright);font-variant-numeric:tabular-nums;
+}
+.fb-hero-count{
+  font-family:var(--mono);font-size:.66rem;font-weight:700;letter-spacing:.04em;
+  color:#fff;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.35);
+  border-radius:20px;padding:2px 10px;
+}
+@media(max-width:500px){
+  .fb-hero-fno{font-size:1.35rem}
+  .fb-hero-time{font-size:1.5rem}
+  .fb-hero-city{font-size:1rem}
+  .fb-hero .fb-logo{width:50px;height:50px}
+  .fb-hero .fb-logo img{width:43px;height:43px}
+}
+
 @media(max-width:500px){
   .fb-card{gap:10px;padding:11px 12px 11px 11px}
   .fb-logo{width:44px;height:44px;border-radius:9px}
@@ -5054,18 +5140,20 @@ async function fetchCuracaoFlights(direction){
   const dir = direction==='arrivals' ? 'Arrival' : 'Departure';
   const url = `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}` +
     `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
-    `&withCargo=false&withPrivate=false&withLocation=false`;
+    `&withCargo=false&withPrivate=false&withLocation=true`;
   const r = await fetch(url, {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}});
   if(!r.ok) throw new Error('HTTP '+r.status);
   const data = await r.json();
   const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
   const rows = list.map(f=>{
-    const mv=f.movement||{}, ap=mv.airport||{};
+    const mv=f.movement||{}, ap=mv.airport||{}, loc=ap.location||{};
     return {
       schedISO: mv.scheduledTime?.local||mv.scheduledTime?.utc||null,
       revISO:   mv.revisedTime?.local||mv.revisedTime?.utc||null,
       place:    ap.municipalityName||ap.name||ap.iata||'—',
       iata:     ap.iata||'',
+      lat:      (typeof loc.lat==='number') ? loc.lat : null,
+      lon:      (typeof loc.lon==='number') ? loc.lon : null,
       flightNo: (f.number||'').replace(/\s+/g,' ').trim()||'—',
       airline:  f.airline?.name||'',
       terminal: mv.terminal||'',
@@ -5096,6 +5184,134 @@ function _airlineLogo(flightNo){
     + `</div>`;
 }
 
+// Best-known time for a flight: revised if present, else scheduled.
+function _effTime(f){
+  const iso = f.revISO || f.schedISO;
+  const d = iso ? new Date(iso) : null;
+  return (d && !isNaN(d)) ? d.getTime() : null;
+}
+
+// Summary chips: counts of on-time / active / delayed / cancelled.
+function _fbStatsHTML(rows){
+  let onTime=0, active=0, delay=0, cancel=0;
+  rows.forEach(f=>{
+    const c=_flightStatus(f.status).cls;
+    if(c==='fb-st-cancel') cancel++;
+    else if(c==='fb-st-delay') delay++;
+    else if(c==='fb-st-active') active++;
+    else onTime++;
+  });
+  const chip=(n,lbl,cls)=> n ? `<span class="fb-stat ${cls}"><b>${n}</b> ${lbl}</span>` : '';
+  return `<div class="fb-stats">
+    <span class="fb-stat fb-stat-total"><b>${rows.length}</b> flights</span>
+    ${chip(onTime,'on time','fb-stat-ok')}
+    ${chip(active,'active','fb-stat-active')}
+    ${chip(delay,'delayed','fb-stat-delay')}
+    ${chip(cancel,'cancelled','fb-stat-cancel')}
+  </div>`;
+}
+
+// Human countdown to a flight's effective time.
+function _countdownText(targetMs){
+  if(targetMs==null) return '';
+  const diff = targetMs - Date.now();
+  const m = Math.round(diff/60000);
+  if(m <= -3)  return 'departed';
+  if(m <= 1)   return 'now';
+  if(m < 60)   return `in ${m} min`;
+  const h=Math.floor(m/60), r=m%60;
+  return r ? `in ${h}h ${r}m` : `in ${h}h`;
+}
+
+// Pick the soonest still-upcoming, non-cancelled flight for the hero card.
+function _pickHero(rows){
+  const now = Date.now();
+  let best=null;
+  for(const f of rows){
+    const c=_flightStatus(f.status).cls;
+    if(c==='fb-st-cancel' || c==='fb-st-done') continue;
+    const t=_effTime(f);
+    if(t==null || t < now - 5*60000) continue;
+    if(!best || t < _effTime(best)) best=f;
+  }
+  return best;
+}
+
+function _fbHeroHTML(f, isArr){
+  const st  = _flightStatus(f.status);
+  const t   = _fmtHM(f.revISO || f.schedISO);
+  const tgt = _effTime(f);
+  const wxSlot = (f.lat!=null && f.lon!=null)
+    ? `<span class="fb-card-wx fb-hero-wx" data-wxkey="${_wxKey(f.lat,f.lon)}"></span>` : '';
+  const dir = isArr ? '🛬' : '🛫';
+  return `<div class="fb-hero ${st.cls}">
+    <div class="fb-hero-tag">${isArr?'Next arrival':'Next departure'}</div>
+    <div class="fb-hero-body">
+      ${_airlineLogo(f.flightNo)}
+      <div class="fb-hero-main">
+        <div class="fb-hero-fno">${dir} ${f.flightNo}</div>
+        <div class="fb-hero-route">
+          ${isArr?'':'<span class="fb-hero-orig">CUR</span><span class="fb-hero-arrow">→</span>'}
+          ${f.iata?`<span class="fb-hero-iata">${f.iata}</span>`:''}
+          <span class="fb-hero-city">${f.place}</span>
+          ${isArr?'<span class="fb-hero-arrow">→</span><span class="fb-hero-orig">CUR</span>':''}
+          ${wxSlot}
+        </div>
+        <div class="fb-hero-aln">${f.airline||''}</div>
+      </div>
+      <div class="fb-hero-side">
+        <span class="fb-hero-time">${t}</span>
+        <span class="fb-hero-count" data-target="${tgt||''}">${_countdownText(tgt)}</span>
+        <span class="fb-card-badge">${st.label}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Destination weather (Open-Meteo, free, batched) ──
+function _wxKey(lat,lon){ return `${(+lat).toFixed(2)},${(+lon).toFixed(2)}`; }
+const _destWx = {};                 // key -> {temp, code, ts}
+const DESTWX_TTL = 30 * 60 * 1000;
+
+async function decorateDestWeather(rows){
+  const need = {};
+  rows.forEach(f=>{
+    if(f.lat==null || f.lon==null) return;
+    const k=_wxKey(f.lat,f.lon), c=_destWx[k];
+    if(!(c && Date.now()-c.ts < DESTWX_TTL)) need[k]=[f.lat,f.lon];
+  });
+  const keys = Object.keys(need);
+  if(keys.length){
+    const lats=keys.map(k=>need[k][0]).join(',');
+    const lons=keys.map(k=>need[k][1]).join(',');
+    try{
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code&timezone=auto`);
+      if(r.ok){
+        const d=await r.json();
+        const arr=Array.isArray(d)?d:[d];
+        keys.forEach((k,i)=>{
+          const o=arr[i];
+          if(o && o.current) _destWx[k]={temp:Math.round(o.current.temperature_2m), code:o.current.weather_code, ts:Date.now()};
+        });
+      }
+    }catch(e){ /* leave slots empty on failure */ }
+  }
+  document.querySelectorAll('.fb-card-wx[data-wxkey]').forEach(slot=>{
+    const w=_destWx[slot.dataset.wxkey];
+    if(!w) return;
+    slot.innerHTML = `<span class="fb-wx-ic">${animatedWeatherSVG(w.code)}</span><span class="fb-wx-t">${w.temp}°</span>`;
+    slot.classList.add('show');
+  });
+}
+
+// Tick the hero countdown every 30s without re-fetching.
+setInterval(()=>{
+  document.querySelectorAll('.fb-hero-count[data-target]').forEach(el=>{
+    const t=parseInt(el.dataset.target,10);
+    if(t) el.textContent=_countdownText(t);
+  });
+}, 30000);
+
 async function renderFlightBoard(direction){
   const el  = document.getElementById('flightBoard');
   const upd = document.getElementById('flightBoardUpdated');
@@ -5110,12 +5326,15 @@ async function renderFlightBoard(direction){
       return;
     }
     const isArr = direction==='arrivals';
+    const hero  = _pickHero(rows);
     const rowsHtml = rows.map(f=>{
       const st   = _flightStatus(f.status);
       const t    = _fmtHM(f.schedISO);
       const tr   = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
       const gate = [f.terminal?'T'+f.terminal:'', f.gate||''].filter(Boolean).join(' · ');
       const dir  = isArr ? '🛬' : '🛫';
+      const wxSlot = (f.lat!=null && f.lon!=null)
+        ? `<span class="fb-card-wx" data-wxkey="${_wxKey(f.lat,f.lon)}"></span>` : '';
       return `<div class="fb-card ${st.cls}">
         ${_airlineLogo(f.flightNo)}
         <div class="fb-card-main">
@@ -5127,6 +5346,7 @@ async function renderFlightBoard(direction){
           <div class="fb-card-r2">
             ${f.iata?`<span class="fb-card-iata">${f.iata}</span>`:''}
             <span class="fb-card-city">${f.place}</span>
+            ${wxSlot}
             ${gate?`<span class="fb-card-gate">🚪 ${gate}</span>`:''}
           </div>
         </div>
@@ -5137,8 +5357,11 @@ async function renderFlightBoard(direction){
         </div>
       </div>`;
     }).join('');
-    el.innerHTML = rowsHtml;
+    el.innerHTML = _fbStatsHTML(rows)
+      + (hero ? _fbHeroHTML(hero, isArr) : '')
+      + rowsHtml;
     setBadge('flightBoardBadge','LIVE');
+    decorateDestWeather(rows);
   }catch(err){
     if(upd) upd.textContent = '';
     el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
