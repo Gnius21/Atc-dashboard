@@ -3224,6 +3224,7 @@ body.night .tab-btn.active{
   grid-template-columns:18px 32px 1fr 36px 44px;
   gap:5px;align-items:center;
 }
+.fd-data-dim{opacity:.45}
 .fd-data-icon{font-size:1rem;line-height:1;text-align:center}
 .fd-data-label{
   font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;
@@ -7525,10 +7526,17 @@ function buildCurrentWxCard(loc, wxapi, models, aqiCol, aqiL){
   const uv   = cur.uv!=null ? Math.round(cur.uv) : null;
   const vis  = cur.vis_km!=null ? Math.round(cur.vis_km) : null;
   const press= cur.pressure_mb!=null ? Math.round(cur.pressure_mb) : null;
+  const rainPctCur = Math.round(
+    blendModelValues(models,'precipitation_probability_max',0).mean
+    ?? day0.daily_chance_of_rain
+    ?? 0
+  );
+  const rainColCur = rainPctCur>=70?'#5ab8ff':rainPctCur>=40?'#22d3ee':rainPctCur>=20?'#9bd4ff':'var(--text-dim)';
 
   const stats = [
     hum!=null   ? `<span class="fc-cur-stat">💧 ${hum}%</span>` : '',
     windKt!=null? `<span class="fc-cur-stat">💨 ${windKt}kt ${windDir}${gustKt>windKt+2?` G${gustKt}`:''}</span>` : '',
+    `<span class="fc-cur-stat" style="color:${rainColCur}">🌧 ${rainPctCur}%</span>`,
     uv!=null    ? `<span class="fc-cur-stat">☀️ UV ${uv}</span>` : '',
     vis!=null   ? `<span class="fc-cur-stat">👁 ${vis}km</span>` : '',
     press!=null ? `<span class="fc-cur-stat">🔵 ${press}mb</span>` : '',
@@ -7591,9 +7599,9 @@ function buildHourlyStrip(day0, icao, day1){
     const windKt = Math.round((h.wind_kph||0)*0.539957);
     const gustKt = Math.round((h.gust_kph||h.wind_kph||0)*0.539957);
     const dewC   = h.dewpoint_c !== undefined ? Math.round(h.dewpoint_c) : null;
-    const rainH  = rain>=40 ? Math.round(((precip??0)/maxPrecip)*36) : 0; // rain bar only at ≥40% chance
+    const rainH  = rain > 0 ? Math.max(2, Math.round(((precip??0)/maxPrecip)*36)) : 0;
     const windH  = Math.round((windKt/maxWind)*28);
-    const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':'rgba(34,211,238,0.25)';
+    const rainCol= rain>=70?'#5ab8ff':rain>=40?'#22d3ee':rain>=20?'rgba(34,211,238,.55)':'rgba(34,211,238,0.2)';
     const windCol= gustKt>=25?'#f87171':gustKt>=18?'#fbbf24':'rgba(34,211,238,0.45)';
     const gustBar= gustKt>windKt+3 ? `<div class="hourly-bar-gust" style="height:${Math.round((gustKt/maxWind)*28)}px;background:${windCol}" title="Gust ${gustKt} kt"></div>` : '';
 
@@ -7607,7 +7615,7 @@ function buildHourlyStrip(day0, icao, day1){
         <div class="hourly-bar-wind" style="height:${Math.max(2,windH)}px;background:${windCol}" title="${windKt} kt"></div>
         ${gustBar}
       </div>
-      <div class="hourly-rain">${rain>=40?rain+'%':''}</div>
+      <div class="hourly-rain" style="color:${rainCol};opacity:${rain<20?.45:1}">${rain>0?rain+'%':'—'}</div>
       <div class="hourly-wind" style="color:${windCol}">${windKt}${gustKt>windKt+3?'<span style="opacity:.6;font-size:.42rem"> G'+gustKt+'</span>':''}</div>
     </div>`;
   }).join('');
@@ -7625,18 +7633,19 @@ function buildHourlyStrip(day0, icao, day1){
      (max-min) as a confidence indicator.
    - WeatherAPI stays as the source for AQI, alerts, hourly text/icon.
 ════════════════════════════════ */
-// Open-Meteo ensemble — 6 global models with good Caribbean coverage.
-// GEM (Canada), MeteoFrance, ECMWF, GFS, ICON, UKMO.
-// Excludes polar/regional models (HRRR, MetNO) that don't cover tropics well.
+// Open-Meteo ensemble — 10 global models with good Caribbean coverage.
+// Excludes polar/regional models (HRRR, MetNO, COSMO-EU) that don't cover tropics well.
 const FCAST_MODELS = [
-  'ecmwf_ifs025',      // ECMWF IFS — gold standard, 0.25°
-  'gfs_seamless',      // NOAA GFS — global, widely used
-  'icon_seamless',     // DWD ICON — high resolution over Atlantic
-  'ukmo_seamless',     // UK Met Office — good Atlantic track record
-  'gem_seamless',      // Environment Canada GEM — strong in tropics
-  'meteofrance_seamless', // Météo-France ARPÈGE/AROME — Caribbean coverage
-  'jma_seamless',         // Japan Meteorological Agency — solid global tropics
-  'bom_access_global',    // Australian BOM ACCESS — global, good Southern Atlantic
+  'ecmwf_ifs025',        // ECMWF IFS — gold standard, 0.25°
+  'ecmwf_aifs025',       // ECMWF AI (Anemoi) — ML-based, often sharper
+  'gfs_seamless',        // NOAA GFS — global, widely used
+  'icon_seamless',       // DWD ICON — high resolution over Atlantic
+  'ukmo_seamless',       // UK Met Office — good Atlantic track record
+  'gem_seamless',        // Environment Canada GEM — strong in tropics
+  'meteofrance_seamless',// Météo-France ARPÈGE/AROME — Caribbean coverage
+  'jma_seamless',        // Japan Meteorological Agency — solid global tropics
+  'bom_access_global',   // Australian BOM ACCESS — global, good Southern Atlantic
+  'cma_grapes_global',   // China Meteorological Administration GRAPES — global
 ];
 const FCAST_CACHE_MS = 15 * 60 * 1000;
 const _fcastCache = {}; // {icao: {ts, days, hourly}}
@@ -7648,8 +7657,8 @@ async function fetchOpenMeteoModels(lat, lon){
     `&hourly=temperature_2m,precipitation_probability,precipitation,wind_speed_10m,wind_gusts_10m,wind_direction_10m,weather_code,dewpoint_2m,relativehumidity_2m,visibility`+
     `&timezone=America%2FCuracao&forecast_days=5&wind_speed_unit=kn`;
 
-  // Try full ensemble first, fall back to 3 reliable models, then default
-  const FALLBACK_MODELS = ['ecmwf_ifs025','gfs_seamless','icon_seamless'];
+  // Try full 10-model ensemble first, fall back to 4 reliable models, then default
+  const FALLBACK_MODELS = ['ecmwf_ifs025','ecmwf_aifs025','gfs_seamless','icon_seamless'];
   for(const modelList of [FCAST_MODELS, FALLBACK_MODELS, null]){
     const url = modelList ? `${base}&models=${modelList.join(',')}` : base;
     try{
@@ -7848,7 +7857,7 @@ async function loadForecast(forceNewsUpdate=false){
         if(rainPct < 40 && wmoC >= 51 && wmoC <= 82) wmoC = 2; // rain icon only at ≥40% chance
         const uvC    = uvCol(uv); const uvL = uvLbl(uv);
         const windCard=['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
-        const rainCol= rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'var(--text-dim)';
+        const rainCol= rainPct>=70?'#5ab8ff':rainPct>=40?'#22d3ee':rainPct>=20?'#9bd4ff':'rgba(155,212,255,.5)';
         const windCol= windKt>=25?'#f87171':windKt>=18?'#fbbf24':'#22d3ee';
         const loFrac = Math.max(0,((tempLo-tMin)/tSpan)*100);
         const hiFrac = Math.min(100,((tempHi-tMin)/tSpan)*100);
@@ -7898,16 +7907,16 @@ async function loadForecast(forceNewsUpdate=false){
               <span class="fd-bar-hi">${tempHi}°</span>
             </div>
 
-            <!-- Rain probability — shown only when chance ≥40% -->
-            ${rainPct>=40?`<div class="fd-data-row">
+            <!-- Rain probability — always shown; dimmed when < 20% -->
+            <div class="fd-data-row${rainPct<20?' fd-data-dim':''}">
               <span class="fd-data-icon">💧</span>
               <span class="fd-data-label">Rain</span>
               <div class="fd-mini-bar">
-                <div class="fd-mini-fill ${rainPct>=60?'animated':''}" style="width:${rainPct}%;background:${rainCol}"></div>
+                <div class="fd-mini-fill ${rainPct>=60?'animated':''}" style="width:${Math.max(2,rainPct)}%;background:${rainCol}"></div>
               </div>
-              <span class="fd-data-val" style="color:${rainCol}">${rainPct}%</span>
-              <span class="fd-data-sub">${rainMm}mm</span>
-            </div>`:''}
+              <span class="fd-data-val" style="color:${rainPct<20?'var(--text-dim)':rainCol}">${rainPct}%</span>
+              <span class="fd-data-sub">${rainPct>=10&&rainMm>0?rainMm+'mm':''}</span>
+            </div>
 
             <!-- Wind -->
             <div class="fd-data-row">
@@ -7959,10 +7968,11 @@ async function loadForecast(forceNewsUpdate=false){
 
       const summary    = wxDays.length ? buildForecastSummary(wxDays, loc) : '';
       const modelCount = models ? FCAST_MODELS.filter(m=>models.daily?.[`temperature_2m_max_${m}`]?.[0]!=null).length : 0;
-      const modelSrc   = modelCount>=7 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF JMA BOM`
-                       : modelCount>=5 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM MF`
-                       : modelCount>=4 ? `${modelCount}-model blend · ECMWF GFS ICON UKMO`
-                       : modelCount>=2 ? `${modelCount}-model blend`
+      const modelSrc   = modelCount>=9  ? `${modelCount}-model blend · ECMWF AI GFS ICON UKMO GEM MF JMA BOM CMA`
+                       : modelCount>=7  ? `${modelCount}-model blend · ECMWF AI GFS ICON UKMO GEM MF JMA`
+                       : modelCount>=5  ? `${modelCount}-model blend · ECMWF GFS ICON UKMO GEM`
+                       : modelCount>=4  ? `${modelCount}-model blend · ECMWF GFS ICON UKMO`
+                       : modelCount>=2  ? `${modelCount}-model blend`
                        : modelCount===1 ? '1 model + WeatherAPI' : 'WeatherAPI only';
 
       // Stash the day-by-day detail for the 5-day modal (opened on card tap).
