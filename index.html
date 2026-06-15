@@ -1495,71 +1495,101 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 
 /* Flight cards */
 .fb-card{
-  padding:11px 16px 10px 14px;
+  display:flex;align-items:center;gap:13px;
+  padding:13px 16px 13px 13px;
   border-left:3px solid transparent;
-  border-bottom:1px solid rgba(255,255,255,.04);
+  border-bottom:1px solid rgba(255,255,255,.05);
   transition:background .15s;cursor:default;
 }
 .fb-card:last-child{border-bottom:none}
-.fb-card:hover{background:rgba(34,211,238,.035)}
-.fb-card.fb-st-active{border-left-color:#22d3ee;background:rgba(34,211,238,.045)}
+.fb-card:hover{background:rgba(34,211,238,.04)}
+.fb-card.fb-st-active{border-left-color:#22d3ee;background:rgba(34,211,238,.05)}
 .fb-card.fb-st-soon{border-left-color:#4ade80;background:rgba(74,222,128,.03)}
-.fb-card.fb-st-delay{border-left-color:#fbbf24;background:rgba(251,191,36,.04)}
-.fb-card.fb-st-cancel{border-left-color:#f87171;background:rgba(248,113,113,.04)}
-.fb-card.fb-st-done{border-left-color:rgba(255,255,255,.08)}
+.fb-card.fb-st-delay{border-left-color:#fbbf24;background:rgba(251,191,36,.045)}
+.fb-card.fb-st-cancel{border-left-color:#f87171;background:rgba(248,113,113,.045)}
+.fb-card.fb-st-done{border-left-color:rgba(255,255,255,.1)}
 
-/* Card top row: direction icon · flight# · airline · time */
-.fb-card-r1{display:flex;align-items:center;gap:9px;margin-bottom:5px}
-.fb-card-dir{font-size:1rem;flex-shrink:0;line-height:1;opacity:.75}
+/* Airline logo block */
+.fb-logo{
+  width:52px;height:52px;flex-shrink:0;border-radius:11px;
+  background:linear-gradient(160deg,rgba(255,255,255,.96),rgba(228,238,248,.9));
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 2px 8px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  position:relative;
+}
+.fb-logo img{width:46px;height:46px;object-fit:contain;display:block}
+.fb-logo-mono{
+  font-family:var(--display);font-weight:800;font-size:1rem;
+  letter-spacing:.02em;color:#0b2740;line-height:1;
+}
+
+/* Main column */
+.fb-card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+
+/* Row 1: flight# + direction + airline */
+.fb-card-r1{display:flex;align-items:baseline;gap:9px;min-width:0}
+.fb-card-dir{font-size:1.05rem;flex-shrink:0;line-height:1;opacity:.8;align-self:center}
 .fb-card-fno{
-  font-family:var(--display);font-size:1.1rem;font-weight:700;
-  color:var(--accent-bright);letter-spacing:.02em;white-space:nowrap;
+  font-family:var(--display);font-size:1.35rem;font-weight:800;
+  color:var(--accent-bright);letter-spacing:.01em;white-space:nowrap;line-height:1;
 }
-.fb-card-dot{color:rgba(255,255,255,.18);font-size:.7rem;flex-shrink:0}
 .fb-card-aln{
-  font-family:var(--mono);font-size:.56rem;color:var(--text-dim);
-  letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  flex:1;min-width:0;
-}
-.fb-card-time{margin-left:auto;text-align:right;flex-shrink:0}
-.fb-card-sched{
-  font-family:var(--mono);font-size:1.08rem;font-weight:700;
-  color:var(--accent-bright);font-variant-numeric:tabular-nums;display:block;
-}
-.fb-card-rev{
-  display:block;font-family:var(--mono);font-size:.54rem;
-  color:#fbbf24;font-weight:600;font-variant-numeric:tabular-nums;text-align:right;
+  font-family:var(--mono);font-size:.62rem;color:var(--text-dim);
+  letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  flex:1;min-width:0;text-transform:uppercase;
 }
 
-/* Card bottom row: IATA badge · city · gate · status */
-.fb-card-r2{display:flex;align-items:center;gap:6px}
+/* Row 2: IATA badge + city */
+.fb-card-r2{display:flex;align-items:center;gap:8px;min-width:0}
 .fb-card-iata{
-  font-family:var(--mono);font-size:.5rem;font-weight:700;
-  color:var(--accent);letter-spacing:.07em;
-  background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.22);
-  border-radius:3px;padding:1px 5px;flex-shrink:0;white-space:nowrap;
+  font-family:var(--mono);font-size:.56rem;font-weight:700;
+  color:var(--accent);letter-spacing:.08em;
+  background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);
+  border-radius:4px;padding:2px 6px;flex-shrink:0;white-space:nowrap;
 }
 .fb-card-city{
-  font-family:var(--display);font-size:.93rem;font-weight:600;
+  font-family:var(--display);font-size:1.08rem;font-weight:600;
   color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   flex:1;min-width:0;
 }
 .fb-card-gate{
-  font-family:var(--mono);font-size:.55rem;font-weight:600;
+  font-family:var(--mono);font-size:.58rem;font-weight:600;
   color:var(--text-dim);letter-spacing:.04em;
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0;
+  border-radius:5px;padding:2px 8px;white-space:nowrap;flex-shrink:0;
+}
+
+/* Side column: time + status */
+.fb-card-side{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.fb-card-sched{
+  font-family:var(--mono);font-size:1.45rem;font-weight:700;
+  color:var(--accent-bright);font-variant-numeric:tabular-nums;line-height:1;
+}
+.fb-card-rev{
+  font-family:var(--mono);font-size:.6rem;
+  color:#fbbf24;font-weight:700;font-variant-numeric:tabular-nums;margin-top:-2px;
 }
 .fb-card-badge{
-  font-family:var(--mono);font-size:.5rem;font-weight:700;letter-spacing:.07em;
-  text-transform:uppercase;padding:3px 8px;border-radius:4px;
-  border:1px solid currentColor;white-space:nowrap;flex-shrink:0;
+  font-family:var(--mono);font-size:.52rem;font-weight:700;letter-spacing:.08em;
+  text-transform:uppercase;padding:4px 9px;border-radius:5px;
+  border:1px solid currentColor;white-space:nowrap;
 }
-.fb-st-done   .fb-card-badge{color:var(--text-dim);border-color:rgba(255,255,255,.12)}
+.fb-st-done   .fb-card-badge{color:var(--text-dim);border-color:rgba(255,255,255,.14)}
 .fb-st-active .fb-card-badge{color:#22d3ee;border-color:rgba(34,211,238,.5);animation:fbPulseA 2s ease-in-out infinite}
 .fb-st-soon   .fb-card-badge{color:#4ade80;border-color:rgba(74,222,128,.4);animation:fbPulseG 3s ease-in-out infinite}
 .fb-st-delay  .fb-card-badge{color:#fbbf24;border-color:rgba(251,191,36,.45)}
 .fb-st-cancel .fb-card-badge{color:#f87171;border-color:rgba(248,113,113,.4)}
+
+@media(max-width:500px){
+  .fb-card{gap:10px;padding:11px 12px 11px 11px}
+  .fb-logo{width:44px;height:44px;border-radius:9px}
+  .fb-logo img{width:38px;height:38px}
+  .fb-card-fno{font-size:1.15rem}
+  .fb-card-city{font-size:.95rem}
+  .fb-card-sched{font-size:1.2rem}
+  .fb-card-gate{display:none}
+}
 
 @keyframes fbPulseA{
   0%,100%{box-shadow:0 0 5px rgba(34,211,238,.3)}
@@ -5047,13 +5077,24 @@ async function fetchCuracaoFlights(direction){
   return rows;
 }
 
-const _barCls = {
-  'fb-st-active':'fb-bar-active',
-  'fb-st-soon'  :'fb-bar-soon',
-  'fb-st-delay' :'fb-bar-delay',
-  'fb-st-cancel':'fb-bar-cancel',
-  'fb-st-done'  :'fb-bar-done',
-};
+// Carrier code = the leading token of the flight number ("AA 1800" -> "AA",
+// "3R 284" -> "3R"). Used to look up the airline logo.
+function _airlineCode(flightNo){
+  const m = String(flightNo||'').trim().match(/^([A-Z0-9]{2,3})\s*\d/i);
+  return m ? m[1].toUpperCase() : '';
+}
+// Build the logo block: an airline logo from the free avs.io CDN, with a
+// monogram fallback (the carrier code) shown if the image fails to load.
+function _airlineLogo(flightNo){
+  const code = _airlineCode(flightNo);
+  if(!code) return `<div class="fb-logo"><span class="fb-logo-mono">✈</span></div>`;
+  const src = `https://pics.avs.io/120/120/${code}.png`;
+  return `<div class="fb-logo">`
+    + `<img src="${src}" alt="${code}" loading="lazy" `
+    + `onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+    + `<span class="fb-logo-mono" style="display:none">${code}</span>`
+    + `</div>`;
+}
 
 async function renderFlightBoard(direction){
   const el  = document.getElementById('flightBoard');
@@ -5064,7 +5105,7 @@ async function renderFlightBoard(direction){
     const rows = await fetchCuracaoFlights(direction);
     if(upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
     if(!rows.length){
-      el.innerHTML = `<div class=”fb-empty”>No ${direction} in the next ~12 hours.</div>`;
+      el.innerHTML = `<div class="fb-empty">No ${direction} in the next ~12 hours.</div>`;
       setBadge('flightBoardBadge','LIVE');
       return;
     }
@@ -5075,22 +5116,24 @@ async function renderFlightBoard(direction){
       const tr   = (f.revISO && f.revISO!==f.schedISO) ? _fmtHM(f.revISO) : '';
       const gate = [f.terminal?'T'+f.terminal:'', f.gate||''].filter(Boolean).join(' · ');
       const dir  = isArr ? '🛬' : '🛫';
-      return `<div class=”fb-card ${st.cls}”>
-        <div class=”fb-card-r1”>
-          <span class=”fb-card-dir”>${dir}</span>
-          <span class=”fb-card-fno”>${f.flightNo}</span>
-          <span class=”fb-card-dot”>·</span>
-          <span class=”fb-card-aln”>${f.airline||'—'}</span>
-          <div class=”fb-card-time”>
-            <span class=”fb-card-sched”>${t}</span>
-            ${tr?`<span class=”fb-card-rev”>→ ${tr}</span>`:''}
+      return `<div class="fb-card ${st.cls}">
+        ${_airlineLogo(f.flightNo)}
+        <div class="fb-card-main">
+          <div class="fb-card-r1">
+            <span class="fb-card-dir">${dir}</span>
+            <span class="fb-card-fno">${f.flightNo}</span>
+            <span class="fb-card-aln">${f.airline||''}</span>
+          </div>
+          <div class="fb-card-r2">
+            ${f.iata?`<span class="fb-card-iata">${f.iata}</span>`:''}
+            <span class="fb-card-city">${f.place}</span>
+            ${gate?`<span class="fb-card-gate">🚪 ${gate}</span>`:''}
           </div>
         </div>
-        <div class=”fb-card-r2”>
-          ${f.iata?`<span class=”fb-card-iata”>${f.iata}</span>`:''}
-          <span class=”fb-card-city”>${f.place}</span>
-          ${gate?`<span class=”fb-card-gate”>${gate}</span>`:''}
-          <span class=”fb-card-badge”>${st.label}</span>
+        <div class="fb-card-side">
+          <span class="fb-card-sched">${t}</span>
+          ${tr?`<span class="fb-card-rev">→ ${tr}</span>`:''}
+          <span class="fb-card-badge">${st.label}</span>
         </div>
       </div>`;
     }).join('');
@@ -5098,7 +5141,7 @@ async function renderFlightBoard(direction){
     setBadge('flightBoardBadge','LIVE');
   }catch(err){
     if(upd) upd.textContent = '';
-    el.innerHTML = `<div class=”fb-notice”>⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
+    el.innerHTML = `<div class="fb-notice">⚠️ Couldn't load the live board (${err.message||'error'}).<br>The official airport board on the right still works.</div>`;
     setBadge('flightBoardBadge','ERROR','error');
   }
 }
