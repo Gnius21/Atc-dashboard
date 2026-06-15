@@ -2923,6 +2923,26 @@ body.night .tab-btn.active{
   opacity:.8;transition:opacity .2s;
 }
 .fc-cur-card:hover .fc-cur-cta{opacity:1}
+
+/* Tomorrow brief */
+.fc-tomorrow-brief{
+  margin:0 16px 12px;
+  padding:11px 14px;
+  background:linear-gradient(135deg,rgba(34,211,238,.06),rgba(99,102,241,.04));
+  border:1px solid rgba(34,211,238,.14);
+  border-left:3px solid rgba(34,211,238,.5);
+  border-radius:var(--radius-lg);
+}
+.fc-tom-lbl{
+  display:block;
+  font-family:var(--mono);font-size:.55rem;font-weight:700;
+  letter-spacing:.13em;text-transform:uppercase;
+  color:var(--accent-bright);margin-bottom:6px;
+}
+.fc-tom-text{
+  font-family:var(--display);font-size:.82rem;font-weight:500;
+  color:var(--text);line-height:1.55;
+}
 @media(max-width:600px){
   .fc-cur-temp{font-size:2.3rem}
   .fc-cur-icon{width:54px;height:54px}
@@ -7508,6 +7528,62 @@ function buildForecastSummary(days, loc){
 
 /* Scrollable 24-hour strip — shows hours from now forward.
    If fewer than 6 hours remain today, also pulls from day1 to fill 18 cells. */
+
+function buildTomorrowBrief(wxDays, models){
+  const day1 = wxDays[1];
+  if(!day1?.day) return '';
+  const d       = day1.day;
+  const dt      = new Date((day1.date||'')+'T12:00:00');
+  const dayName = isFinite(dt.getTime())
+    ? dt.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})
+    : 'Tomorrow';
+
+  const tempHi  = Math.round(blendModelValues(models,'temperature_2m_max',1).mean  ?? d.maxtemp_c ?? 30);
+  const tempLo  = Math.round(blendModelValues(models,'temperature_2m_min',1).mean  ?? d.mintemp_c ?? 25);
+  const rainPct = Math.round(blendModelValues(models,'precipitation_probability_max',1).mean ?? d.daily_chance_of_rain ?? 0);
+  const rawMm   = blendModelValues(models,'precipitation_sum',1).mean ?? d.totalprecip_mm ?? 0;
+  const rainMm  = isFinite(rawMm) ? Number(rawMm.toFixed(1)) : 0;
+  const windKt  = Math.round(blendModelValues(models,'wind_speed_10m_max',1).mean  ?? (d.maxwind_kph||0)*0.539957);
+  const gustKt  = Math.round(blendModelValues(models,'wind_gusts_10m_max',1).mean  ?? windKt*1.25);
+  const windDeg = Math.round(blendModelValues(models,'wind_direction_10m_dominant',1).mean ?? 90);
+  const windCard= ['N','NE','E','SE','S','SW','W','NW'][Math.round((windDeg%360)/45)%8];
+  const uv      = Math.round(blendModelValues(models,'uv_index_max',1).mean ?? d.uv ?? 8);
+  const hum     = Math.round(d.avghumidity || 75);
+  const cond    = d.condition?.text || '';
+  const t       = cond.toLowerCase();
+
+  // Condition phrase
+  let condPhrase;
+  if(t.includes('thunder')||t.includes('storm'))
+    condPhrase = `⛈ Thunderstorms possible`;
+  else if(rainPct >= 70)
+    condPhrase = `🌧 Rainy — ${rainPct}% chance of showers${rainMm>2?`, ~${rainMm} mm`:''}`;
+  else if(rainPct >= 40)
+    condPhrase = `🌦 ${cond} with a ${rainPct}% chance of showers`;
+  else if(rainPct >= 20)
+    condPhrase = `⛅ ${cond} with a slight chance of showers (${rainPct}%)`;
+  else
+    condPhrase = `${cond || '☀️ Sunny / clear'}`;
+
+  // Wind phrase
+  const windPhrase = windKt < 5 ? 'light winds'
+    : gustKt > windKt + 6 ? `${windCard} winds ${windKt}–${gustKt} kt`
+    : `${windCard} winds ${windKt} kt`;
+
+  // UV phrase
+  const uvPhrase = uv >= 11 ? `UV extreme (${uv})` : uv >= 8 ? `UV very high (${uv})` : uv >= 6 ? `UV high (${uv})` : '';
+
+  const parts = [`High ${tempHi}°, low ${tempLo}°`, windPhrase];
+  if(uvPhrase) parts.push(uvPhrase);
+  if(hum > 85) parts.push('very humid');
+
+  const text = `${condPhrase}. ${parts.join(' · ')}.`;
+  return `<div class="fc-tomorrow-brief">
+    <span class="fc-tom-lbl">📅 Tomorrow · ${dayName}</span>
+    <div class="fc-tom-text">${text}</div>
+  </div>`;
+}
+
 // Current-conditions card for the forecast tab. Tapping it opens the 5-day modal.
 function buildCurrentWxCard(loc, wxapi, models, aqiCol, aqiL){
   const cur  = wxapi?.current || {};
@@ -7985,6 +8061,7 @@ async function loadForecast(forceNewsUpdate=false){
       html += `<div class="fcast-island panel" data-icao="${loc.icao}">
         ${buildCurrentWxCard(loc, wxapi, models, aqiCol, aqiL)}
         ${alertHtml}
+        ${wxDays[1] ? buildTomorrowBrief(wxDays, models) : ''}
         ${wxDays[0] ? buildHourlyStrip(wxDays[0], loc.icao, wxDays[1]) : ''}
       </div>`;
       }catch(renderErr){
