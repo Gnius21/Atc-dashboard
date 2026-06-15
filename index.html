@@ -1463,6 +1463,9 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   box-shadow:inset 0 0 80px rgba(0,0,0,0.5),0 0 0 1px rgba(34,211,238,0.06);
 }
 @media(max-width:900px){ .fb-panel{height:580px;min-height:0} }
+/* In the ATC tab the board sits under the radar, so cap its height. */
+.fb-panel-atc{height:560px;min-height:0}
+@media(max-width:900px){ .fb-panel-atc{height:480px} }
 
 /* Board header */
 .fb-head{
@@ -1698,6 +1701,17 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 
 .flights-split .rwc-frame-wrap{height:calc(100vh - 170px);min-height:540px}
 @media(max-width:900px){ .flights-split .rwc-frame-wrap{height:560px;min-height:0} }
+
+/* Official airport iframe, now full-width in the Flights tab */
+.flights-official{height:calc(100vh - 210px);min-height:540px}
+@media(max-width:900px){ .flights-official{height:600px;min-height:0} }
+.flights-note{
+  font-family:var(--mono);font-size:.62rem;line-height:1.6;
+  color:var(--text-dim);margin:0 0 12px;padding:9px 13px;
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:linear-gradient(180deg,rgba(34,211,238,.05),transparent);
+}
+.flights-note b{color:var(--accent-bright)}
 
 /* ── ACTIVE TAB — multi-layer effect ── */
 .tab-btn.active{
@@ -4312,6 +4326,26 @@ body.night .tab-btn.active{
     </div>
   </div>
 
+  <!-- Live flight board (parsed AeroDataBox) — under the ADS-B radar -->
+  <div class="full">
+    <div class="section-title">Live Flight Board — Curaçao (TNCC) / Hato
+      <div class="flights-toggle">
+        <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
+        <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
+      </div>
+    </div>
+    <div class="fb-panel fb-panel-atc">
+      <div class="fb-head">
+        <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
+        <span class="fb-updated" id="flightBoardUpdated"></span>
+        <button class="fb-refresh" id="flightBoardRefresh" title="Refresh" aria-label="Refresh live board">↻</button>
+      </div>
+      <div id="flightBoard" class="fb-list">
+        <div class="fb-empty">Loading flights…</div>
+      </div>
+    </div>
+  </div>
+
 
 
   <div class="col-6">
@@ -4393,23 +4427,11 @@ body.night .tab-btn.active{
       </div>
       <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Official board ↗</a>
     </div>
-    <div class="flights-split">
-      <!-- Live parsed board via AeroDataBox -->
-      <div class="fb-panel">
-        <div class="fb-head">
-          <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
-          <span class="fb-updated" id="flightBoardUpdated"></span>
-          <button class="fb-refresh" id="flightBoardRefresh" title="Refresh" aria-label="Refresh live board">↻</button>
-        </div>
-        <div id="flightBoard" class="fb-list">
-          <div class="fb-empty">Loading flights…</div>
-        </div>
-      </div>
-      <!-- Official airport page iframe -->
-      <div class="rwc-frame-wrap">
-        <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-        <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
-      </div>
+    <p class="flights-note">📋 The live parsed flight board now lives in the <b>ATC</b> tab, under the live ADS-B radar. Below is the official Curaçao Airport board.</p>
+    <!-- Official airport page iframe (full width) -->
+    <div class="rwc-frame-wrap flights-official">
+      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
     </div>
   </div>
 </div>
@@ -4965,9 +4987,12 @@ function switchTab(name){
 
   // ── STEP 2: side effects — each isolated so one failure can't break the tab ──
   try{
-    // Flights tab: render live board + lazy-load official iframe on first open
-    if(name==='flights'){
+    // ATC tab hosts the live board (under the ADS-B radar) — refresh it on open.
+    if(name==='atc'){
       if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
+    }
+    // Flights tab: lazy-load the official airport iframe on first open.
+    if(name==='flights'){
       const active = document.querySelector('#tab-flights .flights-frame.active');
       if(active && !active.src){
         active.src = _flightDir==='arrivals'
@@ -5388,7 +5413,8 @@ document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const mode=btn.dataset.flights;
     _flightDir = mode;
-    document.querySelectorAll('.flights-toggle-btn').forEach(b=>b.classList.toggle('active',b===btn));
+    // Sync every toggle group (ATC + Flights tabs) to the chosen direction.
+    document.querySelectorAll('.flights-toggle-btn').forEach(b=>b.classList.toggle('active',b.dataset.flights===mode));
     document.querySelectorAll('.flights-frame').forEach(f=>{
       const on=f.dataset.mode===mode;
       f.classList.toggle('active',on);
@@ -5404,6 +5430,16 @@ document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
     renderFlightBoard(mode);
   });
 });
+
+// ATC is the default tab and now hosts the live board — render it on load
+// (switchTab never fires for the initially-active tab). Deferred to idle so
+// the critical weather/radar content paints first.
+(function initAtcFlightBoard(){
+  if(!document.getElementById('tab-atc')?.classList.contains('active')) return;
+  const go = ()=>{ if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir); };
+  if('requestIdleCallback' in window) requestIdleCallback(go, {timeout:2500});
+  else setTimeout(go, 1200);
+})();
 
 /* ════════════════════════════════
    REFRESH PROGRESS BAR
