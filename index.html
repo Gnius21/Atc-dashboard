@@ -620,95 +620,6 @@ body.theme-lavender .ic-temp-high{color:#c2410c}
 /* State: fetch error */
 .header-pill.tropics-error{color:var(--muted);border-color:var(--border)}
 
-/* ── NOTAMs ── */
-.notam-badge-fresh,.notam-badge-recent,.notam-badge-warn{
-  font-size:.48rem;padding:1px 5px;border-radius:3px;
-  border:1px solid;margin-left:6px;font-weight:700;
-  letter-spacing:.1em;text-transform:uppercase;vertical-align:middle;
-}
-.notam-badge-fresh{color:#4ade80;border-color:#4ade80}
-.notam-badge-recent{color:#fbbf24;border-color:#fbbf24}
-.notam-badge-warn{color:#f87171;border-color:#f87171}
-
-.notam-panel{
-  border:1px solid var(--border);border-radius:var(--radius-lg);
-  background:linear-gradient(180deg,var(--panel),var(--bg2));
-  overflow:hidden;
-  box-shadow:var(--shadow-panel);
-}
-.notam-body{padding:10px 14px 14px}
-.notam-list{
-  display:flex;flex-direction:column;gap:8px;
-  max-height:520px;overflow-y:auto;
-  scrollbar-width:thin;scrollbar-color:var(--border-hi) transparent;
-  padding-right:4px;
-}
-.notam-list::-webkit-scrollbar{width:6px}
-.notam-list::-webkit-scrollbar-track{background:transparent}
-.notam-list::-webkit-scrollbar-thumb{background:var(--border-hi);border-radius:3px}
-
-.notam-item{
-  padding:10px 12px;
-  border:1px solid var(--border);border-radius:var(--radius);
-  background:linear-gradient(180deg,rgba(0,0,0,0.4),rgba(8,12,20,0.3));
-  border-left:3px solid var(--cyan);
-  font-family:var(--mono);font-size:.62rem;line-height:1.7;
-  color:var(--text);word-break:break-word;font-weight:500;
-  transition:all .15s;
-}
-.notam-item:hover{border-color:var(--border-hi);background:rgba(8,12,20,0.6)}
-.notam-item .notam-id{
-  display:block;color:var(--cyan);font-size:.65rem;
-  letter-spacing:.1em;margin-bottom:4px;font-weight:600;
-}
-.notam-item.warn{border-left-color:var(--amber)}
-.notam-item.warn .notam-id{color:var(--amber)}
-
-.notam-tab-header{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 18px 8px;
-  font-family:var(--mono);font-size:.62rem;color:var(--text-dim);
-  font-weight:500;
-}
-.notam-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-  animation:pulseLed 2s ease-in-out infinite;flex-shrink:0;
-}
-.notam-open-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;font-family:var(--mono);font-size:.62rem;
-  letter-spacing:.14em;text-transform:uppercase;font-weight:500;
-  color:var(--cyan);border:1px solid var(--border-hi);
-  border-radius:var(--radius);background:rgba(34,211,238,0.06);
-  text-decoration:none;
-  transition:all .2s;
-  margin-left:auto;
-}
-.notam-open-btn:hover{
-  background:rgba(34,211,238,0.14);
-  border-color:var(--border-bright);
-  box-shadow:0 0 18px var(--cyan-glow);
-}
-
-.notam-filter{display:flex;gap:6px;padding:0 18px 10px;flex-wrap:wrap}
-.notam-filter-btn{
-  padding:4px 12px;
-  font-family:var(--mono);font-size:.55rem;letter-spacing:.14em;font-weight:500;
-  text-transform:uppercase;
-  border:1px solid var(--border-hi);border-radius:3px;
-  background:transparent;color:var(--text-dim);
-  cursor:pointer;
-  user-select:none;
-  transition:all .15s;
-}
-.notam-filter-btn:hover{color:var(--accent-bright);border-color:var(--accent-bright)}
-.notam-filter-btn.active{
-  color:var(--cyan);border-color:var(--cyan);
-  background:rgba(34,211,238,0.08);
-  box-shadow:0 0 12px var(--cyan-glow);
-}
 
 /* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -4393,9 +4304,8 @@ body.night .tab-btn.active{
   <div class="tab-btn"        data-tab="weather"  role="tab" id="tabbtn-weather"  aria-controls="tab-weather"  aria-selected="false" tabindex="-1">🌤 Weather <span class="tab-key" aria-hidden="true">2</span></div>
   <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
   <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
-  <div class="tab-btn"        data-tab="notams"   role="tab" id="tabbtn-notams"   aria-controls="tab-notams"   aria-selected="false" tabindex="-1">📋 NOTAMs <span class="tab-key" aria-hidden="true">5</span></div>
-  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">6</span></div>
-  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">7</span></div>
+  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">5</span></div>
+  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">6</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -4739,33 +4649,6 @@ body.night .tab-btn.active{
 </div>
 </div>
 
-<!-- ═══ TAB: NOTAMs ═══ -->
-<div class="tab-pane" id="tab-notams">
-<div class="layout">
-  <div class="full">
-    <div class="section-title">NOTAMs — TNCA · TNCC · TNCB — Live · AWC <span class="data-badge loading" id="notamBadge">LOADING</span></div>
-    <div class="notam-panel">
-      <div class="notam-tab-header">
-        <span class="notam-dot"></span>
-        <span id="notamStatusText">Fetching live NOTAMs…</span>
-        <a class="notam-open-btn" href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank">🔗 AWC NOTAM ↗</a>
-      </div>
-      <div class="notam-filter" id="notamFilter">
-        <button class="notam-filter-btn active" data-filter="ALL">All</button>
-        <button class="notam-filter-btn" data-filter="FRESH">🟢 Fresh</button>
-        <button class="notam-filter-btn" data-filter="RECENT">🟡 Recent</button>
-        <button class="notam-filter-btn" data-filter="AGING">⬜ Aging</button>
-        <button class="notam-filter-btn" data-filter="WARN">⚠ Warnings</button>
-      </div>
-      <div class="notam-body">
-        <div class="notam-list" id="notamList">
-          <div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Fetching live NOTAMs from AWC…</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-</div>
 
 <!-- ═══ TAB: FLIGHTS (Dep + Arr toggle) ═══ -->
 
@@ -5227,9 +5110,6 @@ function switchTab(name){
     if(name==='marine' && !marineLoaded){ loadMarine(); fetchTides(); }
   }catch(err){ console.error('[Tabs] loadMarine failed:', err); }
   try{
-    if(name==='notams' && !notamLoaded){ notamLoaded=true; fetchNotams(); }
-  }catch(err){ console.error('[Tabs] fetchNotams failed:', err); }
-  try{
     if(name==='world'){
       const WORLD_STALE = 15 * 60 * 1000;
       if(!window._worldOvrLastFetch || Date.now()-window._worldOvrLastFetch >= WORLD_STALE){
@@ -5254,7 +5134,7 @@ function switchTab(name){
 }
 
 const tabLastSeen={atc:Date.now()};
-let forecastLoaded=false, marineLoaded=false, notamLoaded=false;
+let forecastLoaded=false, marineLoaded=false;
 
 // Robust tab wiring via event delegation on the tab bar.
 // Delegation means it keeps working even if individual buttons are
@@ -5307,7 +5187,7 @@ function wireTabKeys(){
   document.addEventListener('keydown', e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
     if(e.ctrlKey||e.metaKey||e.altKey) return; // don't hijack browser shortcuts (Cmd/Ctrl+1 etc.)
-    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'notams','6':'flights','7':'world'};
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights','6':'world'};
     if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
   });
 }
@@ -7132,7 +7012,7 @@ document.addEventListener('visibilitychange', () => {
 (function applyUrlTab(){
   try{
     const tab = new URLSearchParams(window.location.search).get('tab');
-    if(tab && ['atc','weather','forecast','marine','notams','flights','world'].includes(tab)){
+    if(tab && ['atc','weather','forecast','marine','flights','world'].includes(tab)){
       setTimeout(()=>{ try{ switchTab(tab); }catch(_){} }, 100);
     }
   }catch(_){}
@@ -9412,113 +9292,6 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
 
 /* Wind arrows are built inline within each island card. */
 
-/* ════════════════════════════════
-   NOTAMs — live from Aviation Weather Center (FAA)
-   Free, CORS-OK, fetched on first open of the tab, refreshed every 30 min.
-════════════════════════════════ */
-let notamData = [];
-let notamFilter = 'ALL';
-
-function classifyNotam(n){
-  const text  = (n.traditionalMessage || n.icaoMessage || '').toUpperCase();
-  const klass = n.classification || '';
-  const warnKeys = /CLSD|UNSERVICEABLE|OUT OF SERVICE|OBSTACLE|CRANE|BIRD HAZARD|HAZARD|GUN|BLASTING|EXPLOSIVE|MIL OPS|UAS|DRONE|LASER|PARA|FIREWORKS/;
-  const warn = warnKeys.test(text) || klass === 'CRITICAL';
-
-  let status = 'AGING';
-  if(n.effectiveStart){
-    const ageHrs = (Date.now() - new Date(n.effectiveStart).getTime()) / 3600000;
-    if(ageHrs < 6)   status = 'FRESH';
-    else if(ageHrs < 48) status = 'RECENT';
-  }
-
-  const qSubj = n.qLine?.subject || n.subject || klass || 'INFO';
-  const icao  = n.icaoId || n.location || '—';
-  const tag   = `${icao} · ${qSubj.replace(/_/g,' ')}`;
-  const start = n.effectiveStart ? new Date(n.effectiveStart).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : '';
-  const end   = n.effectiveEnd   ? new Date(n.effectiveEnd  ).toLocaleString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'UTC'})+'Z' : 'PERM';
-  const body  = n.traditionalMessage || n.icaoMessage || n.text || '—';
-  return { tag, text: body, time: start && end ? `${start} – ${end}` : start || end, warn, status, icao };
-}
-
-function renderNotams(){
-  const STATUS_ORDER = {FRESH:0, RECENT:1, AGING:2};
-  const sorted = [...notamData].sort((a,b)=>{
-    const sd = (STATUS_ORDER[a.status]??3) - (STATUS_ORDER[b.status]??3);
-    if(sd!==0) return sd;
-    return (b.warn?1:0) - (a.warn?1:0);
-  });
-  const filtered = notamFilter==='WARN' ? sorted.filter(n=>n.warn)
-                 : notamFilter==='ALL'  ? sorted
-                 : sorted.filter(n=>n.status===notamFilter);
-
-  const fresh  = sorted.filter(n=>n.status==='FRESH').length;
-  const recent = sorted.filter(n=>n.status==='RECENT').length;
-  const warns  = sorted.filter(n=>n.warn).length;
-  const stEl   = document.getElementById('notamStatusText');
-  if(stEl) stEl.textContent = sorted.length
-    ? `${sorted.length} active · ${fresh} fresh · ${recent} recent · ${warns} warnings`
-    : 'Loading…';
-
-  const listEl = document.getElementById('notamList');
-  if(!listEl) return;
-  if(!filtered.length){
-    listEl.innerHTML = `<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">${notamData.length?'No NOTAMs match current filter.':'Fetching live NOTAMs…'}</div>`;
-    return;
-  }
-  listEl.innerHTML = filtered.map(n=>{
-    const statusBadge = n.status==='FRESH'  ? `<span class="notam-badge-fresh">FRESH</span>`
-                      : n.status==='RECENT' ? `<span class="notam-badge-recent">RECENT</span>` : '';
-    const warnPfx = n.warn ? `<span class="notam-badge-warn">⚠ WARN</span>` : '';
-    return `<div class="notam-item${n.warn?' warn':''}">
-      <span class="notam-id">${n.tag}${statusBadge}${warnPfx}
-        <span style="opacity:.5;font-size:.52rem;font-weight:500;margin-left:4px">${n.time}</span>
-      </span>
-      ${n.text}
-    </div>`;
-  }).join('');
-}
-
-async function fetchNotams(){
-  setBadge('notamBadge','LOADING','loading');
-  try{
-    const url = `https://aviationweather.gov/api/data/notam?icaos=TNCA,TNCC,TNCB&format=json&limit=200`;
-    const r = await fetch(url, {cache:'no-store'});
-    if(!r.ok) throw new Error('AWC NOTAM '+r.status);
-    const raw = await r.json();
-    const items = Array.isArray(raw) ? raw : (raw.items || raw.data || []);
-    const seen = new Set();
-    notamData = items.filter(n=>{
-      const id = n.notamId || n.id || JSON.stringify(n).slice(0,40);
-      if(seen.has(id)) return false;
-      seen.add(id); return true;
-    }).map(classifyNotam);
-    renderNotams();
-    setBadge('notamBadge','LIVE');
-    const critCount = notamData.filter(n=>n.warn && n.status!=='AGING').length;
-    const notamTabBtn = document.querySelector('.tab-btn[data-tab="notams"]');
-    if(notamTabBtn && critCount>0) notamTabBtn.title = `${critCount} active warning NOTAM${critCount>1?'s':''}`;
-  }catch(err){
-    console.warn('[NOTAMs]', err.message);
-    setBadge('notamBadge','ERROR','error');
-    const listEl = document.getElementById('notamList');
-    if(listEl) listEl.innerHTML = `<div style="padding:14px;font-family:var(--mono);font-size:.6rem;color:#f87171">
-      NOTAM fetch failed: ${err.message}<br>
-      <a href="https://aviationweather.gov/notam/retrieve?icaos=TNCA,TNCC,TNCB" target="_blank" style="color:var(--cyan)">Open AWC NOTAM lookup ↗</a>
-    </div>`;
-  }
-}
-
-setInterval(fetchNotams, 30 * 60 * 1000);
-
-document.getElementById('notamFilter').addEventListener('click', e=>{
-  const btn = e.target.closest('.notam-filter-btn');
-  if(!btn) return;
-  document.querySelectorAll('.notam-filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  notamFilter = btn.dataset.filter;
-  renderNotams();
-});
 
 /* ════════════════════════════════════════════════════════
    PROGRESSIVE WEB APP — Service Worker + Install prompt
