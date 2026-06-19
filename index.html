@@ -2033,6 +2033,29 @@ body.night .tab-btn.active{
   box-shadow:0 0 14px rgba(74,222,128,0.25), inset 0 0 0 1px rgba(74,222,128,0.3);
 }
 
+/* ── INSTALL BUTTON (PWA) ── */
+.install-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 12px;
+  background:linear-gradient(180deg,rgba(34,211,238,0.18),rgba(0,0,0,0.4));
+  border:1px solid var(--border-bright);border-radius:var(--radius);
+  font-family:var(--mono);font-size:.65rem;letter-spacing:.16em;font-weight:600;
+  text-transform:uppercase;color:var(--cyan);
+  cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06);
+  animation:installPulse 2.5s ease-in-out infinite;
+}
+.install-btn:hover{
+  background:linear-gradient(180deg,rgba(34,211,238,0.3),rgba(0,0,0,0.4));
+  box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1);
+  transform:translateY(-1px);
+}
+@keyframes installPulse{
+  0%,100%{box-shadow:0 0 14px var(--cyan-glow),inset 0 1px 0 rgba(255,255,255,0.06)}
+  50%   {box-shadow:0 0 22px rgba(34,211,238,0.45),inset 0 1px 0 rgba(255,255,255,0.1)}
+}
+
 /* ── STORM ALERT ── */
 .tab-btn.storm-alert{
   color:#f87171 !important;
@@ -9471,6 +9494,120 @@ document.getElementById('notamFilter').addEventListener('click', e=>{
   notamFilter = btn.dataset.filter;
   renderNotams();
 });
+
+/* ════════════════════════════════════════════════════════
+   PROGRESSIVE WEB APP — Service Worker + Install prompt
+   SW is injected as a Blob URL (no separate sw.js file needed).
+   Strategy:
+     - HTML shell → network-first, fall back to cache for offline load
+     - Live API calls → always network, never cached
+     - Fonts / static assets → cache-first
+   Only registers on HTTPS or localhost (browsers block SW on http).
+════════════════════════════════════════════════════════ */
+(function setupPWA(){
+  if(!('serviceWorker' in navigator)) return;
+  if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
+
+  const CACHE_NAME = 'atc-dashboard-v2';
+
+  const SW = `
+    const CACHE = '${CACHE_NAME}';
+    const SHELL = [self.registration.scope];
+
+    self.addEventListener('install', e => {
+      self.skipWaiting();
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(SHELL).catch(() => {}))
+      );
+    });
+
+    self.addEventListener('activate', e => {
+      e.waitUntil(
+        caches.keys()
+          .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+          .then(() => self.clients.claim())
+      );
+    });
+
+    const API_HOSTS = [
+      'checkwx.com','weatherapi.com','open-meteo.com',
+      'marine-api.open-meteo.com','air-quality-api.open-meteo.com',
+      'aviationweather.gov','nhc.noaa.gov','weather.gov',
+      'liveatc.net','tidesandcurrents.noaa.gov',
+      'rss2json.com','windy.com','airplanes.live',
+    ];
+
+    self.addEventListener('fetch', e => {
+      if(e.request.method !== 'GET') return;
+      const url = new URL(e.request.url);
+
+      // Never cache live data
+      if(API_HOSTS.some(h => url.hostname.includes(h))) return;
+
+      // HTML shell — network-first so updates reach users immediately
+      if(e.request.mode === 'navigate' || e.request.destination === 'document'){
+        e.respondWith(
+          fetch(e.request)
+            .then(res => {
+              const copy = res.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy));
+              return res;
+            })
+            .catch(() => caches.match(e.request))
+        );
+        return;
+      }
+
+      // Static assets — cache-first
+      e.respondWith(
+        caches.match(e.request).then(cached =>
+          cached || fetch(e.request).then(res => {
+            if(res.ok && res.type === 'basic'){
+              caches.open(CACHE).then(c => c.put(e.request, res.clone()));
+            }
+            return res;
+          })
+        )
+      );
+    });
+  `;
+
+  const blob   = new Blob([SW], {type:'application/javascript'});
+  const swURL  = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL)
+    .then(() => console.log('[PWA] Service worker registered'))
+    .catch(err => console.warn('[PWA] SW registration failed:', err.message));
+})();
+
+/* Install prompt — shown automatically when browser deems app installable */
+let _installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+  _showInstallBtn();
+});
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn')?.remove();
+  _installPrompt = null;
+});
+
+function _showInstallBtn(){
+  if(document.getElementById('installBtn')) return;
+  const btn = document.createElement('button');
+  btn.id        = 'installBtn';
+  btn.className = 'install-btn';
+  btn.innerHTML = '⬇ Install';
+  btn.title     = 'Install as a home-screen app';
+  btn.addEventListener('click', async () => {
+    if(!_installPrompt) return;
+    _installPrompt.prompt();
+    await _installPrompt.userChoice;
+    _installPrompt = null;
+    btn.remove();
+  });
+  const actions = document.querySelector('.header-actions');
+  if(actions) actions.insertBefore(btn, actions.firstChild);
+}
 
 </script>
 
