@@ -5368,36 +5368,56 @@ function _flightWindow(){
   return { from:f(from), to:f(to) };
 }
 
+const _FLIGHT_LS = 'atc_flights_v1';
+
 async function fetchCuracaoFlights(direction){
   const cached = _flightData[direction];
-  if(cached && Date.now()-cached.ts < FLIGHT_TTL) return cached.rows;
+  if(cached && Date.now()-cached.ts < FLIGHT_TTL) return {rows:cached.rows, stale:false};
   const {from,to} = _flightWindow();
   const dir = direction==='arrivals' ? 'Arrival' : 'Departure';
   const url = `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}` +
     `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
     `&withCargo=false&withPrivate=false&withLocation=true`;
-  const r = await fetch(url, {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}});
-  if(!r.ok) throw new Error('HTTP '+r.status);
-  const data = await r.json();
-  const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
-  const rows = list.map(f=>{
-    const mv=f.movement||{}, ap=mv.airport||{}, loc=ap.location||{};
-    return {
-      schedISO: mv.scheduledTime?.local||mv.scheduledTime?.utc||null,
-      revISO:   mv.revisedTime?.local||mv.revisedTime?.utc||null,
-      place:    ap.municipalityName||ap.name||ap.iata||'—',
-      iata:     ap.iata||'',
-      lat:      (typeof loc.lat==='number') ? loc.lat : null,
-      lon:      (typeof loc.lon==='number') ? loc.lon : null,
-      flightNo: (f.number||'').replace(/\s+/g,' ').trim()||'—',
-      airline:  f.airline?.name||'',
-      terminal: mv.terminal||'',
-      gate:     mv.gate||'',
-      status:   f.status||'',
-    };
-  }).sort((a,b)=>new Date(a.schedISO||0)-new Date(b.schedISO||0));
-  _flightData[direction]={ts:Date.now(),rows};
-  return rows;
+  const ac = new AbortController();
+  const _t = setTimeout(() => ac.abort(), 10000);
+  try{
+    const r = await fetch(url, {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}, signal:ac.signal});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const data = await r.json();
+    const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
+    const rows = list.map(f=>{
+      const mv=f.movement||{}, ap=mv.airport||{}, loc=ap.location||{};
+      return {
+        schedISO: mv.scheduledTime?.local||mv.scheduledTime?.utc||null,
+        revISO:   mv.revisedTime?.local||mv.revisedTime?.utc||null,
+        place:    ap.municipalityName||ap.name||ap.iata||'—',
+        iata:     ap.iata||'',
+        lat:      (typeof loc.lat==='number') ? loc.lat : null,
+        lon:      (typeof loc.lon==='number') ? loc.lon : null,
+        flightNo: (f.number||'').replace(/\s+/g,' ').trim()||'—',
+        airline:  f.airline?.name||'',
+        terminal: mv.terminal||'',
+        gate:     mv.gate||'',
+        status:   f.status||'',
+      };
+    }).sort((a,b)=>new Date(a.schedISO||0)-new Date(b.schedISO||0));
+    _flightData[direction]={ts:Date.now(),rows};
+    try{
+      const saved=JSON.parse(localStorage.getItem(_FLIGHT_LS)||'{}');
+      saved[direction]={ts:Date.now(),rows};
+      localStorage.setItem(_FLIGHT_LS, JSON.stringify(saved));
+    }catch(_){}
+    return {rows, stale:false};
+  }catch(err){
+    try{
+      const saved=JSON.parse(localStorage.getItem(_FLIGHT_LS)||'{}');
+      const fb=saved[direction];
+      if(fb?.rows?.length) return {rows:fb.rows, stale:true, staleTs:fb.ts};
+    }catch(_){}
+    throw err;
+  }finally{
+    clearTimeout(_t);
+  }
 }
 
 // Carrier code = the leading token of the flight number ("AA 1800" -> "AA",
@@ -5553,11 +5573,16 @@ async function renderFlightBoard(direction){
   if(!el) return;
   setBadge('flightBoardBadge','LOADING','loading');
   try{
-    const rows = await fetchCuracaoFlights(direction);
-    if(upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+    const {rows, stale, staleTs} = await fetchCuracaoFlights(direction);
+    if(stale){
+      if(upd) upd.textContent = 'Cached · ' + new Date(staleTs).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+      setBadge('flightBoardBadge','STALE','warn');
+    } else {
+      if(upd) upd.textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Curacao'});
+    }
     if(!rows.length){
       el.innerHTML = `<div class="fb-empty">No ${direction} in the next ~12 hours.</div>`;
-      setBadge('flightBoardBadge','LIVE');
+      if(!stale) setBadge('flightBoardBadge','LIVE');
       return;
     }
     const isArr = direction==='arrivals';
@@ -5595,7 +5620,7 @@ async function renderFlightBoard(direction){
     el.innerHTML = _fbStatsHTML(rows)
       + (hero ? _fbHeroHTML(hero, isArr) : '')
       + rowsHtml;
-    setBadge('flightBoardBadge','LIVE');
+    if(!stale) setBadge('flightBoardBadge','LIVE');
     decorateDestWeather(rows);
   }catch(err){
     if(upd) upd.textContent = '';
@@ -9508,7 +9533,7 @@ document.getElementById('notamFilter').addEventListener('click', e=>{
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v2';
+  const CACHE_NAME = 'atc-dashboard-v3';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
@@ -9553,7 +9578,10 @@ document.getElementById('notamFilter').addEventListener('click', e=>{
               caches.open(CACHE).then(c => c.put(e.request, copy));
               return res;
             })
-            .catch(() => caches.match(e.request))
+            .catch(() => caches.match(e.request).then(cached => cached || new Response(
+              '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title><style>*{box-sizing:border-box;margin:0;padding:0}body{background:#05080f;color:#94a3b8;font-family:monospace;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center}.wrap{padding:24px}.icon{font-size:2.5rem;margin-bottom:12px}.title{color:#22d3ee;font-size:1.1rem;margin-bottom:6px}.hint{margin-top:12px;font-size:.75rem;opacity:.5}</style></head><body><div class="wrap"><div class="icon">✈</div><div class="title">ATC Dashboard</div><div>You\'re offline</div><div class="hint">Reconnect and reload to see live data</div></div></body></html>',
+              {status:200,headers:{'Content-Type':'text/html'}}
+            )))
         );
         return;
       }

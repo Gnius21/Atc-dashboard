@@ -60,6 +60,7 @@ const api = `https://${HOST}/flights/airports/icao/${ICAO}/${from}/${to}` +
 
 const res = await fetch(api, {
   headers: { 'x-rapidapi-key': KEY, 'x-rapidapi-host': HOST },
+  signal: AbortSignal.timeout(15000),
 });
 
 if (!res.ok) {
