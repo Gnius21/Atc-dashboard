@@ -6,12 +6,11 @@ name: Update Curaçao flights
 
 on:
   schedule:
-    # Every 6 hours. The fetch makes ONE AeroDataBox call per run (both
-    # directions at once), so this is ~4 calls/day ≈ 120/month — safely
-    # within the free tier (~150 calls/month).
-    #   • Want fresher data? Use '0 */3 * * *' (every 3h ≈ 240/month).
+    # Every 3 hours. The fetch makes ONE AeroDataBox call per run (both
+    # directions at once), so this is ~8 calls/day ≈ 240/month.
+    #   • Want less frequent? Use '0 */6 * * *' (every 6h ≈ 120/month).
     #   • On a higher plan? Use '0 * * * *' (hourly) for freshest data.
-    - cron: '0 */6 * * *'
+    - cron: '0 */3 * * *'
   workflow_dispatch: {}     # "Run workflow" button for an on-demand refresh
 
 permissions:
