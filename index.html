@@ -1440,6 +1440,9 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   .atc-volume{grid-area:vol;justify-content:flex-start}
   .atc-vol-slider{flex:1;width:auto;max-width:200px}
 }
+@media(max-width:360px){
+  .atc-volume{display:none}
+}
 
 /* ── FULL-HEIGHT IFRAME FRAMES (Satellite, Flights) ── */
 .frame-fallback-link{
@@ -1739,6 +1742,14 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   color:var(--text-dim);line-height:1.8;
 }
 .fb-notice b{color:var(--accent-bright)}
+.fb-skeleton{display:flex;flex-direction:column;gap:8px;padding:6px 8px}
+.fb-skel-row{
+  height:58px;border-radius:var(--radius);
+  background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.03) 75%);
+  background-size:200% 100%;
+  animation:skelPulse 1.5s ease-in-out infinite;
+}
+@keyframes skelPulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .fb-notice code{color:var(--accent-bright);background:rgba(0,0,0,0.4);padding:1px 6px;border-radius:3px}
 
 /* Subscription info (kept for compat, now hidden) */
@@ -5453,6 +5464,7 @@ async function renderFlightBoard(direction){
   const upd = document.getElementById('flightBoardUpdated');
   if(!el) return;
   setBadge('flightBoardBadge','LOADING','loading');
+  el.innerHTML='<div class="fb-skeleton"><div class="fb-skel-row"></div><div class="fb-skel-row"></div><div class="fb-skel-row"></div><div class="fb-skel-row"></div></div>';
   try{
     const {rows, stale, staleTs} = await fetchCuracaoFlights(direction);
     if(stale){
@@ -6705,29 +6717,47 @@ async function openWorldModal(icao){
   const modal = document.getElementById('worldModal');
   const close = document.getElementById('worldModalClose');
   const grid  = document.getElementById('world-ovr-grid');
-  const hide  = ()=>{ if(modal) modal.style.display='none'; };
+  let _opener = null;
+
+  const focusable = ()=>Array.from(modal.querySelectorAll(
+    'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])'
+  ));
+  const hide = ()=>{
+    if(modal) modal.style.display='none';
+    _opener?.focus(); _opener=null;
+  };
+  const open = (card,icao)=>{ _opener=card; openWorldModal(icao).then(()=>close?.focus()).catch(err=>console.warn('[WorldModal]', err.message)); };
+
   if(close) close.addEventListener('click', hide);
   if(modal) modal.addEventListener('click', e=>{ if(e.target===modal) hide(); });
   document.addEventListener('keydown', e=>{
-    if(e.key==='Escape' && modal && modal.style.display!=='none') hide();
+    if(e.key==='Escape' && modal && modal.style.display!=='none'){ hide(); return; }
+    if(e.key==='Tab' && modal && modal.style.display!=='none'){
+      const els=focusable(); if(!els.length) return;
+      const first=els[0], last=els[els.length-1];
+      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+      else           { if(document.activeElement===last) { e.preventDefault(); first.focus(); } }
+    }
   });
   if(grid){
     grid.addEventListener('click', e=>{
-      const card = e.target.closest('.world-ovr-card');
-      if(card?.dataset.icao) openWorldModal(card.dataset.icao).catch(err=>console.warn('[WorldModal]', err.message));
+      const card=e.target.closest('.world-ovr-card');
+      if(card?.dataset.icao) open(card, card.dataset.icao);
     });
     grid.addEventListener('keydown', e=>{
       if(e.key!=='Enter' && e.key!==' ') return;
-      const card = e.target.closest('.world-ovr-card');
-      if(card?.dataset.icao){ e.preventDefault(); openWorldModal(card.dataset.icao).catch(err=>console.warn('[WorldModal]', err.message)); }
+      const card=e.target.closest('.world-ovr-card');
+      if(card?.dataset.icao){ e.preventDefault(); open(card, card.dataset.icao); }
     });
   }
 })();
 
 // ── FORECAST 5-day modal: open from a tapped current-weather card ──
+let _fcastModalOpener = null;
 function openFcastModal(icao){
   const d = _fcastDetail[icao];
   const modal = document.getElementById('fcastModal');
+  const close = document.getElementById('fcastModalClose');
   const body  = document.getElementById('fcastModalBody');
   if(!d || !modal || !body) return;
   body.innerHTML = `
@@ -6742,27 +6772,43 @@ function openFcastModal(icao){
     ${d.alertHtml||''}
     <div class="fcast-days fcast-days-modal">${d.dayCards}</div>`;
   modal.style.display = '';
+  close?.focus();
 }
 
 (function wireFcastModal(){
   const modal = document.getElementById('fcastModal');
   const close = document.getElementById('fcastModalClose');
   const grid  = document.getElementById('forecast-content');
-  const hide  = ()=>{ if(modal) modal.style.display='none'; };
+
+  const focusable = ()=>Array.from(modal.querySelectorAll(
+    'a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])'
+  ));
+  const hide = ()=>{
+    if(modal) modal.style.display='none';
+    _fcastModalOpener?.focus(); _fcastModalOpener=null;
+  };
+  const open = (card,icao)=>{ _fcastModalOpener=card; openFcastModal(icao); };
+
   if(close) close.addEventListener('click', hide);
   if(modal) modal.addEventListener('click', e=>{ if(e.target===modal) hide(); });
   document.addEventListener('keydown', e=>{
-    if(e.key==='Escape' && modal && modal.style.display!=='none') hide();
+    if(e.key==='Escape' && modal && modal.style.display!=='none'){ hide(); return; }
+    if(e.key==='Tab' && modal && modal.style.display!=='none'){
+      const els=focusable(); if(!els.length) return;
+      const first=els[0], last=els[els.length-1];
+      if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+      else           { if(document.activeElement===last) { e.preventDefault(); first.focus(); } }
+    }
   });
   if(grid){
     grid.addEventListener('click', e=>{
       const card = e.target.closest('.fc-cur-card');
-      if(card?.dataset.icao) openFcastModal(card.dataset.icao);
+      if(card?.dataset.icao) open(card, card.dataset.icao);
     });
     grid.addEventListener('keydown', e=>{
       if(e.key!=='Enter' && e.key!==' ') return;
       const card = e.target.closest('.fc-cur-card');
-      if(card?.dataset.icao){ e.preventDefault(); openFcastModal(card.dataset.icao); }
+      if(card?.dataset.icao){ e.preventDefault(); open(card, card.dataset.icao); }
     });
   }
 })();
