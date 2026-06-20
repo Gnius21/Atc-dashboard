@@ -5420,7 +5420,7 @@ async function decorateDestWeather(rows){
     const lats=keys.map(k=>need[k][0]).join(',');
     const lons=keys.map(k=>need[k][1]).join(',');
     try{
-      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code&timezone=auto`);
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,weather_code&timezone=auto`,{signal:AbortSignal.timeout(8000)});
       if(r.ok){
         const d=await r.json();
         const arr=Array.isArray(d)?d:[d];
@@ -7058,7 +7058,7 @@ async function refresh(){
   // WeatherAPI quota guard — only refresh every WX_REFRESH_MS (15 min)
   // unless this is the first call of the session.
   if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
-    await Promise.all(ICAOS.map(fetchWeatherAPI));
+    await Promise.allSettled(ICAOS.map(fetchWeatherAPI));
     _lastWxFetch = Date.now();
   }
 
@@ -7895,8 +7895,8 @@ async function loadForecast(forceNewsUpdate=false){
 
   if(forceNewsUpdate || !window._fcastNewsLoaded){
     window._fcastNewsLoaded = true;
-    loadDustForecast();
-    loadCaribbeanNews();
+    loadDustForecast().catch(e=>console.warn('[Dust]',e.message));
+    loadCaribbeanNews().catch(e=>console.warn('[News]',e.message));
   }
 
   try{
