@@ -6226,7 +6226,7 @@ async function fetchMETAR(){
     ? `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`
     : 'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded';
   const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, opts);
+  const res = await fetch(url, {...opts, signal:AbortSignal.timeout(10000)});
   if(!res.ok) throw new Error('METAR HTTP '+res.status);
   const json = await res.json();
   (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
@@ -6237,7 +6237,7 @@ async function fetchTAF(){
     ? `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`
     : 'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded';
   const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, opts);
+  const res = await fetch(url, {...opts, signal:AbortSignal.timeout(10000)});
   if(!res.ok) throw new Error('TAF HTTP '+res.status);
   const json = await res.json();
   return json.data||[];
@@ -6251,7 +6251,7 @@ async function fetchWeatherAPI(icao){
     const url = PROXY_BASE
       ? `${PROXY_BASE}/wx?q=${encodeURIComponent(q)}&days=4&aqi=yes&alerts=yes`
       : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(q)}&days=4&aqi=yes&alerts=yes`;
-    const res = await fetch(url, {cache:'no-store'});
+    const res = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
     if(!res.ok) throw new Error(res.status);
     store.api[icao] = await res.json();
   }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
@@ -6274,7 +6274,7 @@ async function fetchWorldOvr(){
         const url = PROXY_BASE
           ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=1&aqi=no&alerts=no`
           : `https://api.weatherapi.com/v1/current.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&aqi=no`;
-        const r = await fetch(url,{cache:'no-store'});
+        const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
         if(!r.ok) throw new Error('HTTP '+r.status);
         _worldOvrStore[ap.icao] = await r.json();
       }catch(e){ console.warn('[WorldOvr]',ap.icao,e.message); }
@@ -6452,8 +6452,8 @@ async function openWorldModal(icao){
       ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=3&aqi=no&alerts=no`
       : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&days=3&aqi=no&alerts=no`;
     const [mR, fR] = await Promise.allSettled([
-      fetch(metarUrl, metarOpts).then(r=>{ if(!r.ok) throw new Error('METAR '+r.status); return r.json(); }),
-      fetch(fcUrl, {cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error('Forecast '+r.status); return r.json(); }),
+      fetch(metarUrl, {...metarOpts, signal:AbortSignal.timeout(10000)}).then(r=>{ if(!r.ok) throw new Error('METAR '+r.status); return r.json(); }),
+      fetch(fcUrl, {cache:'no-store', signal:AbortSignal.timeout(10000)}).then(r=>{ if(!r.ok) throw new Error('Forecast '+r.status); return r.json(); }),
     ]);
     c = {
       ts:    Date.now(),
@@ -7746,7 +7746,7 @@ async function fetchOpenMeteoModels(lat, lon){
   for(const modelList of [FCAST_MODELS, FALLBACK_MODELS, null]){
     const url = modelList ? `${base}&models=${modelList.join(',')}` : base;
     try{
-      const r = await fetch(url, {cache:'no-store'});
+      const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(12000)});
       if(r.ok) return r.json();
       console.warn('[Forecast] Open-Meteo', modelList ? modelList.join(',') : 'default', '-> HTTP', r.status, '- trying next');
     }catch(e){
@@ -7827,7 +7827,7 @@ async function loadForecast(forceNewsUpdate=false){
           : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(AIRPORTS[loc.icao]?.q||loc.icao)}&days=5&aqi=yes&alerts=yes`;
 
         const [wxR, mR] = await Promise.allSettled([
-          fetch(wxUrl,{cache:'no-store'}).then(r=>{ if(!r.ok) throw new Error(`WeatherAPI ${r.status}`); return r.json(); }),
+          fetch(wxUrl,{cache:'no-store', signal:AbortSignal.timeout(10000)}).then(r=>{ if(!r.ok) throw new Error(`WeatherAPI ${r.status}`); return r.json(); }),
           fetchOpenMeteoModels(loc.lat, loc.lon),
         ]);
 
@@ -8579,14 +8579,15 @@ async function loadMarine(){
         `&current=sea_surface_temperature&timezone=America%2FCuracao`;
 
       // Fetch wave models + SST in parallel
+      const _mSig = () => AbortSignal.timeout(12000);
       const [ecmwfR, gfsR, sstR] = await Promise.allSettled([
-        fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store'})
+        fetch(buildMarineUrl('ecmwf_wam025'), {cache:'no-store', signal:_mSig()})
           .then(r=>{ if(!r.ok) throw new Error('ECMWF HTTP '+r.status); return r.json(); })
           .catch(e=>{ console.warn(`[Marine] ECMWF ${loc.icao}:`, e.message); return null; }),
-        fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store'})
+        fetch(buildMarineUrl('ncep_gfswave025'), {cache:'no-store', signal:_mSig()})
           .then(r=>{ if(!r.ok) throw new Error('GFS HTTP '+r.status); return r.json(); })
           .catch(e=>{ console.warn(`[Marine] GFS ${loc.icao}:`, e.message); return null; }),
-        fetch(sstUrl, {cache:'no-store'})
+        fetch(sstUrl, {cache:'no-store', signal:_mSig()})
           .then(r=>{ if(!r.ok) throw new Error('SST HTTP '+r.status); return r.json(); })
           .catch(e=>{ console.warn(`[Marine] SST ${loc.icao}:`, e.message); return null; }),
       ]);
@@ -8860,10 +8861,10 @@ setInterval(()=>{
   if(active && active.id==='tab-forecast') loadForecast();
 }, 30 * 60 * 1000);
 
-// Refresh marine every 30 min when its tab is open
+// Refresh marine every 30 min when its tab is open (skip if data is <20 min old)
 setInterval(()=>{
   const active=document.querySelector('.tab-pane.active');
-  if(active && active.id==='tab-marine') loadMarine();
+  if(active && active.id==='tab-marine' && (!window._marineLastRender || Date.now()-window._marineLastRender > 20*60*1000)) loadMarine();
 }, 30 * 60 * 1000);
 
 /* No more page reload — ATC audio must stay alive.
@@ -9220,7 +9221,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v6';
+  const CACHE_NAME = 'atc-dashboard-v7';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
