@@ -5592,8 +5592,9 @@ function renderMETAR(icao,d){
   const obsStr=obs?fmtUTC(d.observed):'—';
   const ageMin=obs?Math.round((Date.now()-obs.getTime())/60000):null;
   const ageWarn=ageMin!==null&&ageMin>90;
+  const _msrc=d._source||'CheckWX';
   document.getElementById(`metar-age-${pfx}`).innerHTML=
-    `CheckWX · Obs ${obsStr}`+
+    `${_msrc} · Obs ${obsStr}`+
     (ageMin!==null?` · <span style="color:${ageWarn?'#f87171':'#4ade80'};font-weight:600">${ageMin} min ago</span>`:'')+
     ` · refreshes every 5 min`;
 
@@ -6221,26 +6222,101 @@ function setBadge(id,text,cls){
    Worker and the keys below stay hidden from the browser.
    If PROXY_BASE is empty the keys are used directly (fallback).
 ════════════════════════════════ */
+
+// ── AWC fallback mappers (Aviation Weather Center — free, no key) ──────────
+function _parseSM(s){
+  if(!s) return null;
+  s=String(s).replace('+','').trim();
+  let v=0;
+  for(const p of s.split(' ')){
+    if(p.includes('/')){const[n,d]=p.split('/');v+=parseInt(n)/parseInt(d);}
+    else v+=parseFloat(p)||0;
+  }
+  return isNaN(v)?null:v;
+}
+function _awcMetarToCheckWX(m){
+  const sm=_parseSM(m.visib);
+  const visMtr=sm!=null?Math.round(sm*1609.34):null;
+  const ceilLayer=(m.skyCondition||[]).find(s=>s.skyCover==='BKN'||s.skyCover==='OVC');
+  const rh=(m.temp!=null&&m.dewp!=null)
+    ?Math.min(100,Math.max(0,Math.round(100*Math.exp((17.625*m.dewp)/(243.04+m.dewp))/Math.exp((17.625*m.temp)/(243.04+m.temp)))))
+    :null;
+  return{
+    icao:m.icaoId, raw_text:m.rawOb, _source:'AWC',
+    observed:m.obsTime?new Date(m.obsTime*1000).toISOString():m.reportTime,
+    wind:{degrees:m.wdir==='VRB'?undefined:parseInt(m.wdir)||undefined,
+          direction:m.wdir==='VRB'?'VRB':undefined,
+          speed_kts:m.wspd??undefined, gust_kts:m.wgst??undefined},
+    temperature:{celsius:m.temp}, dewpoint:{celsius:m.dewp},
+    humidity:rh!=null?{percent:rh}:undefined,
+    barometer:{hpa:m.altim, hg:m.altim!=null?+(m.altim*0.02953).toFixed(2):undefined},
+    visibility:visMtr!=null?{meters:visMtr>9000?9999:visMtr, miles:sm}:undefined,
+    clouds:(m.skyCondition||[]).filter(s=>!['CLR','SKC','NSC','CAVOK'].includes(s.skyCover))
+      .map(s=>({code:s.skyCover, base_feet_agl:s.cloudBase})),
+    ceiling:ceilLayer?{feet:ceilLayer.cloudBase}:undefined,
+    flight_category:m.fltcat,
+    conditions:m.wxString?[{code:m.wxString, text:m.wxString}]:[],
+  };
+}
+function _awcTafToCheckWX(t){
+  const ts=v=>typeof v==='number'?new Date(v*1000).toISOString():v;
+  return{
+    icao:t.icaoId, raw_text:t.rawTAF, _source:'AWC',
+    timestamp:{valid_from:ts(t.validTimeFrom), valid_to:ts(t.validTimeTo)},
+    forecast:(t.forecast||[]).map(f=>{
+      const sm=_parseSM(f.visib);
+      const visMtr=sm!=null?Math.round(sm*1609.34):null;
+      const chgCode=f.changeIndicator||'FM';
+      return{
+        timestamp:{from:ts(f.timeFrom), to:ts(f.timeTo)},
+        change:{indicator:{code:chgCode,
+          text:f.probability?`PROB${f.probability} ${chgCode}`:chgCode}},
+        wind:{degrees:f.windDir==='VRB'?undefined:parseInt(f.windDir)||undefined,
+              speed_kts:f.windSpeed??undefined, gust_kts:f.windGust??undefined},
+        visibility:visMtr!=null?{meters:visMtr>9000?9999:visMtr}:undefined,
+        clouds:(f.skyCondition||[]).filter(s=>!['CLR','SKC'].includes(s.skyCover))
+          .map(s=>({code:s.skyCover, base_feet_agl:s.cloudBase})),
+        conditions:f.wxString?[{code:f.wxString, text:f.wxString}]:[],
+      };
+    }),
+  };
+}
+
 async function fetchMETAR(){
-  const url = PROXY_BASE
-    ? `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`
-    : 'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded';
-  const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, opts);
-  if(!res.ok) throw new Error('METAR HTTP '+res.status);
-  const json = await res.json();
-  (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
+  // Try CheckWX (decoded JSON)
+  try{
+    const url = PROXY_BASE
+      ? `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`
+      : 'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded';
+    const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
+    const res = await fetch(url, opts);
+    if(!res.ok) throw new Error('CheckWX HTTP '+res.status);
+    const json = await res.json();
+    (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
+    return;
+  }catch(e){ console.warn('[METAR] CheckWX failed, using AWC fallback:',e.message); }
+  // Fallback: AWC — free, no API key, no CORS preflight
+  const res=await fetch('https://aviationweather.gov/api/data/metar?ids=TNCA,TNCC,TNCB&format=json&hours=2',{cache:'no-store'});
+  if(!res.ok) throw new Error('AWC METAR HTTP '+res.status);
+  (await res.json()||[]).forEach(m=>{ store.metar[m.icaoId]=_awcMetarToCheckWX(m); });
 }
 
 async function fetchTAF(){
-  const url = PROXY_BASE
-    ? `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`
-    : 'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded';
-  const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, opts);
-  if(!res.ok) throw new Error('TAF HTTP '+res.status);
-  const json = await res.json();
-  return json.data||[];
+  // Try CheckWX (decoded JSON)
+  try{
+    const url = PROXY_BASE
+      ? `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`
+      : 'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded';
+    const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
+    const res = await fetch(url, opts);
+    if(!res.ok) throw new Error('CheckWX HTTP '+res.status);
+    const json = await res.json();
+    return json.data||[];
+  }catch(e){ console.warn('[TAF] CheckWX failed, using AWC fallback:',e.message); }
+  // Fallback: AWC
+  const res=await fetch('https://aviationweather.gov/api/data/taf?ids=TNCA,TNCC,TNCB&format=json',{cache:'no-store'});
+  if(!res.ok) throw new Error('AWC TAF HTTP '+res.status);
+  return (await res.json()||[]).map(_awcTafToCheckWX);
 }
 
 async function fetchWeatherAPI(icao){
@@ -9232,7 +9308,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v10';
+  const CACHE_NAME = 'atc-dashboard-v11';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
