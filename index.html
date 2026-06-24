@@ -1049,8 +1049,8 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   }
   /* Hover affordances only make sense with a pointer */
   .tab-btn{cursor:pointer}
-  /* Taller ADS-B map — desktops have vertical room */
-  .adsb-box{height:620px!important}
+  /* ADS-B map fills viewport height (header ~56px + tab bar ~48px + padding/title ~80px) */
+  .adsb-box{height:calc(100vh - 200px)!important;min-height:480px}
   /* Wider, more readable max line length for METAR/TAF */
   .metar-decoded{grid-template-columns:repeat(4,1fr)}
 }
@@ -1071,7 +1071,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   #world-ovr-grid{
     grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));
   }
-  .adsb-box{height:680px!important}
+  .adsb-box{height:calc(100vh - 190px)!important}
   /* Slightly larger base type for readability at viewing distance */
   .section-title{font-size:.62rem}
 }
@@ -1088,7 +1088,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   .island-widgets-grid{
     grid-template-columns:repeat(auto-fit, minmax(min(100%, 440px), 1fr));
   }
-  .adsb-box{height:760px!important}
+  .adsb-box{height:calc(100vh - 180px)!important}
   /* Forecast + marine content also widen gracefully via their auto-fit */
   #forecast-content, #marine-content{gap:20px}
 }
@@ -4273,7 +4273,7 @@ body.night .tab-btn.active{
       <button class="adsb-layer-btn" id="satLayerBtn" data-active="0" style="margin-left:8px">🛰 Satellite</button>
     </div>
 
-    <div class="radar-box adsb-box" style="height:580px">
+    <div class="radar-box adsb-box">
       <iframe
         id="adsbFrame"
         class="windy-iframe"
@@ -9219,7 +9219,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v5';
+  const CACHE_NAME = 'atc-dashboard-v6';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
