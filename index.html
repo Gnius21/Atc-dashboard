@@ -9219,7 +9219,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v4';
+  const CACHE_NAME = 'atc-dashboard-v5';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
