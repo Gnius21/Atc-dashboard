@@ -6226,7 +6226,7 @@ async function fetchMETAR(){
     ? `${PROXY_BASE}/metar/TNCA,TNCC,TNCB`
     : 'https://api.checkwx.com/metar/TNCA,TNCC,TNCB/decoded';
   const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, {...opts, signal:AbortSignal.timeout(20000)});
+  const res = await fetch(url, opts);
   if(!res.ok) throw new Error('METAR HTTP '+res.status);
   const json = await res.json();
   (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
@@ -6237,7 +6237,7 @@ async function fetchTAF(){
     ? `${PROXY_BASE}/taf/TNCA,TNCC,TNCB`
     : 'https://api.checkwx.com/taf/TNCA,TNCC,TNCB/decoded';
   const opts = PROXY_BASE ? {cache:'no-store'} : {headers:{'X-API-Key':CHECKWX_KEY},cache:'no-store'};
-  const res = await fetch(url, {...opts, signal:AbortSignal.timeout(20000)});
+  const res = await fetch(url, opts);
   if(!res.ok) throw new Error('TAF HTTP '+res.status);
   const json = await res.json();
   return json.data||[];
@@ -9232,7 +9232,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v9';
+  const CACHE_NAME = 'atc-dashboard-v10';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
