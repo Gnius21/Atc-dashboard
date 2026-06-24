@@ -4730,7 +4730,8 @@ function setMapViewFromUrl(u){
   const frame    = document.getElementById('adsbFrame');
   const saveBtn  = document.getElementById('adsbSaveBtn');
   const BASE_URL = 'https://globe.adsbexchange.com/';
-  const DEFAULT  = `${BASE_URL}?lat=12.35&lon=-69.50&zoom=8`;
+  const _mobileZoom = window.innerWidth <= 680 ? 7 : window.innerWidth <= 1000 ? 7.5 : 8;
+  const DEFAULT  = `${BASE_URL}?lat=12.35&lon=-69.50&zoom=${_mobileZoom}`;
 
   let saved = localStorage.getItem(LS_KEY);
   // Discard any saved URL from the old airplanes.live provider
