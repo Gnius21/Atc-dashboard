@@ -8711,7 +8711,7 @@ function renderAbcMap(islandsData){
           <text x="0" y="6" text-anchor="middle" font-family="monospace" font-size="13" fill="#f97316">⚓</text>
           ${arrowSvg}
           <text x="0" y="-24" text-anchor="middle" font-family="monospace" font-size="8"
-            fill="rgba(249,115,22,0.9)" letter-spacing="2">BUOY ${_bd.id}</text>
+            fill="rgba(249,115,22,0.9)" letter-spacing="2">${_bd.model?'MODEL':'BUOY '+_bd.id}</text>
           <rect x="23" y="-34" width="200" height="${panH}" rx="8"
             fill="rgba(5,11,22,0.96)" stroke="#f97316" stroke-width="1.4"
             style="filter:drop-shadow(0 0 7px #f9731633)"/>
@@ -8731,20 +8731,58 @@ function renderAbcMap(islandsData){
 
 /* ── NDBC moored wave buoys nearest the ABC islands.
    NDBC realtime .txt files don't send CORS headers, so a direct browser
-   fetch fails — we must route through a CORS proxy. We try the closest
-   reporting station across a couple of proxies and take the first hit.
+   fetch fails — we must route through a CORS proxy. We try the nearest
+   ACTIVE stations across a couple of proxies and take the first hit.
+   The two closest buoys (42058/42059) are frequently adrift, so if none
+   report we fall back to an Open-Meteo model "virtual buoy" right by the
+   islands (CORS-friendly, no proxy) so the panel always shows sea data.
    Data: wave height, period, wind speed/dir, sea temp. Free, no key.
 ────────────────────────────────────────────────────── */
 const _BUOY_STATIONS = [
-  { id:'42059', label:'E Caribbean', latlon:'15.3°N 67.5°W' },  // closest to ABC
-  { id:'41043', label:'NE Caribbean', latlon:'21.0°N 65.0°W' },
-  { id:'42058', label:'Central Caribbean', latlon:'15.0°N 75.1°W' },
+  // Ordered by distance to ABC (12.2°N 69°W). The close ones (42058/42059)
+  // are often adrift — _parseNdbc skips a station that returns no live data.
+  { id:'42059', label:'E Caribbean',  latlon:'15.3°N 67.6°W' },
+  { id:'42058', label:'Cen Caribbean',latlon:'14.8°N 75.1°W' },
+  { id:'41043', label:'NE of P.Rico', latlon:'21.1°N 64.9°W' },
+  { id:'41046', label:'E of Bahamas', latlon:'23.8°N 68.4°W' },
 ];
+// Offshore model point just N of Curaçao/Bonaire (open Caribbean water)
+const _VBUOY = { lat:13.2, lon:-68.8, latlon:'13.2°N 68.8°W' };
 const _BUOY_PROXIES = [
+  raw => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(raw)}`,
   raw => `https://corsproxy.io/?url=${encodeURIComponent(raw)}`,
   raw => `https://api.allorigins.win/raw?url=${encodeURIComponent(raw)}`,
 ];
 let _buoyData = null, _buoyTs = 0;
+
+// Open-Meteo model fallback — always available, CORS-friendly, no proxy.
+async function fetchVirtualBuoy(){
+  const sig = ()=>AbortSignal.timeout(10000);
+  const [mR, wR] = await Promise.allSettled([
+    fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${_VBUOY.lat}&longitude=${_VBUOY.lon}`+
+      `&current=wave_height,wave_period,wave_direction,sea_surface_temperature&timezone=GMT`,
+      {cache:'no-store', signal:sig()}).then(r=>r.ok?r.json():null),
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${_VBUOY.lat}&longitude=${_VBUOY.lon}`+
+      `&current=wind_speed_10m,wind_direction_10m,pressure_msl&wind_speed_unit=ms&timezone=GMT`,
+      {cache:'no-store', signal:sig()}).then(r=>r.ok?r.json():null),
+  ]);
+  const m = mR.status==='fulfilled' ? mR.value : null;
+  const w = wR.status==='fulfilled' ? wR.value : null;
+  if(!m && !w) return null;
+  const mc = m?.current||{}, wc = w?.current||{};
+  const t = (mc.time||wc.time||'');
+  return {
+    id:'OM', model:true, label:'Open-Meteo model', latlon:_VBUOY.latlon,
+    time: t.includes('T') ? t.split('T')[1]+'Z' : '—',
+    wvht: mc.wave_height ?? null,
+    dpd:  mc.wave_period ?? null,
+    mwd:  mc.wave_direction ?? null,
+    wtmp: mc.sea_surface_temperature ?? null,
+    wspd: wc.wind_speed_10m ?? null,       // m/s
+    wdir: wc.wind_direction_10m ?? null,
+    pres: wc.pressure_msl ?? null,
+  };
+}
 
 function _parseNdbc(txt, station){
   const lines = (txt||'').trim().split('\n');
@@ -8778,7 +8816,12 @@ async function fetchBuoyData(){
       }catch(e){ /* try next proxy / station */ }
     }
   }
-  console.warn('[Buoy] no reporting station reachable');
+  // No real buoy reporting — fall back to Open-Meteo model virtual buoy
+  console.warn('[Buoy] no NDBC station reporting; using Open-Meteo model fallback');
+  try{
+    const vb = await fetchVirtualBuoy();
+    if(vb){ _buoyData = vb; _buoyTs = Date.now(); return _buoyData; }
+  }catch(e){ console.warn('[Buoy] virtual buoy failed:', e.message); }
   return _buoyData;   // keep last good value if we had one
 }
 
@@ -8805,10 +8848,17 @@ function renderBuoySection(){
   const arrow = bd.wdir!=null
     ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)}deg);color:#fbbf24">↓</span>`
     : '';
+  const isModel = !!bd.model;
+  const title = isModel
+    ? `🌐 Model — ${bd.label}`
+    : `⚓ NDBC ${bd.id}`;
+  const note = isModel
+    ? `<div style="padding:7px 16px;border-top:1px solid var(--border);background:rgba(0,0,0,0.25);font-family:var(--mono);font-size:.5rem;color:var(--text-dim);letter-spacing:.04em">No moored buoy near the ABC islands is currently in service (nearest stations adrift). Values are Open-Meteo forecast-model output at the offshore point above.</div>`
+    : '';
   panel.innerHTML = `
     <div class="buoy-head">
-      <span class="buoy-id">⚓ NDBC ${bd.id}</span>
-      <span class="buoy-sub">${bd.label} · ${bd.latlon} · obs ${bd.time}</span>
+      <span class="buoy-id"${isModel?' style="color:#22d3ee"':''}>${title}</span>
+      <span class="buoy-sub">${bd.latlon} · obs ${bd.time}</span>
     </div>
     <div class="buoy-grid">
       ${cell('Sea State', `${sea.code!=='—'?'F'+sea.code+' · ':''}${sea.name}`, sea.col)}
@@ -8818,8 +8868,8 @@ function renderBuoySection(){
       ${cell('Wind', wsKt!=null?`${arrow} ${wDeg} ${wCard} · ${wsKt} kt`:'—', '#fbbf24')}
       ${cell('Sea Temp', bd.wtmp!=null?bd.wtmp.toFixed(1)+' °C':'—', '#34d399')}
       ${cell('Pressure', bd.pres!=null?bd.pres.toFixed(1)+' hPa':'—')}
-    </div>`;
-  setBadge('buoyBadge','LIVE');
+    </div>${note}`;
+  setBadge('buoyBadge', isModel?'MODEL':'LIVE', isModel?'loading':'');
 }
 
 async function loadMarine(){
@@ -9494,7 +9544,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v15';
+  const CACHE_NAME = 'atc-dashboard-v16';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
@@ -9522,7 +9572,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
       'liveatc.net','tidesandcurrents.noaa.gov',
       'rss2json.com','windy.com',
       'adsbexchange.com','rainviewer.com','tilecache.rainviewer.com',
-      'allorigins.win','corsproxy.io','knmi.nl','ndbc.noaa.gov',
+      'allorigins.win','corsproxy.io','codetabs.com','knmi.nl','ndbc.noaa.gov',
     ];
 
     self.addEventListener('fetch', e => {
