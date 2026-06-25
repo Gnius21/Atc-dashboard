@@ -1268,6 +1268,44 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   margin-top:2px;font-weight:500;white-space:nowrap;
 }
 
+/* ── Offshore buoy observations panel ── */
+.buoy-head{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  background:rgba(249,115,22,0.06);
+}
+.buoy-id{
+  font-family:var(--display);font-size:.92rem;font-weight:700;color:#f97316;
+  letter-spacing:.02em;
+}
+.buoy-sub{
+  font-family:var(--mono);font-size:.56rem;color:var(--text-dim);letter-spacing:.04em;
+}
+.buoy-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);
+}
+.buoy-cell{
+  padding:11px 12px;border-right:1px solid var(--border);
+  display:flex;flex-direction:column;justify-content:center;min-width:0;
+}
+.buoy-cell:last-child{border-right:none}
+.buoy-cell-lbl{
+  font-family:var(--mono);font-size:.44rem;letter-spacing:.2em;font-weight:600;
+  text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;white-space:nowrap;
+}
+.buoy-cell-val{
+  font-family:var(--display);font-size:.82rem;font-weight:600;
+  color:var(--accent-bright);line-height:1.15;
+  font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+@media(max-width:1000px){ .buoy-grid{grid-template-columns:repeat(4,1fr)}
+  .buoy-cell:nth-child(4){border-right:none}
+  .buoy-cell{border-bottom:1px solid var(--border)} }
+@media(max-width:600px){ .buoy-grid{grid-template-columns:repeat(2,1fr)}
+  .buoy-cell:nth-child(4){border-right:1px solid var(--border)}
+  .buoy-cell:nth-child(odd){border-right:1px solid var(--border)}
+  .buoy-cell:nth-child(even){border-right:none} }
+
 .metar-clouds-row{
   display:flex;align-items:center;gap:14px;
   padding:7px 14px 7px 18px;
@@ -4490,6 +4528,14 @@ body.night .tab-btn.active{
       <div id="abcMap" style="padding:14px;text-align:center">
         <div style="font-family:var(--mono);font-size:.6rem;color:var(--text-dim);padding:18px">Loading map…</div>
       </div>
+    </div>
+  </div>
+
+  <!-- Nearest offshore buoy live observations -->
+  <div class="full">
+    <div class="section-title">Offshore Buoy — Live Observations <span class="data-badge loading" id="buoyBadge">LOADING</span></div>
+    <div class="panel" id="buoyPanel">
+      <div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">Loading buoy data…</div>
     </div>
   </div>
 
@@ -8736,6 +8782,46 @@ async function fetchBuoyData(){
   return _buoyData;   // keep last good value if we had one
 }
 
+// Render the dedicated buoy observations panel below the sea-state map
+function renderBuoySection(){
+  const panel = document.getElementById('buoyPanel');
+  if(!panel) return;
+  const bd = window._lastBuoyData;
+  if(!bd){
+    panel.innerHTML = `<div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">
+      No offshore buoy currently reporting. Showing model data on the map above.</div>`;
+    setBadge('buoyBadge','OFFLINE','error');
+    return;
+  }
+  const wsKt  = bd.wspd!=null ? Math.round(bd.wspd*1.944) : null;
+  const wCard = bd.wdir!=null ? wdCard(bd.wdir) : '';
+  const wDeg  = bd.wdir!=null ? String(Math.round(bd.wdir)).padStart(3,'0')+'°' : '';
+  const sea   = douglasSeaState(bd.wvht);
+  const cell = (lbl,val,col)=>`
+    <div class="buoy-cell">
+      <div class="buoy-cell-lbl">${lbl}</div>
+      <div class="buoy-cell-val"${col?` style="color:${col}"`:''}>${val}</div>
+    </div>`;
+  const arrow = bd.wdir!=null
+    ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)}deg);color:#fbbf24">↓</span>`
+    : '';
+  panel.innerHTML = `
+    <div class="buoy-head">
+      <span class="buoy-id">⚓ NDBC ${bd.id}</span>
+      <span class="buoy-sub">${bd.label} · ${bd.latlon} · obs ${bd.time}</span>
+    </div>
+    <div class="buoy-grid">
+      ${cell('Sea State', `${sea.code!=='—'?'F'+sea.code+' · ':''}${sea.name}`, sea.col)}
+      ${cell('Wave Hs', bd.wvht!=null?bd.wvht.toFixed(1)+' m':'—', sea.col)}
+      ${cell('Period', bd.dpd!=null?bd.dpd.toFixed(0)+' s':'—')}
+      ${cell('Swell Dir', bd.mwd!=null?String(Math.round(bd.mwd)).padStart(3,'0')+'° '+wdCard(bd.mwd):'—')}
+      ${cell('Wind', wsKt!=null?`${arrow} ${wDeg} ${wCard} · ${wsKt} kt`:'—', '#fbbf24')}
+      ${cell('Sea Temp', bd.wtmp!=null?bd.wtmp.toFixed(1)+' °C':'—', '#34d399')}
+      ${cell('Pressure', bd.pres!=null?bd.pres.toFixed(1)+' hPa':'—')}
+    </div>`;
+  setBadge('buoyBadge','LIVE');
+}
+
 async function loadMarine(){
   marineLoaded=true;
   const container=document.getElementById('marine-content');
@@ -9028,11 +9114,13 @@ async function loadMarine(){
     setBadge('marineBadge','LIVE');
     window._lastMarineIslands = islandsForMap;
     renderAbcMap(islandsForMap);
-    // Fetch buoy data concurrently; re-render map when it arrives
+    // Fetch buoy data concurrently; re-render map + section when it arrives
+    setBadge('buoyBadge','LOADING','loading');
     fetchBuoyData().then(bd=>{
       window._lastBuoyData = bd;
       if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
-    }).catch(e=>console.warn('[Buoy]',e.message));
+      renderBuoySection();
+    }).catch(e=>{ console.warn('[Buoy]',e.message); renderBuoySection(); });
   }catch(e){
     console.error('[Marine] loadMarine failed:', e);
     container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}<br><span style="opacity:.5;font-size:.5rem">Check console for details</span></div>`;
@@ -9406,7 +9494,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v14';
+  const CACHE_NAME = 'atc-dashboard-v15';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
