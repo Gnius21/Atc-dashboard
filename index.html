@@ -8803,25 +8803,35 @@ function _parseNdbc(txt, station){
   };
 }
 
-async function fetchBuoyData(){
-  if(_buoyData && Date.now()-_buoyTs < 30*60*1000) return _buoyData;
+// Try all real NDBC stations × proxies in PARALLEL (7s each) and return the
+// first one that yields live data. Rejects if none respond — callers treat
+// that as "no real buoy" and keep the model fallback.
+function fetchRealBuoy(){
+  const attempts = [];
   for(const station of _BUOY_STATIONS){
     const rawUrl = `https://www.ndbc.noaa.gov/data/realtime2/${station.id}.txt`;
     for(const proxy of _BUOY_PROXIES){
-      try{
-        const r = await fetch(proxy(rawUrl), {cache:'no-store', signal:AbortSignal.timeout(12000)});
-        if(!r.ok) continue;
+      attempts.push((async()=>{
+        const r = await fetch(proxy(rawUrl), {cache:'no-store', signal:AbortSignal.timeout(7000)});
+        if(!r.ok) throw new Error('HTTP '+r.status);
         const parsed = _parseNdbc(await r.text(), station);
-        if(parsed){ _buoyData = parsed; _buoyTs = Date.now(); return _buoyData; }
-      }catch(e){ /* try next proxy / station */ }
+        if(!parsed) throw new Error('no data');
+        return parsed;
+      })());
     }
   }
-  // No real buoy reporting — fall back to Open-Meteo model virtual buoy
-  console.warn('[Buoy] no NDBC station reporting; using Open-Meteo model fallback');
+  return Promise.any(attempts);   // first valid real buoy
+}
+
+// Primary fetch: the Open-Meteo model buoy is fast + reliable, so we use it
+// as the baseline. The real-NDBC upgrade is attempted separately (background)
+// by loadMarine so a slow/adrift buoy network never delays the panel.
+async function fetchBuoyData(){
+  if(_buoyData && Date.now()-_buoyTs < 30*60*1000) return _buoyData;
   try{
     const vb = await fetchVirtualBuoy();
     if(vb){ _buoyData = vb; _buoyTs = Date.now(); return _buoyData; }
-  }catch(e){ console.warn('[Buoy] virtual buoy failed:', e.message); }
+  }catch(e){ console.warn('[Buoy] model fallback failed:', e.message); }
   return _buoyData;   // keep last good value if we had one
 }
 
@@ -9164,13 +9174,22 @@ async function loadMarine(){
     setBadge('marineBadge','LIVE');
     window._lastMarineIslands = islandsForMap;
     renderAbcMap(islandsForMap);
-    // Fetch buoy data concurrently; re-render map + section when it arrives
+    // Buoy: show the fast Open-Meteo model baseline first, then try to
+    // upgrade to a real NDBC buoy in the background (non-blocking).
     setBadge('buoyBadge','LOADING','loading');
     fetchBuoyData().then(bd=>{
       window._lastBuoyData = bd;
       if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
       renderBuoySection();
     }).catch(e=>{ console.warn('[Buoy]',e.message); renderBuoySection(); });
+    // Background upgrade — only replaces the model if a real buoy responds.
+    fetchRealBuoy().then(rb=>{
+      if(rb){
+        _buoyData = rb; _buoyTs = Date.now(); window._lastBuoyData = rb;
+        if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
+        renderBuoySection();
+      }
+    }).catch(()=>{ /* no real buoy reporting — model stays */ });
   }catch(e){
     console.error('[Marine] loadMarine failed:', e);
     container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}<br><span style="opacity:.5;font-size:.5rem">Check console for details</span></div>`;
@@ -9544,7 +9563,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v16';
+  const CACHE_NAME = 'atc-dashboard-v17';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
