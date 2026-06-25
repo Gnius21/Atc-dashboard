@@ -8707,7 +8707,7 @@ function renderAbcMap(islandsData){
           _bd.wtmp!=null? `<text x="33" y="33" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">SST ${_bd.wtmp.toFixed(1)}°C</text>` : '',
         ].filter(Boolean);
         const panH = 20 + rows.length * 18 + 10;
-        return `<g transform="translate(490,75)">
+        return `<g transform="translate(210,70)">
           <line x1="0" y1="18" x2="0" y2="44" stroke="rgba(249,115,22,0.25)" stroke-width="1.2" stroke-dasharray="4 3"/>
           <circle cx="0" cy="0" r="17" fill="rgba(8,18,35,0.97)" stroke="#f97316" stroke-width="2.4"
             style="filter:drop-shadow(0 0 10px #f9731666)"/>
@@ -8860,7 +8860,7 @@ function renderBuoySection(){
       <div class="buoy-cell-val"${col?` style="color:${col}"`:''}>${val}</div>
     </div>`;
   const arrow = bd.wdir!=null
-    ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)+180}deg);color:#fbbf24">↓</span>`
+    ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)}deg);color:#fbbf24">↓</span>`
     : '';
   const isModel = !!bd.model;
   const title = isModel
@@ -9581,7 +9581,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v20';
+  const CACHE_NAME = 'atc-dashboard-v21';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
