@@ -8693,9 +8693,9 @@ function renderAbcMap(islandsData){
         const wCard = _bd.wdir!=null ? wdCard(_bd.wdir) : '';
         const wDeg  = _bd.wdir!=null ? String(Math.round(_bd.wdir)).padStart(3,'0')+'°' : '';
         const wvCol = _bd.wvht!=null ? seaCol(_bd.wvht) : '#22d3ee';
-        // Wind barb arrow: points FROM the wind direction (meteorological convention)
+        // Wind arrow: points the way the wind is blowing TO (flipped 180° from bearing)
         const arrowSvg = _bd.wdir!=null ? (()=>{
-          const ang = _bd.wdir; // "from" bearing → arrow points INTO wind
+          const ang = _bd.wdir + 180;
           return `<g transform="translate(-28,14) rotate(${ang},0,0)">
             <line x1="0" y1="10" x2="0" y2="-10" stroke="#fbbf24" stroke-width="1.8"/>
             <polygon points="0,-12 -3.5,-6 3.5,-6" fill="#fbbf24"/>
@@ -8860,7 +8860,7 @@ function renderBuoySection(){
       <div class="buoy-cell-val"${col?` style="color:${col}"`:''}>${val}</div>
     </div>`;
   const arrow = bd.wdir!=null
-    ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)}deg);color:#fbbf24">↓</span>`
+    ? `<span style="display:inline-block;transform:rotate(${Math.round(bd.wdir)+180}deg);color:#fbbf24">↓</span>`
     : '';
   const isModel = !!bd.model;
   const title = isModel
@@ -9581,7 +9581,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v18';
+  const CACHE_NAME = 'atc-dashboard-v19';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
