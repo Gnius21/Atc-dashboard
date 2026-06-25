@@ -8640,13 +8640,22 @@ function renderAbcMap(islandsData){
       ${(()=>{
         const _bd = window._lastBuoyData;
         if(!_bd) return '';
-        const wsKt = _bd.wspd!=null ? Math.round(_bd.wspd*1.944) : null;
+        const wsKt  = _bd.wspd!=null ? Math.round(_bd.wspd*1.944) : null;
         const wCard = _bd.wdir!=null ? wdCard(_bd.wdir) : '';
+        const wDeg  = _bd.wdir!=null ? String(Math.round(_bd.wdir)).padStart(3,'0')+'°' : '';
         const wvCol = _bd.wvht!=null ? seaCol(_bd.wvht) : '#22d3ee';
+        // Wind barb arrow: points FROM the wind direction (meteorological convention)
+        const arrowSvg = _bd.wdir!=null ? (()=>{
+          const ang = _bd.wdir; // "from" bearing → arrow points INTO wind
+          return `<g transform="translate(-28,14) rotate(${ang},0,0)">
+            <line x1="0" y1="10" x2="0" y2="-10" stroke="#fbbf24" stroke-width="1.8"/>
+            <polygon points="0,-12 -3.5,-6 3.5,-6" fill="#fbbf24"/>
+          </g>`;
+        })() : '';
         const rows = [
           _bd.wvht!=null ? `<text x="33" y="-3" font-family="monospace" font-size="11" font-weight="700" fill="${wvCol}">Hs ${_bd.wvht.toFixed(1)} m · ${_bd.dpd!=null?_bd.dpd.toFixed(0)+'s':'—'}</text>` : '',
-          wsKt!=null ? `<text x="33" y="15" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">Wind ${wsKt} kt ${wCard}</text>` : '',
-          _bd.wtmp!=null ? `<text x="33" y="33" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">SST ${_bd.wtmp.toFixed(1)}°C</text>` : '',
+          wsKt!=null    ? `<text x="33" y="15" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">Wind ${wDeg} ${wCard} · ${wsKt} kt</text>` : '',
+          _bd.wtmp!=null? `<text x="33" y="33" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">SST ${_bd.wtmp.toFixed(1)}°C</text>` : '',
         ].filter(Boolean);
         const panH = 20 + rows.length * 18 + 10;
         return `<g transform="translate(490,460)">
@@ -8654,9 +8663,10 @@ function renderAbcMap(islandsData){
           <circle cx="0" cy="0" r="17" fill="rgba(8,18,35,0.97)" stroke="#f97316" stroke-width="2.4"
             style="filter:drop-shadow(0 0 10px #f9731666)"/>
           <text x="0" y="6" text-anchor="middle" font-family="monospace" font-size="13" fill="#f97316">⚓</text>
+          ${arrowSvg}
           <text x="0" y="-24" text-anchor="middle" font-family="monospace" font-size="8"
             fill="rgba(249,115,22,0.9)" letter-spacing="2">BUOY ${_bd.id}</text>
-          <rect x="23" y="-34" width="188" height="${panH}" rx="8"
+          <rect x="23" y="-34" width="200" height="${panH}" rx="8"
             fill="rgba(5,11,22,0.96)" stroke="#f97316" stroke-width="1.4"
             style="filter:drop-shadow(0 0 7px #f9731633)"/>
           <text x="33" y="-19" font-family="monospace" font-size="8" fill="rgba(249,115,22,0.65)">${_bd.label} · ${_bd.latlon} · ${_bd.time}</text>
@@ -9396,7 +9406,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v13';
+  const CACHE_NAME = 'atc-dashboard-v14';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
