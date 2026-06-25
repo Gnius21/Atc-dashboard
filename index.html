@@ -8673,46 +8673,57 @@ function renderAbcMap(islandsData){
   if(_activeStorms && _activeStorms.length) renderStormTrack(_activeStorms);
 }
 
-/* ── NDBC buoy 42058 — SE Caribbean (14.96°N 67.5°W)
-   Closest moored wave buoy to the ABC islands (~360 km NE of Curaçao).
+/* ── NDBC moored wave buoys nearest the ABC islands.
+   NDBC realtime .txt files don't send CORS headers, so a direct browser
+   fetch fails — we must route through a CORS proxy. We try the closest
+   reporting station across a couple of proxies and take the first hit.
    Data: wave height, period, wind speed/dir, sea temp. Free, no key.
 ────────────────────────────────────────────────────── */
-const _BUOY_ID = '42058';
+const _BUOY_STATIONS = [
+  { id:'42059', label:'E Caribbean', latlon:'15.3°N 67.5°W' },  // closest to ABC
+  { id:'41043', label:'NE Caribbean', latlon:'21.0°N 65.0°W' },
+  { id:'42058', label:'Central Caribbean', latlon:'15.0°N 75.1°W' },
+];
+const _BUOY_PROXIES = [
+  raw => `https://corsproxy.io/?url=${encodeURIComponent(raw)}`,
+  raw => `https://api.allorigins.win/raw?url=${encodeURIComponent(raw)}`,
+];
 let _buoyData = null, _buoyTs = 0;
+
+function _parseNdbc(txt, station){
+  const lines = (txt||'').trim().split('\n');
+  if(lines.length < 3 || !lines[0].startsWith('#')) return null;
+  const hdrs = lines[0].replace(/^#\s*/,'').trim().split(/\s+/);
+  const row  = lines.slice(2).find(l=>l.trim() && !l.startsWith('#'));
+  if(!row) return null;
+  const v = row.trim().split(/\s+/);
+  const g = k=>{ const i=hdrs.indexOf(k); const x=i>=0?v[i]:null; return (x==null||x==='MM'||x==='999'||x==='99.0')?null:parseFloat(x); };
+  const wvht=g('WVHT'), wspd=g('WSPD'), wtmp=g('WTMP');
+  // A row with none of the key fields is a dead station — skip it
+  if(wvht==null && wspd==null && wtmp==null) return null;
+  return {
+    id: station.id, label: station.label, latlon: station.latlon,
+    time: `${v[3]}:${v[4]}Z`,
+    wvht, dpd:g('DPD'), mwd:g('MWD'),
+    wspd, wdir:g('WDIR'), wtmp, pres:g('PRES'),
+  };
+}
+
 async function fetchBuoyData(){
   if(_buoyData && Date.now()-_buoyTs < 30*60*1000) return _buoyData;
-  const rawUrl = `https://www.ndbc.noaa.gov/data/realtime2/${_BUOY_ID}.txt`;
-  let txt;
-  try{
-    const r = await fetch(rawUrl, {cache:'no-store', signal:AbortSignal.timeout(10000)});
-    if(!r.ok) throw new Error('NDBC HTTP '+r.status);
-    txt = await r.text();
-  }catch(e){
-    // NDBC may block CORS on some browsers — fall back to allorigins proxy
-    const r2 = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`,
-      {cache:'no-store', signal:AbortSignal.timeout(12000)});
-    if(!r2.ok) throw new Error('proxy HTTP '+r2.status);
-    txt = await r2.text();
+  for(const station of _BUOY_STATIONS){
+    const rawUrl = `https://www.ndbc.noaa.gov/data/realtime2/${station.id}.txt`;
+    for(const proxy of _BUOY_PROXIES){
+      try{
+        const r = await fetch(proxy(rawUrl), {cache:'no-store', signal:AbortSignal.timeout(12000)});
+        if(!r.ok) continue;
+        const parsed = _parseNdbc(await r.text(), station);
+        if(parsed){ _buoyData = parsed; _buoyTs = Date.now(); return _buoyData; }
+      }catch(e){ /* try next proxy / station */ }
+    }
   }
-  const lines = txt.trim().split('\n');
-  const hdrs  = lines[0].replace(/^#\s*/,'').trim().split(/\s+/);
-  const row   = lines.slice(2).find(l=>l.trim()&&!l.startsWith('#'));
-  if(!row){ _buoyData=null; return null; }
-  const v = row.trim().split(/\s+/);
-  const g = k=>{ const i=hdrs.indexOf(k); return i>=0&&v[i]!=='MM'?parseFloat(v[i]):null; };
-  _buoyData = {
-    id: _BUOY_ID, label:'SE Caribbean', latlon:'14.96°N 67.5°W',
-    time: v[3]+':'+v[4]+'Z',
-    wvht: g('WVHT'),   // significant wave height m
-    dpd:  g('DPD'),    // dominant period s
-    mwd:  g('MWD'),    // mean wave direction °
-    wspd: g('WSPD'),   // wind speed m/s → convert to kt
-    wdir: g('WDIR'),   // wind direction °
-    wtmp: g('WTMP'),   // sea surface temp °C
-    pres: g('PRES'),   // pressure hPa
-  };
-  _buoyTs = Date.now();
-  return _buoyData;
+  console.warn('[Buoy] no reporting station reachable');
+  return _buoyData;   // keep last good value if we had one
 }
 
 async function loadMarine(){
@@ -9385,7 +9396,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v12';
+  const CACHE_NAME = 'atc-dashboard-v13';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
