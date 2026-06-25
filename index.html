@@ -5032,7 +5032,10 @@ function switchTab(name){
     if(name==='forecast' && !forecastLoaded) loadForecast();
   }catch(err){ console.error('[Tabs] loadForecast failed:', err); }
   try{
-    if(name==='marine' && !marineLoaded){ loadMarine(); fetchTides(); }
+    if(name==='marine'){
+      if(!marineLoaded){ loadMarine(); fetchTides(); }
+      loadBuoy();   // independent of marine forecast load
+    }
   }catch(err){ console.error('[Tabs] loadMarine failed:', err); }
   try{
     if(name==='world'){
@@ -8841,8 +8844,9 @@ function renderBuoySection(){
   if(!panel) return;
   const bd = window._lastBuoyData;
   if(!bd){
+    const err = window._buoyErr ? `<br><span style="opacity:.6;font-size:.5rem">${window._buoyErr}</span>` : '';
     panel.innerHTML = `<div style="padding:16px;font-family:var(--mono);font-size:.6rem;color:var(--text-dim);text-align:center">
-      No offshore buoy currently reporting. Showing model data on the map above.</div>`;
+      Buoy &amp; model data unavailable — check connection.${err}</div>`;
     setBadge('buoyBadge','OFFLINE','error');
     return;
   }
@@ -8880,6 +8884,35 @@ function renderBuoySection(){
       ${cell('Pressure', bd.pres!=null?bd.pres.toFixed(1)+' hPa':'—')}
     </div>${note}`;
   setBadge('buoyBadge', isModel?'MODEL':'LIVE', isModel?'loading':'');
+}
+
+// Independent buoy loader — works even if the marine forecast render fails.
+// Shows the fast Open-Meteo model baseline, then upgrades to a real NDBC
+// buoy in the background if one responds. Surfaces any error in the panel.
+let _buoyLoading = false;
+async function loadBuoy(){
+  if(_buoyLoading) return;
+  _buoyLoading = true;
+  window._buoyErr = null;
+  setBadge('buoyBadge','LOADING','loading');
+  try{
+    const bd = await fetchBuoyData();        // model baseline (fast)
+    window._lastBuoyData = bd;
+    if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
+    renderBuoySection();
+  }catch(e){
+    console.warn('[Buoy] load failed:', e.message);
+    window._buoyErr = e.message;
+    renderBuoySection();
+  }finally{ _buoyLoading = false; }
+  // Background: upgrade to a real NDBC buoy if any station responds quickly
+  fetchRealBuoy().then(rb=>{
+    if(rb){
+      _buoyData = rb; _buoyTs = Date.now(); window._lastBuoyData = rb;
+      if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
+      renderBuoySection();
+    }
+  }).catch(()=>{ /* no real buoy reporting — model stays */ });
 }
 
 async function loadMarine(){
@@ -9174,22 +9207,7 @@ async function loadMarine(){
     setBadge('marineBadge','LIVE');
     window._lastMarineIslands = islandsForMap;
     renderAbcMap(islandsForMap);
-    // Buoy: show the fast Open-Meteo model baseline first, then try to
-    // upgrade to a real NDBC buoy in the background (non-blocking).
-    setBadge('buoyBadge','LOADING','loading');
-    fetchBuoyData().then(bd=>{
-      window._lastBuoyData = bd;
-      if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
-      renderBuoySection();
-    }).catch(e=>{ console.warn('[Buoy]',e.message); renderBuoySection(); });
-    // Background upgrade — only replaces the model if a real buoy responds.
-    fetchRealBuoy().then(rb=>{
-      if(rb){
-        _buoyData = rb; _buoyTs = Date.now(); window._lastBuoyData = rb;
-        if(window._lastMarineIslands) renderAbcMap(window._lastMarineIslands);
-        renderBuoySection();
-      }
-    }).catch(()=>{ /* no real buoy reporting — model stays */ });
+    loadBuoy();   // independent + self-diagnosing
   }catch(e){
     console.error('[Marine] loadMarine failed:', e);
     container.innerHTML=`<div style="padding:20px;font-family:var(--mono);font-size:.6rem;color:#f87171;text-align:center">Marine load failed: ${e.message}<br><span style="opacity:.5;font-size:.5rem">Check console for details</span></div>`;
@@ -9563,7 +9581,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v17';
+  const CACHE_NAME = 'atc-dashboard-v18';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
