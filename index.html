@@ -1422,10 +1422,10 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 
 /* ── ATC INLINE PLAYERS ── */
 .atc-players{
-  display:flex;flex-direction:column;gap:12px;padding:14px;
+  display:flex;flex-direction:column;gap:8px;padding:10px;
 }
 .atc-pair-row{
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
 }
 @media(max-width:700px){
   .atc-pair-row{grid-template-columns:1fr;}
@@ -1433,8 +1433,8 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .atc-player{
   display:grid;
   grid-template-columns:auto 1fr auto auto;
-  gap:14px;align-items:center;
-  padding:12px 14px;
+  gap:10px;align-items:center;
+  padding:8px 10px;
   border:1px solid var(--border);
   border-left:3px solid var(--cyan);
   border-radius:var(--radius);
@@ -1450,7 +1450,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 }
 
 .atc-play-btn{
-  width:44px;height:44px;border-radius:50%;
+  width:36px;height:36px;border-radius:50%;
   border:1px solid var(--border-hi);
   background:linear-gradient(180deg,rgba(34,211,238,0.1),rgba(0,0,0,0.4));
   color:var(--cyan);
@@ -1497,10 +1497,10 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   display:flex;align-items:center;gap:7px;
   font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;
   text-transform:uppercase;color:var(--text-dim);font-weight:600;
-  padding:5px 10px;
+  padding:4px 8px;
   border:1px solid var(--border-hi);border-radius:3px;
   background:rgba(0,0,0,0.3);
-  min-width:90px;
+  min-width:0;
 }
 .atc-status-dot{
   width:7px;height:7px;border-radius:50%;
@@ -1528,7 +1528,7 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 .atc-vol-icon{font-size:.85rem;opacity:.65}
 .atc-vol-slider{
   -webkit-appearance:none;appearance:none;
-  width:100px;height:4px;
+  width:64px;height:4px;
   background:var(--border-hi);border-radius:2px;
   outline:none;cursor:pointer;
 }
