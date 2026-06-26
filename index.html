@@ -1422,7 +1422,13 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 
 /* ── ATC INLINE PLAYERS ── */
 .atc-players{
-  display:flex;flex-direction:column;gap:10px;padding:14px;
+  display:flex;flex-direction:column;gap:12px;padding:14px;
+}
+.atc-pair-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;
+}
+@media(max-width:700px){
+  .atc-pair-row{grid-template-columns:1fr;}
 }
 .atc-player{
   display:grid;
@@ -4234,67 +4240,73 @@ body.night .tab-btn.active{
     <div class="panel">
       <div class="atc-players">
 
-        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
-          <button class="atc-play-btn" aria-label="Play TNCC TWR"><span class="atc-play-icon">▶</span></button>
-          <div class="atc-info">
-            <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Tower</div>
-            <div class="atc-freq">118.300 MHz · Curaçao</div>
+        <!-- Curaçao pair -->
+        <div class="atc-pair-row">
+          <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_twr">
+            <button class="atc-play-btn" aria-label="Play TNCC TWR"><span class="atc-play-icon">▶</span></button>
+            <div class="atc-info">
+              <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Tower</div>
+              <div class="atc-freq">118.300 MHz · Curaçao</div>
+            </div>
+            <div class="atc-status">
+              <span class="atc-status-dot"></span>
+              <span class="atc-status-text">Idle</span>
+            </div>
+            <div class="atc-volume">
+              <span class="atc-vol-icon">🔊</span>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+            </div>
           </div>
-          <div class="atc-status">
-            <span class="atc-status-dot"></span>
-            <span class="atc-status-text">Idle</span>
-          </div>
-          <div class="atc-volume">
-            <span class="atc-vol-icon">🔊</span>
-            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+
+          <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
+            <button class="atc-play-btn" aria-label="Play TNCC APP"><span class="atc-play-icon">▶</span></button>
+            <div class="atc-info">
+              <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Approach / Radar</div>
+              <div class="atc-freq">APP / RDR · Curaçao</div>
+            </div>
+            <div class="atc-status">
+              <span class="atc-status-dot"></span>
+              <span class="atc-status-text">Idle</span>
+            </div>
+            <div class="atc-volume">
+              <span class="atc-vol-icon">🔊</span>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+            </div>
           </div>
         </div>
 
-        <div class="atc-player" data-stream="https://d.liveatc.net/tncc3_rdr1">
-          <button class="atc-play-btn" aria-label="Play TNCC APP"><span class="atc-play-icon">▶</span></button>
-          <div class="atc-info">
-            <div class="atc-label"><span class="atc-flag">🇨🇼</span> TNCC · Hato Approach / Radar</div>
-            <div class="atc-freq">APP / RDR · Curaçao</div>
+        <!-- Aruba + Bonaire pair -->
+        <div class="atc-pair-row">
+          <div class="atc-player" data-stream="https://d.liveatc.net/tnca">
+            <button class="atc-play-btn" aria-label="Play TNCA TWR"><span class="atc-play-icon">▶</span></button>
+            <div class="atc-info">
+              <div class="atc-label"><span class="atc-flag">🇦🇼</span> TNCA · Aruba Tower</div>
+              <div class="atc-freq">118.000 MHz · Queen Beatrix</div>
+            </div>
+            <div class="atc-status">
+              <span class="atc-status-dot"></span>
+              <span class="atc-status-text">Idle</span>
+            </div>
+            <div class="atc-volume">
+              <span class="atc-vol-icon">🔊</span>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+            </div>
           </div>
-          <div class="atc-status">
-            <span class="atc-status-dot"></span>
-            <span class="atc-status-text">Idle</span>
-          </div>
-          <div class="atc-volume">
-            <span class="atc-vol-icon">🔊</span>
-            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
-          </div>
-        </div>
 
-        <div class="atc-player" data-stream="https://d.liveatc.net/tnca">
-          <button class="atc-play-btn" aria-label="Play TNCA TWR"><span class="atc-play-icon">▶</span></button>
-          <div class="atc-info">
-            <div class="atc-label"><span class="atc-flag">🇦🇼</span> TNCA · Aruba Tower</div>
-            <div class="atc-freq">118.000 MHz · Queen Beatrix</div>
-          </div>
-          <div class="atc-status">
-            <span class="atc-status-dot"></span>
-            <span class="atc-status-text">Idle</span>
-          </div>
-          <div class="atc-volume">
-            <span class="atc-vol-icon">🔊</span>
-            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
-          </div>
-        </div>
-
-        <div class="atc-player" data-stream="https://d.liveatc.net/tncb">
-          <button class="atc-play-btn" aria-label="Play TNCB TWR"><span class="atc-play-icon">▶</span></button>
-          <div class="atc-info">
-            <div class="atc-label"><span class="atc-flag">🇧🇶</span> TNCB · Bonaire Tower</div>
-            <div class="atc-freq">118.700 MHz · Flamingo</div>
-          </div>
-          <div class="atc-status">
-            <span class="atc-status-dot"></span>
-            <span class="atc-status-text">Idle</span>
-          </div>
-          <div class="atc-volume">
-            <span class="atc-vol-icon">🔊</span>
-            <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+          <div class="atc-player" data-stream="https://d.liveatc.net/tncb">
+            <button class="atc-play-btn" aria-label="Play TNCB TWR"><span class="atc-play-icon">▶</span></button>
+            <div class="atc-info">
+              <div class="atc-label"><span class="atc-flag">🇧🇶</span> TNCB · Bonaire Tower</div>
+              <div class="atc-freq">118.700 MHz · Flamingo</div>
+            </div>
+            <div class="atc-status">
+              <span class="atc-status-dot"></span>
+              <span class="atc-status-text">Idle</span>
+            </div>
+            <div class="atc-volume">
+              <span class="atc-vol-icon">🔊</span>
+              <input type="range" min="0" max="100" value="80" class="atc-vol-slider"/>
+            </div>
           </div>
         </div>
 
