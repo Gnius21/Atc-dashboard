@@ -6321,6 +6321,30 @@ function _awcTafToCheckWX(t){
   };
 }
 
+// CORS proxies to wrap AWC (aviationweather.gov does not reliably send
+// Access-Control-Allow-Origin, so a direct browser fetch can be blocked).
+const _AWC_PROXIES = [
+  raw => raw,                                                                  // direct first
+  raw => `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(raw)}`,
+  raw => `https://corsproxy.io/?url=${encodeURIComponent(raw)}`,
+  raw => `https://api.allorigins.win/raw?url=${encodeURIComponent(raw)}`,
+];
+
+// Fetch an AWC JSON endpoint, trying a direct hit then CORS proxies in turn.
+async function _fetchAwcJson(rawUrl){
+  let lastErr;
+  for(const wrap of _AWC_PROXIES){
+    try{
+      const res = await fetch(wrap(rawUrl), {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(Array.isArray(data)) return data;
+      throw new Error('unexpected payload');
+    }catch(e){ lastErr=e; /* try next proxy */ }
+  }
+  throw lastErr || new Error('AWC unreachable');
+}
+
 async function fetchMETAR(){
   // Try CheckWX (decoded JSON)
   try{
@@ -6331,13 +6355,15 @@ async function fetchMETAR(){
     const res = await fetch(url, opts);
     if(!res.ok) throw new Error('CheckWX HTTP '+res.status);
     const json = await res.json();
-    (json.data||[]).forEach(d=>{ store.metar[d.icao]=d; });
-    return;
+    if(json.data && json.data.length){
+      json.data.forEach(d=>{ store.metar[d.icao]=d; });
+      return;
+    }
+    throw new Error('CheckWX empty');
   }catch(e){ console.warn('[METAR] CheckWX failed, using AWC fallback:',e.message); }
-  // Fallback: AWC — free, no API key, no CORS preflight
-  const res=await fetch('https://aviationweather.gov/api/data/metar?ids=TNCA,TNCC,TNCB&format=json&hours=2',{cache:'no-store'});
-  if(!res.ok) throw new Error('AWC METAR HTTP '+res.status);
-  (await res.json()||[]).forEach(m=>{ store.metar[m.icaoId]=_awcMetarToCheckWX(m); });
+  // Fallback: AWC — free, no API key (direct, then via CORS proxies)
+  const arr = await _fetchAwcJson('https://aviationweather.gov/api/data/metar?ids=TNCA,TNCC,TNCB&format=json&hours=2');
+  arr.forEach(m=>{ store.metar[m.icaoId]=_awcMetarToCheckWX(m); });
 }
 
 async function fetchTAF(){
@@ -6350,12 +6376,12 @@ async function fetchTAF(){
     const res = await fetch(url, opts);
     if(!res.ok) throw new Error('CheckWX HTTP '+res.status);
     const json = await res.json();
-    return json.data||[];
+    if(json.data && json.data.length) return json.data;
+    throw new Error('CheckWX empty');
   }catch(e){ console.warn('[TAF] CheckWX failed, using AWC fallback:',e.message); }
-  // Fallback: AWC
-  const res=await fetch('https://aviationweather.gov/api/data/taf?ids=TNCA,TNCC,TNCB&format=json',{cache:'no-store'});
-  if(!res.ok) throw new Error('AWC TAF HTTP '+res.status);
-  return (await res.json()||[]).map(_awcTafToCheckWX);
+  // Fallback: AWC (direct, then via CORS proxies)
+  const arr = await _fetchAwcJson('https://aviationweather.gov/api/data/taf?ids=TNCA,TNCC,TNCB&format=json');
+  return arr.map(_awcTafToCheckWX);
 }
 
 async function fetchWeatherAPI(icao){
@@ -9571,7 +9597,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v22';
+  const CACHE_NAME = 'atc-dashboard-v23';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
