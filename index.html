@@ -4224,8 +4224,7 @@ body.night .tab-btn.active{
   <div class="tab-btn"        data-tab="weather"  role="tab" id="tabbtn-weather"  aria-controls="tab-weather"  aria-selected="false" tabindex="-1">🌤 Weather <span class="tab-key" aria-hidden="true">2</span></div>
   <div class="tab-btn"        data-tab="forecast" role="tab" id="tabbtn-forecast" aria-controls="tab-forecast" aria-selected="false" tabindex="-1">📅 Forecast <span class="tab-key" aria-hidden="true">3</span></div>
   <div class="tab-btn"        data-tab="marine"   role="tab" id="tabbtn-marine"   aria-controls="tab-marine"   aria-selected="false" tabindex="-1">🌊 Marine <span class="tab-key" aria-hidden="true">4</span></div>
-  <div class="tab-btn"        data-tab="flights"  role="tab" id="tabbtn-flights"  aria-controls="tab-flights"  aria-selected="false" tabindex="-1">✈ Flights <span class="tab-key" aria-hidden="true">5</span></div>
-  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">6</span></div>
+  <div class="tab-btn"        data-tab="world"    role="tab" id="tabbtn-world"    aria-controls="tab-world"    aria-selected="false" tabindex="-1">🌍 World <span class="tab-key" aria-hidden="true">5</span></div>
 </div>
 
 <!-- ═══ TAB: ATC ═══ -->
@@ -4347,9 +4346,10 @@ body.night .tab-btn.active{
       <div class="flights-toggle">
         <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
         <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
+        <button class="flights-toggle-btn" data-flights="flights">✈ Flights</button>
       </div>
     </div>
-    <div class="fb-panel fb-panel-atc">
+    <div class="fb-panel fb-panel-atc" id="fb-panel-atc">
       <div class="fb-head">
         <span class="fb-head-title">📋 Live Board <span class="data-badge loading" id="flightBoardBadge">LOADING</span></span>
         <span class="fb-updated" id="flightBoardUpdated"></span>
@@ -4357,6 +4357,13 @@ body.night .tab-btn.active{
       </div>
       <div id="flightBoard" class="fb-list">
         <div class="fb-empty">Loading flights…</div>
+      </div>
+    </div>
+    <div id="fb-official-atc" style="display:none">
+      <div class="rwc-frame-wrap flights-official">
+        <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Official board ↗</a>
+        <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
+        <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
       </div>
     </div>
   </div>
@@ -4367,14 +4374,14 @@ body.night .tab-btn.active{
     <div>
       <div class="section-title">Windy — Cloud Cover</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
@@ -4432,26 +4439,8 @@ body.night .tab-btn.active{
 </div>
 </div>
 
-<!-- ═══ TAB: FLIGHTS ═══ -->
-<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights">
-<div class="layout">
-  <div class="full">
-    <div class="section-title">Flights — Curaçao International (TNCC) / Hato
-      <div class="flights-toggle">
-        <button class="flights-toggle-btn active" data-flights="departures">🛫 Departures</button>
-        <button class="flights-toggle-btn" data-flights="arrivals">🛬 Arrivals</button>
-      </div>
-      <a id="flightsExtLink" href="https://curacao-airport.com/flights/?type=departures" target="_blank" class="frame-fallback-link">Official board ↗</a>
-    </div>
-    <p class="flights-note">📋 The live parsed flight board now lives in the <b>ATC</b> tab, under the live ADS-B radar. Below is the official Curaçao Airport board.</p>
-    <!-- Official airport page iframe (full width) -->
-    <div class="rwc-frame-wrap flights-official">
-      <iframe id="depFrame" class="rwc-frame flights-frame active" data-mode="departures" title="Departures" loading="lazy"></iframe>
-      <iframe id="arrFrame" class="rwc-frame flights-frame" data-mode="arrivals" title="Arrivals" loading="lazy" style="display:none"></iframe>
-    </div>
-  </div>
-</div>
-</div>
+<!-- ═══ TAB: FLIGHTS (merged into ATC tab) ═══ -->
+<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights" style="display:none"></div>
 
 <!-- ═══ TAB: WEATHER ═══ -->
 <div class="tab-pane" id="tab-weather" role="tabpanel" aria-labelledby="tabbtn-weather">
@@ -4467,14 +4456,14 @@ body.night .tab-btn.active{
   <div class="col-6">
     <div class="section-title">Radar</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=radar"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=radar"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Cloud Cover</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=clouds"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=clouds"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -5018,15 +5007,6 @@ function switchTab(name){
     if(name==='atc'){
       if(typeof renderFlightBoard==='function') renderFlightBoard(_flightDir);
     }
-    // Flights tab: lazy-load the official airport iframe on first open.
-    if(name==='flights'){
-      const active = document.querySelector('#tab-flights .flights-frame.active');
-      if(active && !active.src){
-        active.src = _flightDir==='arrivals'
-          ? 'https://curacao-airport.com/flights/?type=arrivals'
-          : 'https://curacao-airport.com/flights/?type=departures';
-      }
-    }
     // Lazy-init Windy iframes inside the tab being opened (data-src → src).
     const pane=document.getElementById('tab-'+name);
     if(pane){
@@ -5463,27 +5443,25 @@ async function renderFlightBoard(direction){
   });
 })();
 
-// Flights sub-toggle (Departures ↔ Arrivals) — drives the native board
-// and the official airport iframe.
+// Flights sub-toggle (Departures / Arrivals / Official Board)
 document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const mode=btn.dataset.flights;
-    _flightDir = mode;
-    // Sync every toggle group (ATC + Flights tabs) to the chosen direction.
     document.querySelectorAll('.flights-toggle-btn').forEach(b=>b.classList.toggle('active',b.dataset.flights===mode));
-    document.querySelectorAll('.flights-frame').forEach(f=>{
-      const on=f.dataset.mode===mode;
-      f.classList.toggle('active',on);
-      f.style.display = on ? '' : 'none';
-      if(on && !f.src){
-        f.src = mode==='arrivals'
-          ? 'https://curacao-airport.com/flights/?type=arrivals'
-          : 'https://curacao-airport.com/flights/?type=departures';
-      }
-    });
-    const ext = document.getElementById('flightsExtLink');
-    if(ext) ext.href = `https://curacao-airport.com/flights/?type=${mode}`;
-    renderFlightBoard(mode);
+    const parsedPanel  = document.getElementById('fb-panel-atc');
+    const officialPanel= document.getElementById('fb-official-atc');
+    if(mode==='flights'){
+      if(parsedPanel)   parsedPanel.style.display  = 'none';
+      if(officialPanel) officialPanel.style.display = '';
+      // Lazy-load the iframe on first open
+      const depF = document.getElementById('depFrame');
+      if(depF && !depF.src) depF.src = 'https://curacao-airport.com/flights/?type=departures';
+    } else {
+      _flightDir = mode;
+      if(parsedPanel)   parsedPanel.style.display  = '';
+      if(officialPanel) officialPanel.style.display = 'none';
+      renderFlightBoard(mode);
+    }
   });
 });
 
@@ -7063,7 +7041,7 @@ document.addEventListener('visibilitychange', () => {
 (function applyUrlTab(){
   try{
     const tab = new URLSearchParams(window.location.search).get('tab');
-    if(tab && ['atc','weather','forecast','marine','flights','world'].includes(tab)){
+    if(tab && ['atc','weather','forecast','marine','world'].includes(tab)){
       setTimeout(()=>{ try{ switchTab(tab); }catch(_){} }, 100);
     }
   }catch(_){}
@@ -9593,7 +9571,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v21';
+  const CACHE_NAME = 'atc-dashboard-v22';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
