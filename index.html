@@ -2265,7 +2265,7 @@ body.night .tab-btn.active{
 /* Right column rows */
 .wov-header{
   display:flex;align-items:baseline;justify-content:space-between;
-  gap:8px;margin-bottom:3px;
+  gap:8px;margin-bottom:3px;min-width:0;
 }
 .wov-name{
   font-family:var(--display);font-size:1.05rem;font-weight:700;
@@ -6470,9 +6470,9 @@ function renderWorldOvr(){
           <div class="wov-icon" style="opacity:.25">${animatedWeatherSVG(3)}</div>
           <div class="wov-flag">${ap.flag}</div>
         </div>
-        <div>
+        <div style="min-width:0">
           <div class="wov-header">
-            <div>
+            <div style="min-width:0;overflow:hidden">
               <div class="wov-name">${ap.name}</div>
               <div class="wov-sub">${ap.sub}</div>
             </div>
@@ -6540,7 +6540,7 @@ function renderWorldOvr(){
         <div class="wov-flag">${ap.flag}</div>
         <div class="wov-daynight">${periodIcon}</div>
       </div>
-      <div>
+      <div style="min-width:0">
         <div class="wov-header">
           <div style="min-width:0;overflow:hidden">
             <div class="wov-name">${ap.name}</div>
@@ -9598,7 +9598,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v23';
+  const CACHE_NAME = 'atc-dashboard-v24';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
