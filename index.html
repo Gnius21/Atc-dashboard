@@ -25,6 +25,12 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"/>
 </noscript>
 
+<!-- Warm up TLS to the data APIs so the first fetch on load is faster -->
+<link rel="preconnect" href="https://api.checkwx.com" crossorigin/>
+<link rel="preconnect" href="https://api.weatherapi.com"/>
+<link rel="dns-prefetch" href="https://aviationweather.gov"/>
+<link rel="dns-prefetch" href="https://api.open-meteo.com"/>
+
 <style>
 :root{
   /* Day palette — refined deep navy with electric cyan */
@@ -4663,14 +4669,26 @@ function fmtUTC(str){
 /* ════════════════════════════════
    CLOCKS
 ════════════════════════════════ */
+const _clockUtcEl   = document.getElementById('clockUtc');
+const _clockLocalEl = document.getElementById('clockLocal');
 function updateClocks(){
   const now=new Date();
-  document.getElementById('clockUtc').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
-  const ast=new Date(now.toLocaleString('en-US',{timeZone:'America/Curacao'}));
-  document.getElementById('clockLocal').textContent=`${pad(ast.getHours())}:${pad(ast.getMinutes())}:${pad(ast.getSeconds())}`;
+  if(_clockUtcEl) _clockUtcEl.textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+  // Curaçao/AST is a fixed UTC−4 offset year-round (no DST), so derive it
+  // arithmetically — avoids an Intl.DateTimeFormat allocation every second.
+  if(_clockLocalEl){
+    const ast=new Date(now.getTime() - 4*3600*1000);
+    _clockLocalEl.textContent=`${pad(ast.getUTCHours())}:${pad(ast.getUTCMinutes())}:${pad(ast.getUTCSeconds())}`;
+  }
 }
-setInterval(updateClocks,1000);
+let _clockTimer=setInterval(updateClocks,1000);
 updateClocks();
+// Pause the 1-second clock while the tab is hidden; resume (and resync) on
+// return. Background timers waste CPU/battery and are throttled anyway.
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ clearInterval(_clockTimer); _clockTimer=null; }
+  else if(!_clockTimer){ updateClocks(); _clockTimer=setInterval(updateClocks,1000); }
+});
 
 /* ════════════════════════════════
    NIGHT MODE
@@ -5489,11 +5507,17 @@ document.querySelectorAll('.flights-toggle-btn').forEach(btn=>{
    REFRESH PROGRESS BAR
 ════════════════════════════════ */
 let refreshStart=Date.now();
+const _refreshBarEl=document.getElementById('refreshProgress');
 function tickBar(){
+  if(!_refreshBarEl) return;
   const pct=Math.min(100,((Date.now()-refreshStart)/REFRESH_MS)*100);
-  document.getElementById('refreshProgress').style.width=pct+'%';
+  _refreshBarEl.style.width=pct+'%';
 }
-setInterval(tickBar,1000);
+let _barTimer=setInterval(tickBar,1000);
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ clearInterval(_barTimer); _barTimer=null; }
+  else if(!_barTimer){ tickBar(); _barTimer=setInterval(tickBar,1000); }
+});
 
 function resetBar(){
   refreshStart=Date.now();
@@ -7108,10 +7132,8 @@ document.addEventListener('visibilitychange', () => {
 /* ════════════════════════════════
    MAIN REFRESH CYCLE
 ════════════════════════════════ */
-async function refresh(){
-  _isRefreshing = true;
-  resetBar();
-
+// METAR fetch + render (own retry) — runs concurrently with TAF/Wx.
+async function _refreshMETAR(){
   try{
     try{ await fetchMETAR(); }
     catch(e1){
@@ -7121,7 +7143,6 @@ async function refresh(){
     }
     ICAOS.forEach(icao=>{ if(store.metar[icao]) renderMETAR(icao,store.metar[icao]); });
     setBadge('metarBadge','LIVE');
-    // Warn on badge if any METAR is >60 min stale
     const maxAge = Math.max(...ICAOS.map(i=>{
       const obs = store.metar[i]?.observed;
       return obs ? (Date.now()-new Date(obs).getTime())/60000 : 0;
@@ -7136,7 +7157,10 @@ async function refresh(){
     });
     setBadge('metarBadge','ERROR','error');
   }
+}
 
+// TAF fetch + render (own retry) — runs concurrently with METAR/Wx.
+async function _refreshTAF(){
   try{
     let tafData;
     try{ tafData=await fetchTAF(); }
@@ -7151,13 +7175,21 @@ async function refresh(){
     console.warn('TAF fetch failed:',e.message);
     renderTAFStrip(null);
   }
+}
 
-  // WeatherAPI quota guard — only refresh every WX_REFRESH_MS (15 min)
-  // unless this is the first call of the session.
-  if(Date.now() - _lastWxFetch >= WX_REFRESH_MS){
-    await Promise.allSettled(ICAOS.map(fetchWeatherAPI));
-    _lastWxFetch = Date.now();
+async function refresh(){
+  _isRefreshing = true;
+  resetBar();
+
+  // METAR, TAF and (quota-gated) WeatherAPI are independent — fire them
+  // concurrently instead of serially so the refresh completes in roughly
+  // the time of the slowest single request rather than their sum.
+  const tasks = [_refreshMETAR(), _refreshTAF()];
+  const wxDue = Date.now() - _lastWxFetch >= WX_REFRESH_MS;
+  if(wxDue){
+    tasks.push(Promise.allSettled(ICAOS.map(fetchWeatherAPI)).then(()=>{ _lastWxFetch = Date.now(); }));
   }
+  await Promise.allSettled(tasks);
 
   renderIslandCards();
   updateLiveStrip();
@@ -7270,7 +7302,9 @@ function triggerManualRefresh(){
 
 // World overview now fetches lazily on first World-tab open (see switchTab).
 refresh();
-setInterval(refresh,REFRESH_MS);
+// Skip the periodic refresh while the tab is hidden — the visibilitychange
+// handler re-fetches on return, so background polling only wastes data/battery.
+setInterval(()=>{ if(!document.hidden) refresh(); },REFRESH_MS);
 
 /* ════════════════════════════════
    IFRAME KEEP-ALIVE
@@ -9628,7 +9662,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v25';
+  const CACHE_NAME = 'atc-dashboard-v26';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
