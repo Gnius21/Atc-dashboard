@@ -2299,6 +2299,15 @@ body.night .tab-btn.active{
   font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;
   color:var(--text-dim);line-height:1.35;margin-bottom:8px;
 }
+.wov-minmax{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+  font-family:var(--mono);font-size:.7rem;font-weight:600;
+  margin-bottom:6px;letter-spacing:.03em;
+}
+.wov-minmax span{white-space:nowrap;}
+.wov-hi{color:#fbbf24;}
+.wov-lo{color:#93c5fd;}
+.wov-rain{color:#5ab8ff;}
 .wov-stats{
   display:flex;gap:14px;flex-wrap:wrap;
   font-family:var(--mono);font-size:.66rem;color:var(--text-dim);
@@ -6415,7 +6424,7 @@ async function fetchWorldOvr(){
       try{
         const url = PROXY_BASE
           ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=1&aqi=no&alerts=no`
-          : `https://api.weatherapi.com/v1/current.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&aqi=no`;
+          : `https://api.weatherapi.com/v1/forecast.json?key=${WX_API_KEY}&q=${encodeURIComponent(ap.q)}&days=1&aqi=no&alerts=no`;
         const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
         if(!r.ok) throw new Error('HTTP '+r.status);
         _worldOvrStore[ap.icao] = await r.json();
@@ -6527,6 +6536,26 @@ function renderWorldOvr(){
     const uvWorld  = cur.uv != null ? `UV ${cur.uv.toFixed(0)}` : null;
     const statsItems = [windStr, humid, visKm, uvWorld].filter(Boolean);
 
+    // ── Daily high / low + rain in the past 24h ──
+    // forecast.json gives today's day summary + hourly precip. Sum the
+    // hourly precip up to the current local hour for genuine past rainfall;
+    // fall back to the day's total accumulation if hourly data is missing.
+    const fday  = d?.forecast?.forecastday?.[0];
+    const fdDay = fday?.day;
+    const maxC  = fdDay?.maxtemp_c != null ? Math.round(fdDay.maxtemp_c) : null;
+    const minC  = fdDay?.mintemp_c != null ? Math.round(fdDay.mintemp_c) : null;
+    let   rainMm = fdDay?.totalprecip_mm;
+    if(Array.isArray(fday?.hour) && loc?.localtime_epoch){
+      const past = fday.hour.filter(h=>h.time_epoch <= loc.localtime_epoch);
+      if(past.length) rainMm = past.reduce((s,h)=>s+(h.precip_mm||0),0);
+    }
+    const hiLoStr = (maxC!=null && minC!=null)
+      ? `<span class="wov-hi">↑${maxC}°</span><span class="wov-lo">↓${minC}°</span>` : '';
+    const rainStr = rainMm!=null
+      ? `<span class="wov-rain">☔ ${rainMm>=10?Math.round(rainMm):rainMm.toFixed(1)}mm</span>` : '';
+    const minMaxRow = (hiLoStr||rainStr)
+      ? `<div class="wov-minmax">${hiLoStr}${rainStr}</div>` : '';
+
     const feelsStr = (feelsC != null && feelsC !== tempC)
       ? `Feels ${feelsC}°` : '';
 
@@ -6553,6 +6582,7 @@ function renderWorldOvr(){
           ${feelsStr?`<div class="wov-feels">${feelsStr}</div>`:''}
         </div>
         <div class="wov-cond">${condText}</div>
+        ${minMaxRow}
         ${statsItems.length?`<div class="wov-stats">${statsItems.map(s=>`<span>${s}</span>`).join('')}</div>`:''}
         <span class="wov-icao">${ap.icao}</span>
       </div>
@@ -9598,7 +9628,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v24';
+  const CACHE_NAME = 'atc-dashboard-v25';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
