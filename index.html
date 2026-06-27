@@ -360,34 +360,38 @@ body.theme-lavender .night-btn,.theme-lavender .toggle-container{
   background:rgba(255,255,255,0.7);border-color:rgba(99,102,241,0.2);color:var(--accent);
 }
 
-/* ── GLASS theme — deep purple/indigo, frosted glass ── */
+/* ── GLASS theme — deep emerald green, frosted glass ── */
 body.theme-glass{
-  --accent:#c084fc;--accent-bright:#e0baff;--accent-dim:#7c3aed;
-  --accent-glow:rgba(192,132,252,0.14);
-  --cyan:#a78bfa;--cyan-glow:rgba(167,139,250,0.22);
-  --green:#34d399;--amber:#fbbf24;--red:#ff6b9d;
-  --bg:#130826;--bg2:#1a0a3c;--bg3:#0d1a4a;
+  --accent:#34d399;--accent-bright:#6ee7b7;--accent-dim:#065f46;
+  --accent-glow:rgba(52,211,153,0.14);
+  --cyan:#2dd4bf;--cyan-glow:rgba(45,212,191,0.22);
+  --green:#4ade80;--amber:#fbbf24;--red:#fb7185;
+  --bg:#04140f;--bg2:#062a1e;--bg3:#053028;
   --panel:rgba(255,255,255,0.06);--panel-hi:rgba(255,255,255,0.10);
-  --border:rgba(180,130,255,0.18);--border-hi:rgba(210,170,255,0.38);--border-bright:rgba(192,132,252,0.55);
-  --text:#f0eaff;--text-dim:#9878cc;--muted:#5c4a8a;
+  --border:rgba(110,231,183,0.18);--border-hi:rgba(150,240,205,0.38);--border-bright:rgba(52,211,153,0.55);
+  --text:#e7fff5;--text-dim:#79b8a0;--muted:#2f6b54;
+  /* Weather icons — emerald/mint */
+  --wx-cloud:#bdeeda;--wx-cloud-hi:#dafff0;--wx-cloud-dark:#5fa88c;--wx-cloud-dark-hi:#7cc4a6;
+  --wx-storm:#2f6b54;--wx-storm-hi:#479a78;--wx-drop:#2dd4bf;--wx-fog:#bdeeda;
+  --wx-sun:#fbbf24;--wx-sun-hi:#fde68a;
 }
-body.theme-glass{background:linear-gradient(135deg,#130826 0%,#0d1a4a 55%,#0a2040 100%)!important;}
+body.theme-glass{background:linear-gradient(135deg,#04140f 0%,#062a1e 55%,#053028 100%)!important;}
 body.theme-glass::before{
   background:
-    radial-gradient(ellipse 900px 700px at 15% 5%,rgba(124,58,237,0.22) 0%,transparent 60%),
-    radial-gradient(ellipse 700px 600px at 85% 85%,rgba(59,130,246,0.14) 0%,transparent 55%)!important;
+    radial-gradient(ellipse 900px 700px at 15% 5%,rgba(16,185,129,0.22) 0%,transparent 60%),
+    radial-gradient(ellipse 700px 600px at 85% 85%,rgba(20,184,166,0.14) 0%,transparent 55%)!important;
 }
-body.theme-glass header{background:rgba(30,10,70,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(200,160,255,0.12);}
-body.theme-glass .tab-bar{background:rgba(20,6,50,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-body.theme-glass .tab-btn{color:rgba(200,170,255,0.6);}
-body.theme-glass .tab-btn.active{background:linear-gradient(180deg,rgba(124,58,237,0.82),rgba(79,30,180,0.88));border-color:rgba(180,130,255,0.55);box-shadow:0 5px 18px rgba(124,58,237,0.4),inset 0 1px 0 rgba(220,195,255,0.2);color:#fff;}
-body.theme-glass .tab-btn:hover:not(.active){background:rgba(130,80,255,0.12);color:#d0b0ff;}
-body.theme-glass .panel{background:rgba(255,255,255,0.055);border-color:rgba(200,160,255,0.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
-body.theme-glass .wx-bar{background:rgba(20,6,50,0.7);border-bottom-color:rgba(180,130,255,0.14);}
+body.theme-glass header{background:rgba(6,40,28,0.55);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(120,230,190,0.12);}
+body.theme-glass .tab-bar{background:rgba(4,30,22,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-glass .tab-btn{color:rgba(140,220,190,0.6);}
+body.theme-glass .tab-btn.active{background:linear-gradient(180deg,rgba(5,150,105,0.82),rgba(4,110,80,0.88));border-color:rgba(110,231,183,0.55);box-shadow:0 5px 18px rgba(5,150,105,0.4),inset 0 1px 0 rgba(195,255,230,0.2);color:#fff;}
+body.theme-glass .tab-btn:hover:not(.active){background:rgba(16,185,129,0.12);color:#9af0cc;}
+body.theme-glass .panel{background:rgba(255,255,255,0.055);border-color:rgba(120,230,190,0.16);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+body.theme-glass .wx-bar{background:rgba(4,30,22,0.7);border-bottom-color:rgba(110,231,183,0.14);}
 body.theme-glass .section-title{color:var(--accent);}
-body.theme-glass .data-badge{border-color:rgba(192,132,252,0.35);}
-body.theme-glass .clock-block{background:rgba(30,10,70,0.55);border-color:rgba(180,130,255,0.2);}
-body.theme-glass .night-btn,body.theme-glass .toggle-container{background:rgba(30,10,70,0.55);border-color:rgba(180,130,255,0.25);color:var(--accent);}
+body.theme-glass .data-badge{border-color:rgba(52,211,153,0.35);}
+body.theme-glass .clock-block{background:rgba(6,40,28,0.55);border-color:rgba(110,231,183,0.2);}
+body.theme-glass .night-btn,body.theme-glass .toggle-container{background:rgba(6,40,28,0.55);border-color:rgba(110,231,183,0.25);color:var(--accent);}
 
 /* ── NEON theme — dark purple, vivid cyan/neon ── */
 body.theme-neon{
@@ -460,76 +464,76 @@ body.theme-moonlit .data-badge{border-color:rgba(147,180,255,0.32);}
 body.theme-moonlit .clock-block{background:rgba(16,24,58,0.6);border-color:rgba(147,180,255,0.22);}
 body.theme-moonlit .night-btn,body.theme-moonlit .toggle-container{background:rgba(16,24,58,0.6);border-color:rgba(147,180,255,0.25);color:var(--accent);}
 
-/* ── AMETHYST theme — royal violet + pink, vibrant glass (3D weather) ── */
+/* ── RUBY theme — crimson + rose, vibrant glass (3D weather) ── */
 body.theme-amethyst{
-  --accent:#c77dff;--accent-bright:#ecb8ff;--accent-dim:#5b2a8c;
-  --accent-glow:rgba(199,125,255,0.16);
-  --cyan:#b06aff;--cyan-glow:rgba(176,106,255,0.24);
-  --green:#3ee6b4;--amber:#ffc94d;--red:#ff6b9d;--magenta:#ff6bd6;
-  --bg:#160a2e;--bg2:#1f0d42;--bg3:#2a1257;
+  --accent:#fb6f92;--accent-bright:#ffb3c8;--accent-dim:#831843;
+  --accent-glow:rgba(251,111,146,0.16);
+  --cyan:#f472b6;--cyan-glow:rgba(244,114,182,0.24);
+  --green:#34e89e;--amber:#ffc94d;--red:#ff5d6c;--magenta:#ff6bd6;
+  --bg:#1c0712;--bg2:#2a0a1c;--bg3:#3a0e26;
   --panel:rgba(255,255,255,0.06);--panel-hi:rgba(255,255,255,0.11);
-  --border:rgba(199,125,255,0.2);--border-hi:rgba(230,160,255,0.4);--border-bright:rgba(255,107,214,0.55);
-  --text:#f4e9ff;--text-dim:#b193d8;--muted:#5b3a8a;
-  /* Weather icons — bright violet/pink */
-  --wx-cloud:#d9c2ff;--wx-cloud-hi:#f0e2ff;--wx-cloud-dark:#9a6fcc;--wx-cloud-dark-hi:#b48fe0;
-  --wx-storm:#5b2a8c;--wx-storm-hi:#8a4fc4;--wx-drop:#b06aff;--wx-fog:#d9c2ff;
+  --border:rgba(255,140,180,0.2);--border-hi:rgba(255,175,205,0.4);--border-bright:rgba(255,93,143,0.55);
+  --text:#ffeaf1;--text-dim:#d895ab;--muted:#7a2f4c;
+  /* Weather icons — bright rose/pink */
+  --wx-cloud:#ffcdde;--wx-cloud-hi:#ffe3ee;--wx-cloud-dark:#cc6f93;--wx-cloud-dark-hi:#e08fab;
+  --wx-storm:#7a2f4c;--wx-storm-hi:#b04f74;--wx-drop:#f472b6;--wx-fog:#ffcdde;
   --wx-sun:#ffc94d;--wx-sun-hi:#ffe39a;
   --radius:16px;--radius-lg:22px;
 }
-body.theme-amethyst{background:linear-gradient(150deg,#160a2e 0%,#250d50 55%,#3a1060 100%)!important;}
+body.theme-amethyst{background:linear-gradient(150deg,#1c0712 0%,#3a0e26 55%,#4a1030 100%)!important;}
 body.theme-amethyst::before{
   background:
-    radial-gradient(ellipse 800px 650px at 12% 6%,rgba(168,85,247,0.26) 0%,transparent 58%),
-    radial-gradient(ellipse 650px 550px at 88% 90%,rgba(255,107,214,0.16) 0%,transparent 55%)!important;
+    radial-gradient(ellipse 800px 650px at 12% 6%,rgba(244,63,94,0.26) 0%,transparent 58%),
+    radial-gradient(ellipse 650px 550px at 88% 90%,rgba(255,107,180,0.16) 0%,transparent 55%)!important;
 }
-body.theme-amethyst header{background:rgba(35,12,72,0.58);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(220,160,255,0.14);}
-body.theme-amethyst .tab-bar{background:rgba(28,10,60,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-body.theme-amethyst .tab-btn{color:rgba(210,170,255,0.62);}
-body.theme-amethyst .tab-btn.active{background:linear-gradient(180deg,rgba(168,85,247,0.82),rgba(120,40,200,0.9));border-color:rgba(230,160,255,0.55);box-shadow:0 5px 20px rgba(168,85,247,0.45),inset 0 1px 0 rgba(240,210,255,0.22);color:#fff;}
-body.theme-amethyst .tab-btn:hover:not(.active){background:rgba(180,90,255,0.14);color:#e9b8ff;}
-body.theme-amethyst .panel{background:rgba(255,255,255,0.06);border-color:rgba(220,160,255,0.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-body.theme-amethyst .fcast-day{background:rgba(40,16,80,0.55);backdrop-filter:blur(12px);}
-body.theme-amethyst .wx-bar{background:rgba(28,10,60,0.7);border-bottom-color:rgba(220,160,255,0.16);}
+body.theme-amethyst header{background:rgba(58,14,38,0.58);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom-color:rgba(255,160,195,0.14);}
+body.theme-amethyst .tab-bar{background:rgba(48,10,30,0.6);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-amethyst .tab-btn{color:rgba(255,170,200,0.62);}
+body.theme-amethyst .tab-btn.active{background:linear-gradient(180deg,rgba(244,63,94,0.82),rgba(190,30,80,0.9));border-color:rgba(255,160,195,0.55);box-shadow:0 5px 20px rgba(244,63,94,0.45),inset 0 1px 0 rgba(255,215,228,0.22);color:#fff;}
+body.theme-amethyst .tab-btn:hover:not(.active){background:rgba(255,90,140,0.14);color:#ffb8cd;}
+body.theme-amethyst .panel{background:rgba(255,255,255,0.06);border-color:rgba(255,160,195,0.18);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-amethyst .fcast-day{background:rgba(70,16,42,0.55);backdrop-filter:blur(12px);}
+body.theme-amethyst .wx-bar{background:rgba(48,10,30,0.7);border-bottom-color:rgba(255,160,195,0.16);}
 body.theme-amethyst .section-title{color:var(--accent-bright);}
-body.theme-amethyst .data-badge{border-color:rgba(255,107,214,0.36);}
-body.theme-amethyst .clock-block{background:rgba(40,16,80,0.5);border-color:rgba(220,160,255,0.22);}
-body.theme-amethyst .night-btn,body.theme-amethyst .toggle-container{background:rgba(40,16,80,0.5);border-color:rgba(220,160,255,0.25);color:var(--accent);}
+body.theme-amethyst .data-badge{border-color:rgba(255,93,143,0.36);}
+body.theme-amethyst .clock-block{background:rgba(70,16,42,0.5);border-color:rgba(255,160,195,0.22);}
+body.theme-amethyst .night-btn,body.theme-amethyst .toggle-container{background:rgba(70,16,42,0.5);border-color:rgba(255,160,195,0.25);color:var(--accent);}
 
-/* ── NEBULA theme — deep purple dashboard, cyan + magenta gradient ── */
+/* ── SUNSET theme — warm ember dashboard, orange + coral gradient ── */
 body.theme-nebula{
-  --accent:#22d3ee;--accent-bright:#7df0ff;--accent-dim:#4a2c8c;
-  --accent-glow:rgba(34,211,238,0.14);
-  --cyan:#22d3ee;--cyan-glow:rgba(34,211,238,0.25);
-  --green:#34e89e;--amber:#ffd54d;--red:#ff5d8f;--magenta:#d946ef;
-  --bg:#140e34;--bg2:#1b1448;--bg3:#241a5a;
-  --panel:rgba(27,20,72,0.7);--panel-hi:rgba(40,28,100,0.88);
-  --border:rgba(124,92,220,0.2);--border-hi:rgba(160,120,255,0.36);--border-bright:rgba(34,211,238,0.5);
-  --text:#ece8ff;--text-dim:#9b8dd0;--muted:#3a2a70;
-  /* Weather icons — cyan/violet on purple */
-  --wx-cloud:#c4bdf0;--wx-cloud-hi:#e6e2ff;--wx-cloud-dark:#7a6cb8;--wx-cloud-dark-hi:#988bd4;
-  --wx-storm:#4a2c8c;--wx-storm-hi:#6f4fc0;--wx-drop:#22d3ee;--wx-fog:#c4bdf0;
+  --accent:#ff9e57;--accent-bright:#ffc699;--accent-dim:#9a3412;
+  --accent-glow:rgba(255,158,87,0.16);
+  --cyan:#ffb347;--cyan-glow:rgba(255,179,71,0.24);
+  --green:#5fd0a0;--amber:#ffd54d;--red:#ff5d6c;--magenta:#ff7eb6;
+  --bg:#1a0d0a;--bg2:#2a1310;--bg3:#3a1a14;
+  --panel:rgba(58,28,20,0.7);--panel-hi:rgba(86,42,28,0.88);
+  --border:rgba(255,158,87,0.2);--border-hi:rgba(255,190,130,0.36);--border-bright:rgba(255,140,80,0.5);
+  --text:#ffeede;--text-dim:#d0a585;--muted:#6b3a28;
+  /* Weather icons — warm amber/coral */
+  --wx-cloud:#ffd9bd;--wx-cloud-hi:#ffe9d6;--wx-cloud-dark:#c08868;--wx-cloud-dark-hi:#d4a482;
+  --wx-storm:#6b3a28;--wx-storm-hi:#9a5a3c;--wx-drop:#ffb347;--wx-fog:#ffd9bd;
   --wx-sun:#ffd54d;--wx-sun-hi:#ffe89a;
   --radius:14px;--radius-lg:20px;
 }
-body.theme-nebula{background:linear-gradient(145deg,#140e34 0%,#1d1450 55%,#2a1a5e 100%)!important;}
+body.theme-nebula{background:linear-gradient(145deg,#1a0d0a 0%,#341612 55%,#46201a 100%)!important;}
 body.theme-nebula::before{
   background:
-    radial-gradient(ellipse 850px 650px at 8% 2%,rgba(124,58,237,0.28) 0%,transparent 58%),
-    radial-gradient(ellipse 700px 550px at 92% 95%,rgba(34,211,238,0.16) 0%,transparent 55%),
-    radial-gradient(ellipse 500px 450px at 60% 50%,rgba(217,70,239,0.1) 0%,transparent 52%)!important;
+    radial-gradient(ellipse 850px 650px at 8% 2%,rgba(249,115,22,0.28) 0%,transparent 58%),
+    radial-gradient(ellipse 700px 550px at 92% 95%,rgba(255,179,71,0.16) 0%,transparent 55%),
+    radial-gradient(ellipse 500px 450px at 60% 50%,rgba(255,107,150,0.1) 0%,transparent 52%)!important;
 }
-body.theme-nebula header{background:rgba(20,14,52,0.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:rgba(160,120,255,0.16);}
-body.theme-nebula .tab-bar{background:rgba(16,10,44,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-body.theme-nebula .tab-btn{color:rgba(170,150,235,0.6);}
-body.theme-nebula .tab-btn.active{background:linear-gradient(180deg,rgba(124,58,237,0.8),rgba(34,140,200,0.7));border-color:rgba(34,211,238,0.45);box-shadow:0 5px 20px rgba(124,58,237,0.45),0 0 22px rgba(34,211,238,0.14),inset 0 1px 0 rgba(200,180,255,0.2);color:#fff;}
-body.theme-nebula .tab-btn:hover:not(.active){background:rgba(124,58,237,0.14);color:#bda8ff;}
-body.theme-nebula .panel{background:linear-gradient(135deg,rgba(40,28,100,0.6),rgba(20,14,52,0.78));border-color:rgba(124,92,220,0.22);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
-body.theme-nebula .fcast-day{background:rgba(27,20,72,0.82);backdrop-filter:blur(10px);}
-body.theme-nebula .wx-bar{background:rgba(16,10,44,0.82);border-bottom-color:rgba(160,120,255,0.16);}
+body.theme-nebula header{background:rgba(40,18,12,0.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom-color:rgba(255,180,120,0.16);}
+body.theme-nebula .tab-bar{background:rgba(32,14,10,0.8);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-nebula .tab-btn{color:rgba(255,180,130,0.6);}
+body.theme-nebula .tab-btn.active{background:linear-gradient(180deg,rgba(249,115,22,0.85),rgba(200,70,20,0.9));border-color:rgba(255,170,90,0.5);box-shadow:0 5px 20px rgba(249,115,22,0.45),0 0 22px rgba(255,179,71,0.14),inset 0 1px 0 rgba(255,215,180,0.2);color:#fff;}
+body.theme-nebula .tab-btn:hover:not(.active){background:rgba(249,115,22,0.14);color:#ffc699;}
+body.theme-nebula .panel{background:linear-gradient(135deg,rgba(86,42,28,0.6),rgba(36,18,12,0.78));border-color:rgba(255,158,87,0.22);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+body.theme-nebula .fcast-day{background:rgba(58,28,20,0.82);backdrop-filter:blur(10px);}
+body.theme-nebula .wx-bar{background:rgba(32,14,10,0.82);border-bottom-color:rgba(255,180,120,0.16);}
 body.theme-nebula .section-title{color:var(--accent-bright);}
-body.theme-nebula .data-badge{border-color:rgba(34,211,238,0.34);}
-body.theme-nebula .clock-block{background:rgba(40,28,100,0.55);border-color:rgba(160,120,255,0.22);}
-body.theme-nebula .night-btn,body.theme-nebula .toggle-container{background:rgba(40,28,100,0.55);border-color:rgba(160,120,255,0.25);color:var(--accent);}
+body.theme-nebula .data-badge{border-color:rgba(255,140,80,0.34);}
+body.theme-nebula .clock-block{background:rgba(86,42,28,0.55);border-color:rgba(255,180,120,0.22);}
+body.theme-nebula .night-btn,body.theme-nebula .toggle-container{background:rgba(86,42,28,0.55);border-color:rgba(255,180,120,0.25);color:var(--accent);}
 
 .lock-label{
   font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
@@ -4143,12 +4147,12 @@ body.night .tab-btn.active{
         <span class="theme-opt-sub">Light · Clean Minimal</span>
       </button>
 
-      <button class="theme-opt" data-theme="glass" title="Glass — deep purple/indigo frosted glass">
-        <div class="theme-swatch" style="background:linear-gradient(135deg,#1a0a3c,#0d1a4a);border-color:rgba(192,132,252,0.6)">
-          <span style="font-size:1rem">🔮</span>
+      <button class="theme-opt" data-theme="glass" title="Emerald — deep green frosted glass">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#062a1e,#053028);border-color:rgba(52,211,153,0.6)">
+          <span style="font-size:1rem">💚</span>
         </div>
-        <span class="theme-opt-name">Glass</span>
-        <span class="theme-opt-sub">Purple · Frosted Glass</span>
+        <span class="theme-opt-name">Emerald</span>
+        <span class="theme-opt-sub">Green · Frosted Glass</span>
       </button>
 
       <button class="theme-opt" data-theme="neon" title="Neon — dark purple with vivid cyan neon">
@@ -4167,20 +4171,20 @@ body.night .tab-btn.active{
         <span class="theme-opt-sub">Indigo · Night Sky</span>
       </button>
 
-      <button class="theme-opt" data-theme="amethyst" title="Amethyst — royal violet + pink, vibrant glass">
-        <div class="theme-swatch" style="background:linear-gradient(135deg,#250d50,#3a1060);border-color:rgba(255,107,214,0.6)">
-          <span style="font-size:1rem">💜</span>
+      <button class="theme-opt" data-theme="amethyst" title="Ruby — crimson + rose, vibrant glass">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#3a0e26,#4a1030);border-color:rgba(255,93,143,0.6)">
+          <span style="font-size:1rem">❤️</span>
         </div>
-        <span class="theme-opt-name">Amethyst</span>
-        <span class="theme-opt-sub">Violet · Pink Glass</span>
+        <span class="theme-opt-name">Ruby</span>
+        <span class="theme-opt-sub">Crimson · Rose Glass</span>
       </button>
 
-      <button class="theme-opt" data-theme="nebula" title="Nebula — deep purple dashboard, cyan + magenta">
-        <div class="theme-swatch" style="background:linear-gradient(135deg,#1d1450,#2a1a5e);border-color:rgba(34,211,238,0.6)">
-          <span style="font-size:1rem">🌠</span>
+      <button class="theme-opt" data-theme="nebula" title="Sunset — warm ember dashboard, orange + coral">
+        <div class="theme-swatch" style="background:linear-gradient(135deg,#341612,#46201a);border-color:rgba(255,140,80,0.6)">
+          <span style="font-size:1rem">🌅</span>
         </div>
-        <span class="theme-opt-name">Nebula</span>
-        <span class="theme-opt-sub">Cyan · Magenta Purple</span>
+        <span class="theme-opt-name">Sunset</span>
+        <span class="theme-opt-sub">Orange · Ember Glow</span>
       </button>
 
     </div>
@@ -9662,7 +9666,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v26';
+  const CACHE_NAME = 'atc-dashboard-v27';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
