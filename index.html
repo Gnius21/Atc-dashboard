@@ -535,6 +535,36 @@ body.theme-nebula .data-badge{border-color:rgba(255,140,80,0.34);}
 body.theme-nebula .clock-block{background:rgba(86,42,28,0.55);border-color:rgba(255,180,120,0.22);}
 body.theme-nebula .night-btn,body.theme-nebula .toggle-container{background:rgba(86,42,28,0.55);border-color:rgba(255,180,120,0.25);color:var(--accent);}
 
+/* ── Reduced motion — honor the OS "reduce motion" setting ──
+   Near-instant transitions, no looping animations (scanline, pulsing
+   LEDs, drifting clouds, spinners), and no smooth-scroll. Saves battery
+   and helps motion-sensitive users without changing the layout. */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+    scroll-behavior:auto!important;
+  }
+  .scanline{display:none!important}
+}
+
+/* ── Loading skeletons — shimmer placeholders shown on first tab load ── */
+.skeleton-card{
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px;min-height:150px;
+  position:relative;overflow:hidden;
+}
+.skeleton-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(155,212,255,0.08),transparent);
+  transform:translateX(-100%);animation:skelShimmer 1.4s ease-in-out infinite;
+}
+@keyframes skelShimmer{100%{transform:translateX(100%)}}
+.skel-line{height:11px;border-radius:5px;background:var(--border-hi);margin:11px 0;opacity:.55}
+.skel-line.lg{height:28px;width:52%;margin-bottom:18px}
+.skel-line.w90{width:90%}.skel-line.w70{width:70%}.skel-line.w40{width:40%}
+
 .lock-label{
   font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
   color:var(--text-dim);line-height:1;margin-top:1px;
@@ -4714,7 +4744,9 @@ function applyTheme(theme){
   try{ localStorage.setItem('atc_theme',''+theme); }catch(_){}
   // Update active state in picker
   document.querySelectorAll('.theme-opt').forEach(btn=>{
-    btn.classList.toggle('active', btn.dataset.theme===theme);
+    const on = btn.dataset.theme===theme;
+    btn.classList.toggle('active', on);
+    btn.setAttribute('aria-pressed', String(on));
   });
   // Update theme-btn emoji
   const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'💚',neon:'⚡',moonlit:'🌌',amethyst:'❤️',nebula:'🌅'};
@@ -4745,14 +4777,40 @@ const themeBtn    = document.getElementById('themeBtn');
 const themePicker = document.getElementById('themePicker');
 const themeClose  = document.getElementById('themePickerClose');
 
-themeBtn.onclick = ()=>{ themePicker.style.display='flex'; };
-themeClose.onclick = ()=>{ themePicker.style.display='none'; };
-themePicker.addEventListener('click', e=>{ if(e.target===themePicker) themePicker.style.display='none'; });
+function openThemePicker(){
+  themePicker.style.display='flex';
+  themeBtn.setAttribute('aria-expanded','true');
+  // Move focus to the currently-selected option for keyboard users
+  (themePicker.querySelector('.theme-opt.active') || themePicker.querySelector('.theme-opt'))?.focus();
+}
+function closeThemePicker(){
+  themePicker.style.display='none';
+  themeBtn.setAttribute('aria-expanded','false');
+  themeBtn.focus();
+}
+themeBtn.setAttribute('aria-haspopup','dialog');
+themeBtn.setAttribute('aria-expanded','false');
+themeBtn.onclick = openThemePicker;
+themeClose.onclick = closeThemePicker;
+themePicker.addEventListener('click', e=>{ if(e.target===themePicker) closeThemePicker(); });
+// Esc closes; Tab is trapped within the picker while open.
+document.addEventListener('keydown', e=>{
+  if(themePicker.style.display!=='flex') return;
+  if(e.key==='Escape'){ e.preventDefault(); closeThemePicker(); return; }
+  if(e.key==='Tab'){
+    const f = [...themePicker.querySelectorAll('button:not([disabled])')];
+    if(!f.length) return;
+    const first=f[0], last=f[f.length-1];
+    if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+  }
+});
 
 document.querySelectorAll('.theme-opt').forEach(btn=>{
+  btn.setAttribute('aria-pressed', String(btn.classList.contains('active')));
   btn.onclick=()=>{
     applyTheme(btn.dataset.theme);
-    setTimeout(()=>{ themePicker.style.display='none'; }, 200);
+    setTimeout(closeThemePicker, 200);
   };
 });
 
@@ -6423,6 +6481,74 @@ async function fetchTAF(){
   return arr.map(_awcTafToCheckWX);
 }
 
+// WMO weather-code → short description (Open-Meteo uses WMO codes; our
+// renderers feed condition.text through mapWeatherApiToWMO's text fallback).
+function _wmoText(c){
+  const M={0:'Clear',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+    45:'Fog',48:'Rime fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+    56:'Freezing drizzle',57:'Freezing drizzle',61:'Light rain',63:'Rain',
+    65:'Heavy rain',66:'Freezing rain',67:'Freezing rain',71:'Light snow',
+    73:'Snow',75:'Heavy snow',77:'Snow grains',80:'Rain showers',
+    81:'Rain showers',82:'Heavy rain showers',85:'Snow showers',86:'Snow showers',
+    95:'Thunderstorm',96:'Thunderstorm',99:'Thunderstorm'};
+  return M[c]||'—';
+}
+// WMO code → nearest WeatherAPI condition code, so the fallback's icons
+// resolve correctly through mapWeatherApiToWMO (which keys off the code).
+function _wmoToWxCode(c){
+  const M={0:1000,1:1000,2:1003,3:1009,45:1135,48:1147,51:1153,53:1153,55:1153,
+    56:1168,57:1171,61:1183,63:1189,65:1195,66:1198,67:1201,71:1213,73:1219,
+    75:1225,77:1237,80:1240,81:1243,82:1246,85:1255,86:1258,95:1087,96:1276,99:1282};
+  return M[c] != null ? M[c] : 1000;
+}
+
+// Free, keyless, CORS-friendly fallback when WeatherAPI is down/over quota.
+// Returns a minimal WeatherAPI-shaped object plus a genuine trailing-24h
+// rainfall total (mm) summed from hourly precip across yesterday→now.
+async function fetchOpenMeteoWx(lat, lon){
+  if(lat==null || lon==null) return null;
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+    `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,`+
+    `weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index,is_day`+
+    `&hourly=precipitation&past_days=1&forecast_days=1&wind_speed_unit=kmh&timezone=auto`;
+  const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
+  if(!r.ok) throw new Error('Open-Meteo HTTP '+r.status);
+  const j = await r.json();
+  const c = j.current || {};
+  // Trailing-24h rain: sum hourly precip within (now-24h, now].
+  let rain24 = null;
+  const ht = j.hourly?.time, hp = j.hourly?.precipitation;
+  if(Array.isArray(ht) && Array.isArray(hp) && c.time){
+    const now = new Date(c.time).getTime();
+    const lo  = now - 24*3600*1000;
+    let sum=0, seen=false;
+    for(let i=0;i<ht.length;i++){
+      const t=new Date(ht[i]).getTime();
+      if(t>lo && t<=now){ sum += hp[i]||0; seen=true; }
+    }
+    if(seen) rain24 = sum;
+  }
+  const wxApi = {
+    _source:'Open-Meteo',
+    location:{ localtime: c.time ? c.time.replace('T',' ') : '' },
+    current:{
+      temp_c: c.temperature_2m,
+      feelslike_c: c.apparent_temperature,
+      humidity: c.relative_humidity_2m,
+      cloud: c.cloud_cover,
+      precip_mm: c.precipitation,
+      uv: c.uv_index,
+      is_day: c.is_day,
+      wind_kph: c.wind_speed_10m,
+      wind_degree: c.wind_direction_10m,
+      wind_dir: c.wind_direction_10m!=null ? wdCard(c.wind_direction_10m) : '',
+      gust_kph: c.wind_gusts_10m,
+      condition:{ code:_wmoToWxCode(c.weather_code), text:_wmoText(c.weather_code) },
+    },
+  };
+  return { wxApi, rain24 };
+}
+
 async function fetchWeatherAPI(icao){
   const q = AIRPORTS[icao]?.q;
   if(!q) return;
@@ -6434,7 +6560,14 @@ async function fetchWeatherAPI(icao){
     const res = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
     if(!res.ok) throw new Error(res.status);
     store.api[icao] = await res.json();
-  }catch(e){ console.warn(`weatherapi ${icao}:`,e.message); }
+    return;
+  }catch(e){ console.warn(`weatherapi ${icao}, trying Open-Meteo:`,e.message); }
+  // Fallback so island cards never go blank when WeatherAPI is down/over quota
+  try{
+    const ap = AIRPORTS[icao];
+    const om = await fetchOpenMeteoWx(ap?.lat, ap?.lon);
+    if(om?.wxApi) store.api[icao] = om.wxApi;
+  }catch(e2){ console.warn(`Open-Meteo fallback ${icao}:`,e2.message); }
 }
 
 
@@ -6445,11 +6578,17 @@ async function fetchWeatherAPI(icao){
    Renders animated weather icon + temp + conditions + wind.
 ════════════════════════════════ */
 const _worldOvrStore = {};   // icao → WeatherAPI response
+const _worldRain24   = {};   // icao → genuine trailing-24h rainfall (mm)
 
 async function fetchWorldOvr(){
   setBadge('worldOvrBadge','LOADING','loading');
   try{
     await Promise.allSettled(WORLD_OVR.map(async ap=>{
+      // Open-Meteo runs alongside WeatherAPI: it supplies the genuine
+      // trailing-24h rainfall and doubles as a keyless fallback if
+      // WeatherAPI is down/over quota.
+      const omP = fetchOpenMeteoWx(ap.lat, ap.lon).catch(()=>null);
+      let wxOk = false;
       try{
         const url = PROXY_BASE
           ? `${PROXY_BASE}/wx?q=${encodeURIComponent(ap.q)}&days=1&aqi=no&alerts=no`
@@ -6457,7 +6596,13 @@ async function fetchWorldOvr(){
         const r = await fetch(url, {cache:'no-store', signal:AbortSignal.timeout(10000)});
         if(!r.ok) throw new Error('HTTP '+r.status);
         _worldOvrStore[ap.icao] = await r.json();
+        wxOk = true;
       }catch(e){ console.warn('[WorldOvr]',ap.icao,e.message); }
+      const om = await omP;
+      if(om){
+        if(om.rain24 != null) _worldRain24[ap.icao] = om.rain24;
+        if(!wxOk && om.wxApi)  _worldOvrStore[ap.icao] = om.wxApi;  // fallback
+      }
     }));
     renderWorldOvr();
     setBadge('worldOvrBadge','LIVE');
@@ -6566,17 +6711,19 @@ function renderWorldOvr(){
     const statsItems = [windStr, humid, visKm, uvWorld].filter(Boolean);
 
     // ── Daily high / low + rain in the past 24h ──
-    // forecast.json gives today's day summary + hourly precip. Sum the
-    // hourly precip up to the current local hour for genuine past rainfall;
-    // fall back to the day's total accumulation if hourly data is missing.
+    // Prefer the genuine trailing-24h total from Open-Meteo; fall back to
+    // WeatherAPI's hourly precip summed to now, then the day total.
     const fday  = d?.forecast?.forecastday?.[0];
     const fdDay = fday?.day;
     const maxC  = fdDay?.maxtemp_c != null ? Math.round(fdDay.maxtemp_c) : null;
     const minC  = fdDay?.mintemp_c != null ? Math.round(fdDay.mintemp_c) : null;
-    let   rainMm = fdDay?.totalprecip_mm;
-    if(Array.isArray(fday?.hour) && loc?.localtime_epoch){
-      const past = fday.hour.filter(h=>h.time_epoch <= loc.localtime_epoch);
-      if(past.length) rainMm = past.reduce((s,h)=>s+(h.precip_mm||0),0);
+    let   rainMm = _worldRain24[ap.icao];
+    if(rainMm == null){
+      rainMm = fdDay?.totalprecip_mm;
+      if(Array.isArray(fday?.hour) && loc?.localtime_epoch){
+        const past = fday.hour.filter(h=>h.time_epoch <= loc.localtime_epoch);
+        if(past.length) rainMm = past.reduce((s,h)=>s+(h.precip_mm||0),0);
+      }
     }
     const hiLoStr = (maxC!=null && minC!=null)
       ? `<span class="wov-hi">↑${maxC}°</span><span class="wov-lo">↓${minC}°</span>` : '';
@@ -8023,11 +8170,27 @@ function confidenceLevel(tempSpread, n){
   return                  {lvl:'low',    label:'Low confidence',  col:'#f87171', glow:'rgba(248,113,113,0.45)'};
 }
 
+// Shimmer placeholder cards shown while a tab loads for the first time.
+function skeletonCards(n){
+  let s='';
+  for(let i=0;i<n;i++){
+    s+='<div class="skeleton-card"><div class="skel-line lg"></div>'+
+       '<div class="skel-line w90"></div><div class="skel-line w70"></div>'+
+       '<div class="skel-line w40"></div></div>';
+  }
+  return s;
+}
+
 async function loadForecast(forceNewsUpdate=false){
   const container = document.getElementById('forecast-content');
   if(!container){ console.warn('[Forecast] #forecast-content not found'); return; }
   forecastLoaded = true;
   setBadge('fcastBadge','LOADING','loading');
+  // First load only — show skeletons instead of a bare "Loading…" line.
+  if(!window._forecastRenderedOnce){
+    container.innerHTML = skeletonCards(FCAST_LOCATIONS.length || 3);
+    window._forecastRenderedOnce = true;
+  }
 
   if(forceNewsUpdate || !window._fcastNewsLoaded){
     window._fcastNewsLoaded = true;
@@ -9006,6 +9169,11 @@ async function loadMarine(){
   const container=document.getElementById('marine-content');
   if(!container){ console.warn('[Marine] #marine-content not found'); marineLoaded=false; return; }
   setBadge('marineBadge','LOADING','loading');
+  // First load only — show skeletons instead of a bare "Loading…" line.
+  if(!window._marineRenderedOnce){
+    container.innerHTML = skeletonCards(FCAST_LOCATIONS.length || 3);
+    window._marineRenderedOnce = true;
+  }
 
   try{
     const results=await Promise.allSettled(FCAST_LOCATIONS.map(async loc=>{
@@ -9667,7 +9835,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v28';
+  const CACHE_NAME = 'atc-dashboard-v29';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
