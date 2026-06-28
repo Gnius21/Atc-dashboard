@@ -4699,7 +4699,8 @@ document.addEventListener('visibilitychange',()=>{
 ════════════════════════════════ */
 /* ════════════════════════════════
    THEME SYSTEM
-   Five themes: dark (default), night, purple, navy, lavender.
+   Ten themes: dark (default), night, purple, navy, lavender, glass
+   (Emerald), neon, moonlit, amethyst (Ruby), nebula (Sunset).
    Persisted in localStorage so choice survives page reload.
 ════════════════════════════════ */
 const THEMES = ['dark','night','purple','navy','lavender','glass','neon','moonlit','amethyst','nebula'];
@@ -4716,12 +4717,12 @@ function applyTheme(theme){
     btn.classList.toggle('active', btn.dataset.theme===theme);
   });
   // Update theme-btn emoji
-  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'🔮',neon:'⚡',moonlit:'🌌',amethyst:'💜',nebula:'🌠'};
+  const icons={dark:'🌑',night:'🌙',purple:'🟣',navy:'🔵',lavender:'🌸',glass:'💚',neon:'⚡',moonlit:'🌌',amethyst:'❤️',nebula:'🌅'};
   const themeBtn=document.getElementById('themeBtn');
   if(themeBtn) themeBtn.textContent=icons[theme]||'🎨';
 
   // Update browser theme-color meta (status bar tint)
-  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7',glass:'#130826',neon:'#080318',moonlit:'#070b1f',amethyst:'#160a2e',nebula:'#140e34'};
+  const metaColors={dark:'#05080f',night:'#150a06',purple:'#12082a',navy:'#070e20',lavender:'#eef0f7',glass:'#04140f',neon:'#080318',moonlit:'#070b1f',amethyst:'#1c0712',nebula:'#1a0d0a'};
   const metaTheme=document.querySelector('meta[name="theme-color"]');
   if(metaTheme) metaTheme.content = metaColors[theme]||'#05080f';
 
@@ -9666,7 +9667,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v27';
+  const CACHE_NAME = 'atc-dashboard-v28';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
