@@ -1226,6 +1226,10 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
   filter:drop-shadow(0 0 4px var(--cyan));
 }
 .radar-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+/* Crop the Windy bottom bar (logo + timeline scrubber) for a cleaner map.
+   Scoped to .windy-iframe so ADS-B map controls stay visible. The extra
+   height pushes the branding strip past the container's overflow:hidden. */
+.radar-box iframe.windy-iframe{height:calc(100% + 42px);bottom:auto}
 .overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
 
 /* ── METAR CARDS (compact, TAF-style) ── */
@@ -4423,14 +4427,14 @@ body.night .tab-btn.active{
     <div>
       <div class="section-title">Windy — Cloud Cover</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade" style="width:100%;height:100%;border:none;display:block"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
@@ -4608,14 +4612,14 @@ body.night .tab-btn.active{
     <div>
       <div class="section-title">Windy — Wave Height &amp; Swell</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=true&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=waves&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=false&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Wind Speed &amp; Direction</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=true&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind&product=ecmwf&level=surface&detailLat=12.189&detailLon=-68.960&detail=true&pressure=false&menu=false&message=false&marker=true&calendar=now&type=map&location=coordinates&metricWind=kt&metricTemp=%C2%B0C" loading="lazy"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
@@ -5103,7 +5107,7 @@ function switchTab(name){
     if(pane){
       pane.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
         if(!f.src){
-          f.src=f.getAttribute('data-src');
+          f.src=cleanWindyUrl(f.getAttribute('data-src'));
           f.removeAttribute('data-src');
         }
       });
@@ -5210,12 +5214,27 @@ wireTabs(); wireTabKeys();
 // so initialise its Windy iframes (data-src → src). Deferred to idle so the
 // critical weather data renders before these secondary embeds compete for
 // bandwidth on first paint.
+// Append Windy's declutter params (hide left toolbar, search, pressure
+// toggle and message popups) to any embed.windy.com URL. Existing params
+// are preserved so deliberately-configured maps (e.g. marine detail) keep
+// their settings; only missing keys are filled in.
+function cleanWindyUrl(url){
+  if(!url || !url.includes('embed.windy.com')) return url;
+  try{
+    const u = new URL(url);
+    const clean = {menu:'false', message:'false', pressure:'false',
+      type:'map', location:'coordinates', metricWind:'kt', metricTemp:'°C'};
+    for(const k in clean){ if(!u.searchParams.has(k)) u.searchParams.set(k, clean[k]); }
+    return u.toString();
+  }catch(_){ return url; }
+}
+
 (function initActivePaneIframes(){
   const active = document.querySelector('.tab-pane.active');
   if(!active) return;
   const load = ()=>active.querySelectorAll('iframe.windy-iframe[data-src]').forEach(f=>{
     if(!f.src){
-      f.src = f.getAttribute('data-src');
+      f.src = cleanWindyUrl(f.getAttribute('data-src'));
       f.removeAttribute('data-src');
     }
   });
@@ -6892,8 +6911,8 @@ async function openWorldModal(icao){
   const windyBase = (overlay) =>
     `https://embed.windy.com/embed2.html?lat=${ap.lat}&lon=${ap.lon}` +
     `&detailLat=${ap.lat}&detailLon=${ap.lon}&zoom=8&level=surface` +
-    `&overlay=${overlay}&product=${overlay}&menu=&message=true&marker=true` +
-    `&calendar=now&type=map&location=coordinates&detail=true` +
+    `&overlay=${overlay}&product=${overlay}&menu=false&message=false&marker=true` +
+    `&calendar=now&type=map&location=coordinates&detail=true&pressure=false` +
     `&metricWind=kt&metricTemp=%C2%B0C`;
 
   body.innerHTML = hdr + `
@@ -9835,7 +9854,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v29';
+  const CACHE_NAME = 'atc-dashboard-v30';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
