@@ -4427,14 +4427,14 @@ body.night .tab-btn.active{
     <div>
       <div class="section-title">Windy — Cloud Cover</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7.5&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=clouds" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
       <div class="radar-box">
-        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7.5&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
@@ -9854,7 +9854,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v31';
+  const CACHE_NAME = 'atc-dashboard-v32';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
