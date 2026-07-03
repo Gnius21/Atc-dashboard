@@ -4509,28 +4509,28 @@ body.night .tab-btn.active{
   <div class="col-6">
     <div class="section-title">Radar</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=radar"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Cloud Cover</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.35&lon=-69.5&zoom=8&overlay=clouds"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=clouds"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Satellite IR</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=satellite"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=satellite"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
   <div class="col-6">
     <div class="section-title">Wind</div>
     <div class="radar-box">
-      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.4&lon=-69.2&zoom=8&overlay=wind"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=wind"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -9854,7 +9854,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v32';
+  const CACHE_NAME = 'atc-dashboard-v33';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
