@@ -4494,8 +4494,8 @@ body.night .tab-btn.active{
 </div>
 </div>
 
-<!-- ═══ TAB: FLIGHTS (merged into ATC tab) ═══ -->
-<div class="tab-pane" id="tab-flights" role="tabpanel" aria-labelledby="tabbtn-flights" style="display:none"></div>
+<!-- Flights tab merged into the ATC tab's Live Flight Board -->
+
 
 <!-- ═══ TAB: WEATHER ═══ -->
 <div class="tab-pane" id="tab-weather" role="tabpanel" aria-labelledby="tabbtn-weather">
@@ -5199,12 +5199,12 @@ function wireTabs(){
     }
   });
 }
-// Keyboard shortcuts 1–7
+// Keyboard shortcuts 1–5
 function wireTabKeys(){
   document.addEventListener('keydown', e=>{
     if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
     if(e.ctrlKey||e.metaKey||e.altKey) return; // don't hijack browser shortcuts (Cmd/Ctrl+1 etc.)
-    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'flights','6':'world'};
+    const map={'1':'atc','2':'weather','3':'forecast','4':'marine','5':'world'};
     if(map[e.key]){ try{ switchTab(map[e.key]); }catch(err){ console.error('[Tabs] key switch failed:', err); } }
   });
 }
@@ -9856,7 +9856,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v34';
+  const CACHE_NAME = 'atc-dashboard-v35';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
