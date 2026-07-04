@@ -1233,6 +1233,15 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
    usable — the logo returns with it, an unavoidable pairing. */
 .radar-box iframe.windy-iframe:not(.windy-timeline){height:calc(100% + 42px);bottom:auto}
 .overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
+/* Corner layer badge — identifies the overlay now that Windy's own
+   labels are hidden. Injected by injectWindyBadges() at load. */
+.map-layer-badge{
+  position:absolute;top:8px;right:8px;z-index:20;
+  font-family:var(--mono);font-size:.5rem;letter-spacing:.14em;font-weight:600;
+  color:var(--accent-bright);background:rgba(0,0,0,0.55);
+  border:1px solid var(--border-hi);border-radius:3px;padding:3px 7px;
+  pointer-events:none;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
 
 /* ── METAR CARDS (compact, TAF-style) ── */
 .metar-strip{display:flex;flex-direction:column;gap:12px;padding:14px}
@@ -5230,6 +5239,24 @@ function cleanWindyUrl(url){
     return u.toString();
   }catch(_){ return url; }
 }
+
+// Stamp a small corner badge on each static Windy map naming its overlay
+// (Windy's own labels are hidden by the declutter pass).
+function injectWindyBadges(){
+  const NAMES = {clouds:'CLOUDS', radar:'RADAR', satellite:'SAT IR',
+    wind:'WIND', dustsm:'DUST', waves:'WAVES'};
+  document.querySelectorAll('iframe.windy-iframe').forEach(f=>{
+    const url = f.src || f.getAttribute('data-src') || '';
+    const m = url.match(/[?&]overlay=([a-z]+)/);
+    const box = f.closest('.radar-box');
+    if(!m || !box || box.querySelector('.map-layer-badge')) return;
+    const b = document.createElement('span');
+    b.className='map-layer-badge';
+    b.textContent = NAMES[m[1]] || m[1].toUpperCase();
+    box.appendChild(b);
+  });
+}
+injectWindyBadges();
 
 (function initActivePaneIframes(){
   const active = document.querySelector('.tab-pane.active');
@@ -9856,7 +9883,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v35';
+  const CACHE_NAME = 'atc-dashboard-v36';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
