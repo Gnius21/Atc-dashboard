@@ -3,17 +3,87 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+<!-- ── Google Analytics 4 + Consent Mode v2 ──
+     TODO: replace G-XXXXXXXXXX (both places below) with the real GA4
+     Measurement ID once the property is created. Consent defaults to
+     "denied" until the visitor accepts the cookie banner (see the
+     consent-banner script later in the page), so no analytics/ad storage
+     is used before opt-in — required for EEA/UK visitors. -->
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+  gtag('consent', 'default', {
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'denied'
+  });
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+
+<!-- ── Google AdSense ──
+     TODO once the AdSense account/site is approved: uncomment the script
+     tag below and replace ca-pub-XXXXXXXXXXXXXXXX with the real publisher
+     ID (also used in /ads.txt — see repo root). Left commented out until
+     then so no invalid-ID requests go out and site verification (which
+     Google does by crawling for this exact tag) can be triggered cleanly
+     the moment it's uncommented.
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
 <meta name="theme-color" content="#05080f"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="RWC Caribbean"/>
+<meta name="apple-mobile-web-app-title" content="Curaçao Weather ATC"/>
 <!-- PWA manifest (inline data URI) + icons — no external files needed -->
-<link rel="manifest" href='data:application/manifest+json,{"name":"RWC Caribbean","short_name":"RWC","start_url":".","display":"standalone","background_color":"%2304060b","theme_color":"%2305080f","orientation":"portrait-primary","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%2296%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22230%22 r=%2270%22 fill=%22%23fbbf24%22/%3E%3Cellipse cx=%22290%22 cy=%22300%22 rx=%2295%22 ry=%2250%22 fill=%22%2394a3b8%22/%3E%3Cellipse cx=%22230%22 cy=%22290%22 rx=%2255%22 ry=%2240%22 fill=%22%23cbd5e1%22/%3E%3Ctext x=%22256%22 y=%22430%22 font-family=%22sans-serif%22 font-size=%2270%22 font-weight=%22bold%22 fill=%22%235ab8ff%22 text-anchor=%22middle%22%3ERWC%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'/>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Cura%C3%A7ao Weather ATC","short_name":"CW ATC","start_url":".","display":"standalone","background_color":"%2304060b","theme_color":"%2305080f","orientation":"portrait-primary","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%2296%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22230%22 r=%2270%22 fill=%22%23fbbf24%22/%3E%3Cellipse cx=%22290%22 cy=%22300%22 rx=%2295%22 ry=%2250%22 fill=%22%2394a3b8%22/%3E%3Cellipse cx=%22230%22 cy=%22290%22 rx=%2255%22 ry=%2240%22 fill=%22%23cbd5e1%22/%3E%3Ctext x=%22256%22 y=%22430%22 font-family=%22sans-serif%22 font-size=%2270%22 font-weight=%22bold%22 fill=%22%235ab8ff%22 text-anchor=%22middle%22%3ECW%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}]}'/>
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%2296%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22230%22 r=%2270%22 fill=%22%23fbbf24%22/%3E%3Cellipse cx=%22290%22 cy=%22300%22 rx=%2295%22 ry=%2250%22 fill=%22%2394a3b8%22/%3E%3C/svg%3E"/>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22%3E%3Crect width=%22512%22 height=%22512%22 rx=%2296%22 fill=%22%2304060b%22/%3E%3Ccircle cx=%22256%22 cy=%22230%22 r=%2270%22 fill=%22%23fbbf24%22/%3E%3Cellipse cx=%22290%22 cy=%22300%22 rx=%2295%22 ry=%2250%22 fill=%22%2394a3b8%22/%3E%3C/svg%3E"/>
-<title>RWC Caribbean — ATC &amp; Weather</title>
+<title>Curaçao Weather ATC — Live ABC Islands Weather, Radar &amp; Flight Tracker</title>
 
+<!-- ── SEO ── -->
+<meta name="description" content="Live weather, radar, METAR/TAF, sea state and flight tracking for Curaçao, Aruba &amp; Bonaire. Real-time ADS-B, ATC audio, marine forecasts and tropical storm alerts for the ABC islands."/>
+<link rel="canonical" href="https://curacaoweatheratc.uk/"/>
+<meta name="robots" content="index, follow"/>
+
+<!-- Open Graph -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Curaçao Weather ATC"/>
+<meta property="og:title" content="Curaçao Weather ATC — Live ABC Islands Weather, Radar & Flight Tracker"/>
+<meta property="og:description" content="Live weather, radar, METAR/TAF, sea state and flight tracking for Curaçao, Aruba & Bonaire — real-time ADS-B, ATC audio and marine forecasts."/>
+<meta property="og:url" content="https://curacaoweatheratc.uk/"/>
+<meta property="og:image" content="https://curacaoweatheratc.uk/assets/og-card.png"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:locale" content="en_US"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Curaçao Weather ATC — Live ABC Islands Weather, Radar & Flight Tracker"/>
+<meta name="twitter:description" content="Live weather, radar, METAR/TAF, sea state and flight tracking for Curaçao, Aruba & Bonaire."/>
+<meta name="twitter:image" content="https://curacaoweatheratc.uk/assets/og-card.png"/>
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Curaçao Weather ATC",
+  "url": "https://curacaoweatheratc.uk/",
+  "description": "Live weather, radar, METAR/TAF, sea state and flight tracking for Curaçao, Aruba and Bonaire.",
+  "applicationCategory": "Weather",
+  "operatingSystem": "Any",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "areaServed": [
+    { "@type": "Place", "name": "Curaçao" },
+    { "@type": "Place", "name": "Aruba" },
+    { "@type": "Place", "name": "Bonaire" }
+  ]
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -564,6 +634,67 @@ body.theme-nebula .night-btn,body.theme-nebula .toggle-container{background:rgba
 .skel-line{height:11px;border-radius:5px;background:var(--border-hi);margin:11px 0;opacity:.55}
 .skel-line.lg{height:28px;width:52%;margin-bottom:18px}
 .skel-line.w90{width:90%}.skel-line.w70{width:70%}.skel-line.w40{width:40%}
+
+/* ── ABOUT / EDITORIAL SECTION ── */
+.about-section{max-width:900px;margin:20px auto 0;padding:0 18px;}
+.about-details{
+  border:1px solid var(--border);border-radius:var(--radius-lg);
+  background:var(--panel);padding:2px 0;
+}
+.about-details summary{
+  cursor:pointer;list-style:none;padding:16px 20px;
+  font-family:var(--display);font-weight:700;font-size:.82rem;
+  letter-spacing:.03em;color:var(--accent-bright);
+  display:flex;align-items:center;gap:10px;
+}
+.about-details summary::-webkit-details-marker{display:none}
+.about-details summary::before{
+  content:'▸';color:var(--cyan);font-size:.75rem;transition:transform .2s;flex-shrink:0;
+}
+.about-details[open] summary::before{transform:rotate(90deg);}
+.about-body{padding:2px 22px 22px;font-family:var(--body);font-size:.78rem;line-height:1.7;color:var(--text);}
+.about-body h2{
+  font-family:var(--display);font-size:.72rem;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--accent-bright);margin:20px 0 8px;
+}
+.about-body h2:first-child{margin-top:6px}
+.about-body p{margin:0 0 12px;color:var(--text-dim);}
+.about-body b{color:var(--text);font-weight:600;}
+
+/* ── SITE FOOTER ── */
+.site-footer{
+  border-top:1px solid var(--border);
+  margin-top:24px;padding:28px 18px 34px;
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,0.15));
+}
+.site-footer-inner{
+  max-width:1100px;margin:0 auto;
+  display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center;
+}
+.site-footer-brand{display:flex;flex-direction:column;gap:4px;}
+.site-footer-title{
+  font-family:var(--display);font-weight:700;font-size:.9rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent-bright);
+}
+.site-footer-tag{
+  font-family:var(--mono);font-size:.6rem;color:var(--text-dim);letter-spacing:.02em;
+}
+.site-footer-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+.site-footer-links a{
+  font-family:var(--mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-dim);text-decoration:none;border-bottom:1px solid transparent;
+  transition:color .15s,border-color .15s;
+}
+.site-footer-links a:hover{color:var(--accent-bright);border-color:var(--accent-bright);}
+.site-footer-credit{
+  font-family:var(--mono);font-size:.54rem;line-height:1.7;color:var(--muted);
+  max-width:760px;
+}
+.site-footer-credit a{color:var(--text-dim);text-decoration:none;}
+.site-footer-credit a:hover{color:var(--accent-bright);}
+.site-footer-copy{
+  font-family:var(--mono);font-size:.54rem;color:var(--muted);letter-spacing:.06em;
+}
 
 .lock-label{
   font-family:var(--mono);font-size:.45rem;letter-spacing:.08em;
@@ -3684,6 +3815,47 @@ body.night .tab-btn.active{
 }
 #offlineBanner .offline-icon{font-size:.9rem;line-height:1;}
 @keyframes offlineSlide{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── COOKIE / CONSENT BANNER ── */
+.consent-banner{
+  position:fixed;left:0;right:0;bottom:0;z-index:9998;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:14px 20px;
+  background:linear-gradient(180deg,rgba(8,12,20,0.97),rgba(4,6,11,0.99));
+  border-top:1px solid var(--border-hi);
+  box-shadow:0 -6px 24px rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  animation:consentSlide .35s cubic-bezier(.4,0,.2,1);
+}
+@keyframes consentSlide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.consent-icon{font-size:1.15rem;flex-shrink:0;}
+.consent-text{
+  flex:1;min-width:240px;
+  font-family:var(--mono);font-size:.62rem;line-height:1.6;color:var(--text-dim);
+}
+.consent-text a{color:var(--accent-bright);text-decoration:underline;}
+.consent-actions{display:flex;gap:10px;flex-shrink:0;}
+.consent-btn{
+  font-family:var(--mono);font-size:.6rem;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;padding:9px 18px;border-radius:6px;cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.consent-btn:active{transform:scale(.96)}
+.consent-btn-primary{
+  border:1px solid var(--cyan);color:#04121a;
+  background:linear-gradient(180deg,var(--cyan),#0891b2);
+  box-shadow:0 0 16px var(--cyan-glow);
+}
+.consent-btn-ghost{
+  border:1px solid var(--border-hi);color:var(--text-dim);background:transparent;
+}
+.consent-btn-ghost:hover{color:var(--text);border-color:var(--accent-bright);}
+@media(max-width:560px){
+  .consent-banner{padding:12px 14px;}
+  .consent-actions{width:100%;justify-content:stretch;}
+  .consent-btn{flex:1;}
+}
+
 @media (prefers-reduced-motion: reduce){
   /* Honour the OS "reduce motion" setting: kill decorative looping
      animations site-wide (also eases CPU/GPU load on low-end devices),
@@ -4116,7 +4288,7 @@ body.night .tab-btn.active{
       <span class="clock-label">UTC · Zulu</span>
     </div>
   </div>
-  <span class="header-title">ATC &amp; Weather Dashboard</span>
+  <span class="header-title">Curaçao Weather ATC</span>
   <div class="header-actions">
     <div class="header-pill" id="tropicsPill" title="Atlantic tropical activity (NHC)">
       <span class="tropics-dot"></span>
@@ -4140,7 +4312,7 @@ body.night .tab-btn.active{
 <!-- PWA install banner (iOS: shown after a few seconds; Android: shown on beforeinstallprompt) -->
 <div id="pwaInstallBanner" role="complementary" aria-label="Install app" style="display:none">
   <span class="pwa-banner-icon">📲</span>
-  <span id="pwaInstallText">Add RWC Caribbean to your home screen for quick access</span>
+  <span id="pwaInstallText">Add Curaçao Weather ATC to your home screen for quick access</span>
   <button id="pwaInstallBtn" class="pwa-banner-btn">Install</button>
   <button id="pwaInstallDismiss" class="pwa-banner-dismiss" aria-label="Dismiss">✕</button>
 </div>
@@ -4149,6 +4321,20 @@ body.night .tab-btn.active{
 <div id="offlineBanner" role="alert" aria-live="assertive" style="display:none">
   <span class="offline-icon" aria-hidden="true">⚠</span>
   <span id="offlineBannerText">No internet connection — data may be stale. Retrying automatically…</span>
+</div>
+
+<!-- Cookie / analytics consent banner (Consent Mode v2) — shown until the
+     visitor accepts or declines; choice persisted in localStorage. -->
+<div id="consentBanner" class="consent-banner" role="dialog" aria-label="Cookie consent" aria-live="polite" style="display:none">
+  <span class="consent-icon" aria-hidden="true">🍪</span>
+  <span class="consent-text">
+    We use cookies for analytics, and to support ads that help keep this dashboard free. See our
+    <a href="privacy.html">Privacy Policy</a>.
+  </span>
+  <div class="consent-actions">
+    <button id="consentDecline" class="consent-btn consent-btn-ghost">Decline</button>
+    <button id="consentAccept" class="consent-btn consent-btn-primary">Accept</button>
+  </div>
 </div>
 
 <!-- THEME PICKER MODAL -->
@@ -4658,6 +4844,59 @@ body.night .tab-btn.active{
 </div>
 </div>
 
+<section class="about-section" aria-labelledby="about-heading">
+  <div class="about-inner">
+    <details class="about-details">
+      <summary id="about-heading">About Curaçao Weather ATC &amp; the ABC Islands Weather Guide</summary>
+      <div class="about-body">
+
+        <h2>What this dashboard is</h2>
+        <p>Curaçao Weather ATC is a live operations dashboard for the ABC Islands — Aruba, Bonaire and Curaçao — built for pilots, aviation spotters, sailors, dive operators and anyone who wants a real-time read on conditions in the southern Caribbean. It combines a live ADS-B aircraft radar, streaming air traffic control audio from Hato, Queen Beatrix and Flamingo airports, decoded METAR and TAF reports, a multi-model weather forecast, and a marine panel covering sea state, swell, wind and offshore buoy data — all refreshed automatically, all in one page. Unlike general weather apps, every figure here is sourced directly from aviation and marine authorities, not smoothed averages.</p>
+
+        <h2>Climate of the ABC Islands</h2>
+        <p>Aruba, Bonaire and Curaçao sit at roughly 12°N, just off the Venezuelan coast — far enough south and west that they lie outside the main Atlantic hurricane belt, which is why they're sometimes called the "hurricane-proof" islands even though a close pass or indirect effects (swell, rain bands) are still possible in an active season. The islands sit under the influence of the northeast trade winds almost year-round, giving steady 15–25kt winds that make them a magnet for windsurfing and kitesurfing, and keep humidity from feeling as oppressive as it would elsewhere at this latitude. The dry season runs roughly January to September, with a short wet season from October to December bringing brief, heavy tropical showers rather than prolonged rain. Sea temperatures stay in the 26–29°C range year-round.</p>
+
+        <h2>Reading METAR, TAF and flight categories</h2>
+        <p>A METAR is a routine hourly (sometimes half-hourly) surface weather report issued by an airport, encoded in a fixed format: wind direction and speed, visibility, present weather, cloud layers, temperature/dewpoint and altimeter setting. A TAF is the forecast equivalent, valid for 24–30 hours ahead. Both are summarized here with a flight category — <b>VFR</b> (Visual Flight Rules, good conditions), <b>MVFR</b> (Marginal VFR, reduced ceiling or visibility), <b>IFR</b> (Instrument Flight Rules required), or <b>LIFR</b> (Low IFR, near-minimum conditions) — a shorthand pilots use to judge, at a glance, whether visual flying is workable at Hato (TNCC), Queen Beatrix (TNCA) or Flamingo (TNCB).</p>
+
+        <h2>Understanding sea state</h2>
+        <p>The marine panel reports significant wave height, dominant swell direction and period, and wind-driven chop, then classifies the result on the WMO/Douglas sea-scale — from "calm" through "moderate" to "very rough." Wave height alone doesn't tell the whole story: a short-period wind sea feels choppier at a given height than a long-period ground swell, which is why period is shown alongside height. This is the same data mariners and dive operators use to judge whether conditions are workable for a boat trip or a shore dive.</p>
+
+        <h2>Frequently asked questions</h2>
+        <p><b>Is this official ATC or aviation data?</b> No — this dashboard aggregates public, third-party data sources (ADS-B Exchange, CheckWX, AviationWeather.gov, Windy, Open-Meteo, NOAA) for situational awareness only. It is not affiliated with any airport authority or air navigation service provider and must not be used for flight planning or navigation.</p>
+        <p><b>Why does the ATC audio sometimes go quiet?</b> The streams are provided by LiveATC.net and depend on volunteer-run ground receivers; brief outages happen when local infrastructure or the source feed drops.</p>
+        <p><b>How often does the data refresh?</b> METAR/TAF and island weather refresh automatically every few minutes; the marine and forecast panels refresh roughly every 30 minutes; the ADS-B radar and audio streams are continuous/live.</p>
+        <p><b>Does this work on mobile?</b> Yes — the dashboard is a installable Progressive Web App. On iOS or Android, use your browser's "Add to Home Screen" option for an app-like experience with offline caching of the last-seen data.</p>
+
+      </div>
+    </details>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <div class="site-footer-brand">
+      <span class="site-footer-title">Curaçao Weather ATC</span>
+      <span class="site-footer-tag">Live weather &amp; flight operations dashboard for the ABC Islands</span>
+    </div>
+    <nav class="site-footer-links" aria-label="Site">
+      <a href="privacy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="site-footer-credit">
+      Data &amp; embeds courtesy of
+      <a href="https://www.windy.com" target="_blank" rel="noopener">Windy</a>,
+      <a href="https://globe.adsbexchange.com" target="_blank" rel="noopener">ADS-B Exchange</a>,
+      <a href="https://www.weather.gov" target="_blank" rel="noopener">NOAA/NWS</a>,
+      <a href="https://www.checkwx.com" target="_blank" rel="noopener">CheckWX</a> and
+      <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a>.
+      Not affiliated with any ANSP or airport authority — for situational awareness only, not for flight planning.
+    </div>
+    <div class="site-footer-copy">© <span id="footerYear">2026</span> Curaçao Weather ATC</div>
+  </div>
+</footer>
+
 <!-- ═══ TAB: DASHBOARD ═══ -->
 <script>
 /* ════════════════════════════════
@@ -4714,6 +4953,10 @@ function fmtUTC(str){
   const d=new Date(str);
   return `${pad(d.getUTCDate())}/${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}Z`;
 }
+
+// Footer copyright year — set once, no need for a live tick like the clocks.
+const _footerYearEl = document.getElementById('footerYear');
+if(_footerYearEl) _footerYearEl.textContent = new Date().getFullYear();
 
 /* ════════════════════════════════
    CLOCKS
@@ -7427,6 +7670,48 @@ async function refresh(){
 }
 
 /* ════════════════════════════════
+   CONSENT BANNER (Consent Mode v2)
+   Shown until the visitor accepts/declines; choice persisted in
+   localStorage so it only appears once. gtag() is defined in <head>
+   before this runs (Consent Mode default is set to "denied" there).
+════════════════════════════════ */
+(function initConsentBanner(){
+  const KEY = 'atc_consent_v1';
+  const banner  = document.getElementById('consentBanner');
+  const accept  = document.getElementById('consentAccept');
+  const decline = document.getElementById('consentDecline');
+  if(!banner) return;
+
+  function applyConsent(granted){
+    if(typeof gtag !== 'function') return;
+    const state = granted ? 'granted' : 'denied';
+    gtag('consent', 'update', {
+      ad_storage: state, ad_user_data: state,
+      ad_personalization: state, analytics_storage: state,
+    });
+  }
+
+  let saved = null;
+  try{ saved = localStorage.getItem(KEY); }catch(_){}
+  if(saved === 'granted' || saved === 'denied'){
+    applyConsent(saved === 'granted');
+  }else{
+    banner.style.display = 'flex';
+  }
+
+  accept?.addEventListener('click', ()=>{
+    try{ localStorage.setItem(KEY, 'granted'); }catch(_){}
+    applyConsent(true);
+    banner.style.display = 'none';
+  });
+  decline?.addEventListener('click', ()=>{
+    try{ localStorage.setItem(KEY, 'denied'); }catch(_){}
+    applyConsent(false);
+    banner.style.display = 'none';
+  });
+})();
+
+/* ════════════════════════════════
    #1 OFFLINE DETECTION + #2 DATA-AGE + #3 MANUAL REFRESH
 ════════════════════════════════ */
 let _lastSuccessfulRefresh = 0;   // ms timestamp of last refresh that completed
@@ -9885,7 +10170,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v37';
+  const CACHE_NAME = 'atc-dashboard-v38';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
@@ -9914,6 +10199,9 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
       'rss2json.com','windy.com',
       'adsbexchange.com','rainviewer.com','tilecache.rainviewer.com',
       'allorigins.win','corsproxy.io','codetabs.com','knmi.nl','ndbc.noaa.gov',
+      // Analytics/ads — always hit network live, never cached/served stale.
+      'googletagmanager.com','google-analytics.com','googlesyndication.com',
+      'doubleclick.net','googleadservices.com',
     ];
 
     self.addEventListener('fetch', e => {
