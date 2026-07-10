@@ -43,9 +43,14 @@ request, caching responses at the edge.
 5. (Recommended) Lock CORS to your site. Edit `wrangler.toml`:
    ```toml
    [vars]
-   ALLOWED_ORIGIN = "https://gnius21.github.io"
+   ALLOWED_ORIGIN = "https://curacaoweatheratc.uk"
    ```
    then `wrangler deploy` again.
+
+6. **Rotate the old keys.** The previous keys shipped in the public HTML/git
+   history, so after the proxy is live generate fresh keys at CheckWX,
+   WeatherAPI and RapidAPI, `wrangler secret put` each one again, and blank
+   the constants in `index.html`.
 
 ## Notes
 

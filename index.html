@@ -4895,11 +4895,17 @@ body.night .tab-btn.active{
 /* ════════════════════════════════
    CONFIG
 ════════════════════════════════ */
-// Direct API keys — move these to a Cloudflare Worker proxy once you
-// have it deployed (see atc-proxy.js) to hide them from view-source.
+// ── API keys / proxy ──
+// SECURITY: set PROXY_BASE to the deployed Cloudflare Worker URL
+// (flights-worker/ — e.g. 'https://rwc-atc-proxy.<subdomain>.workers.dev',
+// no trailing slash). When set, ALL keyed calls (CheckWX, WeatherAPI,
+// AeroDataBox) route through the Worker, which holds the keys as secrets —
+// then rotate the keys below and replace them with '' so the old exposed
+// ones die. The direct keys only exist as a dev fallback while
+// PROXY_BASE is empty.
+const PROXY_BASE     = '';
 const CHECKWX_KEY    = 'fb135a94c0574db4b26082b70705b4af';
 const WX_API_KEY     = 'fef2a58ed5fa4b2ea08221244260405';
-const PROXY_BASE     = '';
 const REFRESH_MS    = 5 * 60 * 1000;        // METAR/TAF — fast
 const WX_REFRESH_MS = 15 * 60 * 1000;       // WeatherAPI + Open-Meteo — slower (preserve API quota)
 let _lastWxFetch    = 0;
@@ -5550,17 +5556,21 @@ async function fetchCuracaoFlights(direction){
   if(cached && Date.now()-cached.ts < FLIGHT_TTL) return {rows:cached.rows, stale:false};
   const {from,to} = _flightWindow();
   const dir = direction==='arrivals' ? 'Arrival' : 'Departure';
-  const url = `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}` +
-    `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
-    `&withCargo=false&withPrivate=false&withLocation=true`;
+  // Via the key-holding proxy Worker when configured, else direct (dev only).
+  const url = PROXY_BASE
+    ? `${PROXY_BASE}/flights?direction=${direction}`
+    : `https://${AERODATABOX_HOST}/flights/airports/icao/TNCC/${from}/${to}` +
+      `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
+      `&withCargo=false&withPrivate=false&withLocation=true`;
+  const opts = PROXY_BASE ? {} : {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}};
   const ac = new AbortController();
   const _t = setTimeout(() => ac.abort(), 10000);
   try{
-    const r = await fetch(url, {headers:{'x-rapidapi-key':AERODATABOX_KEY,'x-rapidapi-host':AERODATABOX_HOST}, signal:ac.signal});
+    const r = await fetch(url, {...opts, signal:ac.signal});
     if(!r.ok) throw new Error('HTTP '+r.status);
     const data = await r.json();
-    const list = (direction==='arrivals' ? data.arrivals : data.departures) || [];
-    const rows = list.map(f=>{
+    // The proxy returns rows already mapped/sorted; direct calls map here.
+    const rows = PROXY_BASE ? (data.rows||[]) : ((direction==='arrivals' ? data.arrivals : data.departures) || []).map(f=>{
       const mv=f.movement||{}, ap=mv.airport||{}, loc=ap.location||{};
       return {
         schedISO: mv.scheduledTime?.local||mv.scheduledTime?.utc||null,
@@ -10163,7 +10173,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v41';
+  const CACHE_NAME = 'atc-dashboard-v42';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
@@ -10195,6 +10205,9 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
       // Analytics/ads — always hit network live, never cached/served stale.
       'googletagmanager.com','google-analytics.com','googlesyndication.com',
       'doubleclick.net','googleadservices.com',
+      // Key-holding API proxy Worker — its responses are edge-cached
+      // upstream; never let the SW serve them stale.
+      'workers.dev',
     ];
 
     self.addEventListener('fetch', e => {

@@ -72,7 +72,7 @@ async function handleFlights(url, env, ctx, cors) {
   const dir = direction === 'arrivals' ? 'Arrival' : 'Departure';
   const api = `https://${AERODATABOX_HOST}/flights/airports/icao/${AIRPORT_ICAO}/${from}/${to}` +
     `?direction=${dir}&withLeg=false&withCancelled=true&withCodeshared=false` +
-    `&withCargo=false&withPrivate=false&withLocation=false`;
+    `&withCargo=false&withPrivate=false&withLocation=true`;
 
   const upstream = await fetch(api, {
     headers: { 'x-rapidapi-key': env.AERODATABOX_KEY, 'x-rapidapi-host': AERODATABOX_HOST },
@@ -84,13 +84,16 @@ async function handleFlights(url, env, ctx, cors) {
   const list = (direction === 'arrivals' ? data.arrivals : data.departures) || [];
 
   const rows = list.map(f => {
-    const mv = f.movement || {};
-    const ap = mv.airport  || {};
+    const mv  = f.movement || {};
+    const ap  = mv.airport  || {};
+    const loc = ap.location || {};
     return {
       schedISO: mv.scheduledTime?.local || mv.scheduledTime?.utc || null,
       revISO:   mv.revisedTime?.local   || mv.revisedTime?.utc   || null,
       place:    ap.municipalityName || ap.name || ap.iata || '—',
       iata:     ap.iata || '',
+      lat:      (typeof loc.lat === 'number') ? loc.lat : null,
+      lon:      (typeof loc.lon === 'number') ? loc.lon : null,
       flightNo: (f.number || '').replace(/\s+/g, ' ').trim() || '—',
       airline:  f.airline?.name || '',
       terminal: mv.terminal || '',
