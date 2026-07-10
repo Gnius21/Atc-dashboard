@@ -24,15 +24,8 @@
 </script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 
-<!-- ── Google AdSense ──
-     TODO once the AdSense account/site is approved: uncomment the script
-     tag below and replace ca-pub-XXXXXXXXXXXXXXXX with the real publisher
-     ID (also used in /ads.txt — see repo root). Left commented out until
-     then so no invalid-ID requests go out and site verification (which
-     Google does by crawling for this exact tag) can be triggered cleanly
-     the moment it's uncommented.
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
--->
+<!-- ── Google AdSense (site verification + Auto ads once approved) ── -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8809941591993194" crossorigin="anonymous"></script>
 <meta name="theme-color" content="#05080f"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -10170,7 +10163,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v40';
+  const CACHE_NAME = 'atc-dashboard-v41';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
