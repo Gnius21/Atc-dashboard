@@ -1360,9 +1360,9 @@ body.night .tab-btn:hover{background:rgba(204,136,0,0.06);}
 /* Crop the Windy bottom bar (logo + timeline scrubber) for a cleaner map.
    Scoped to .windy-iframe so ADS-B map controls stay visible. The extra
    height pushes the branding strip past the container's overflow:hidden.
-   Radar panels opt out (.windy-timeline) so the animation scrubber stays
-   usable — the logo returns with it, an unavoidable pairing. */
-.radar-box iframe.windy-iframe:not(.windy-timeline){height:calc(100% + 42px);bottom:auto}
+   Applies to ALL Windy embeds, radar included — the timeline scrubber
+   shares the strip with the logo, so it goes too. */
+.radar-box iframe.windy-iframe{height:calc(100% + 42px);bottom:auto}
 .overlay-blocker{position:absolute;inset:0;z-index:1000;background:transparent}
 /* Corner layer badge — identifies the overlay now that Windy's own
    labels are hidden. Injected by injectWindyBadges() at load. */
@@ -4631,7 +4631,7 @@ body.night .tab-btn.active{
     <div>
       <div class="section-title">Windy — Precipitation Radar</div>
       <div class="radar-box">
-        <iframe class="windy-iframe windy-timeline" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <div class="overlay-blocker"></div>
       </div>
     </div>
@@ -4706,7 +4706,7 @@ body.night .tab-btn.active{
   <div class="col-6">
     <div class="section-title">Radar</div>
     <div class="radar-box">
-      <iframe class="windy-iframe windy-timeline" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar"></iframe>
+      <iframe class="windy-iframe" data-src="https://embed.windy.com/embed2.html?lat=12.2&lon=-68.96&zoom=7&overlay=radar"></iframe>
       <div class="overlay-blocker"></div>
     </div>
   </div>
@@ -7206,7 +7206,7 @@ async function openWorldModal(icao){
         <div>
           <div class="wm-section-title" style="margin-bottom:6px">Windy Radar</div>
           <div class="radar-box">
-            <iframe class="windy-iframe windy-timeline" src="${windyBase('radar')}" frameborder="0" allowfullscreen></iframe>
+            <iframe class="windy-iframe" src="${windyBase('radar')}" frameborder="0" allowfullscreen></iframe>
           </div>
         </div>
         <div>
@@ -10170,7 +10170,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v38';
+  const CACHE_NAME = 'atc-dashboard-v39';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
