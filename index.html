@@ -4018,6 +4018,14 @@ body.night .tab-btn.active{
   .wx-bar-flag{font-size:1.1rem}
   .wx-bar-temp{font-size:.9rem}
   .wx-bar-cat{display:none}
+  /* Section titles carry inline control buttons (Save Position, Radar,
+     Satellite). At phone width the row can't fit on one line, so let it
+     wrap and stop the buttons from being squeezed (which clipped their
+     labels, e.g. "SAVE POSITION" -> "SAV POSITI"). */
+  .section-title{flex-wrap:wrap;gap:7px 8px}
+  .section-title .btn,
+  .section-title .btn-small,
+  .section-title .adsb-layer-btn{flex-shrink:0}
 }
 
 
@@ -10177,7 +10185,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v43';
+  const CACHE_NAME = 'atc-dashboard-v44';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
