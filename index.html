@@ -5240,7 +5240,10 @@ document.querySelectorAll('.atc-player').forEach(card=>{
 
   const audio = new Audio();
   audio.preload = 'none';
-  audio.crossOrigin = 'anonymous';
+  // NOTE: do NOT set crossOrigin here. These streams are just played, never
+  // read via Web Audio API, and LiveATC's Icecast mounts don't send CORS
+  // headers — so crossOrigin='anonymous' turns a playable stream into a CORS
+  // failure that hangs the player on "Connecting". Plain playback needs no CORS.
   audio.volume = volSlider.value/100;
 
   let userWantsPlay = false;
@@ -10185,7 +10188,7 @@ setInterval(checkStormAlerts, 30 * 60 * 1000);
   if(!('serviceWorker' in navigator)) return;
   if(location.protocol !== 'https:' && location.hostname !== 'localhost') return;
 
-  const CACHE_NAME = 'atc-dashboard-v44';
+  const CACHE_NAME = 'atc-dashboard-v45';
 
   const SW = `
     const CACHE = '${CACHE_NAME}';
